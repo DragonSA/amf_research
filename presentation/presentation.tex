@@ -1,0 +1,164 @@
+% ----------------------------------------------------------------
+% LaTeX definitions for a Beamer presentation     ****************
+% Template prepared by T.A. McWalter (April 2010)
+% ----------------------------------------------------------------
+\documentclass{beamer}
+\let\Tiny=\tiny
+
+% BEAMER OPTIONS -------------------------------------------------
+
+\mode<presentation>
+{
+  \useinnertheme[shadow]{rounded}
+  \usetheme{Copenhagen}
+  \setbeamercovered{transparent}
+  \useoutertheme{infolines}
+  \useoutertheme{shadow}
+%  \setbeamertemplate{navigation symbols}{}     % Switches off navigation icons
+}
+
+% GRAPHICS HANDLING ----------------------------------------------
+
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+    \pdffalse                   % not running PDFTeX
+\else
+    \ifx\pdfoutput\relax
+        \pdffalse               % not running PDFTeX
+    \else
+        \ifnum\pdfoutput>0
+            \pdftrue            % running PDFTeX, with PDF output
+        \else
+            \pdffalse           % running PDFTeX, with DVI output
+        \fi
+    \fi
+\fi
+
+\ifpdf
+    \usepackage{graphicx}
+    \DeclareGraphicsExtensions{.pdf}
+    \newcommand{\bb}{viewport}
+\else
+    \usepackage{graphicx}
+    \DeclareGraphicsExtensions{.eps}
+    \newcommand{\bb}{bb}
+\fi
+
+% PACKAGES -------------------------------------------------------
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{color}
+
+%\usepackage{pgf}
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{resize to}[a4paper,border shrink=5mm,landscape]     % Use this option for printing on A4 paper
+%\pgfpagesuselayout{4 on 1}[a4paper,border shrink=5mm,landscape]		% Use this option for printing 4 slides per page on A4 paper
+
+% THEOREM STYLES -------------------------------------------------
+
+\newtheorem{thm}{Theorem.}
+\newtheorem{cor}[thm]{Corollary.}
+\newtheorem{con}[thm]{Conjecture.}
+\newtheorem{ass}[thm]{Assumption.}
+\newtheorem{lem}[thm]{Lemma.}
+\newtheorem{prop}[thm]{Proposition.}
+\newtheorem{defn}[thm]{Definition.}
+\renewcommand{\thethm}{}  % not numbered
+
+% PREAMBLE -------------------------------------------------------
+
+\title[Valuation of Convertible Bonds]{Valuation of Convertible Bonds}
+
+%\subtitle{Subtitle (if needed)}
+
+\author[D.B. Naylor]{David Naylor}
+
+\institute[AMF Wits]{Programme in Advanced Mathematics of Finance,\\
+    School of Computational and Applied Mathematics,\\
+    University of the Witwatersrand\\
+    \vspace{.5cm}\includegraphics[height=2cm]{../common/WitsColourLogo}}
+
+\date{Day Month Year}
+
+% MAIN DOCUMENT --------------------------------------------------
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% -----------------------
+
+% If you want a small logo on each page then uncomment the following line
+%
+%\logo{\includegraphics[height=0.75cm]{WitsColourLogo.pdf}}
+
+\section{Introduction}
+
+\begin{frame}{Introduction}
+\begin{enumerate}
+    \item<1-> This is the first item.
+    \item<2-> This is the second item.
+    \item<3-> This is the third item.
+\end{enumerate}
+\end{frame}
+
+% -----------------------
+
+\begin{frame}{Outline of the Talk}
+  \tableofcontents[hidesubsections]
+\end{frame}
+
+% -----------------------
+
+\AtBeginSection[] {
+    \begin{frame}<beamer>{Outline}
+        \tableofcontents[currentsection,hideothersubsections]
+    \end{frame}
+}
+
+\section{First Section}
+
+\subsection{Subsection 1.1}
+
+\begin{frame}{Subsection 1.1}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=7cm]{FigFile1}
+%     \caption[Coefficient of variation]{Coefficient of variation of the estimator.}\label{CoV}
+% \end{figure}
+\end{frame}
+
+% -----------------------
+
+
+\subsection{Subsection 1.2 - with no heading}
+
+\begin{frame}
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[\bb=0 0 672 504, width=8cm]{Matlab.jpg}
+%     \caption[Matlab logo]{The Matlab logo.}\label{Matlab}
+% \end{figure}
+\end{frame}
+
+% -----------------------
+
+
+\section{Second Section}
+
+\subsection{Subsection 2.1}
+
+\begin{frame}{Subsection 2.1}
+\end{frame}
+
+% -----------------------
+
+
+\end{document}

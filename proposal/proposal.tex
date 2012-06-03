@@ -1,0 +1,123 @@
+% ----------------------------------------------------------------
+% AMS-LaTeX definitions for a Honours Proposal *******************
+% Template prepared by T.A. McWalter (May 2010)
+% ----------------------------------------------------------------
+\documentclass[a4paper,11pt,oneside]{article}
+
+% PACKAGES -------------------------------------------------------
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathrsfs}
+\usepackage{url}
+
+% GRAPHICS HANDLING ----------------------------------------------
+
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+    \pdffalse                   % not running PDFTeX
+\else
+    \ifx\pdfoutput\relax
+        \pdffalse               % not running PDFTeX
+    \else
+        \ifnum\pdfoutput>0
+            \pdftrue            % running PDFTeX, with PDF output
+        \else
+            \pdffalse           % running PDFTeX, with DVI output
+        \fi
+    \fi
+\fi
+
+\ifpdf
+    \usepackage[pdftex]{graphicx}
+    \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+    \newcommand{\bb}{viewport}
+\else
+    \usepackage{graphicx}
+    \DeclareGraphicsExtensions{.eps, .jpg}
+    \newcommand{\bb}{bb}
+\fi
+
+% OTHER SET-UP ---------------------------------------------------
+
+% Page dimensions
+
+\setlength{\topmargin}{0.5cm}
+\setlength{\headsep}{1cm}
+\setlength{\textwidth}{14.0cm}
+\setlength{\headheight}{14pt}
+\setlength{\textheight}{22cm}
+\setlength{\oddsidemargin}{1.3cm}
+\setlength{\evensidemargin}{0cm}
+
+% Line spacing
+
+\newcommand{\setlinespacing}[1]
+           {\renewcommand{\baselinestretch}{#1}\small\normalsize}
+
+
+% MACRO DEFINITIONS ----------------------------------------------
+
+
+% PREAMBLE -------------------------------------------------------
+
+\title{Honours Project Proposal:\\
+Valuation of Convertible Bonds}
+
+\author{David Naylor\\[1cm]
+Supervisor: Dr. Tom McWalter\\[3cm]
+Programme in Advanced Mathematics of Finance,\\
+University of the Witwatersrand,\\
+Johannesburg.\\[2cm]
+\includegraphics[width=4cm]{../common/WitsColourLogo}\\[2cm]
+}
+
+% MAIN DOCUMENT --------------------------------------------------
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\setlinespacing{1.20}
+\newpage
+
+\setcounter{page}{1}
+
+% ABSTRACT -------------------------------------------------------
+
+\def\abstractname{\Large Abstract}
+\begin{abstract}
+Provide an abstract here.
+\end{abstract}
+
+
+% CONTENT --------------------------------------------------------
+
+\section{Introduction}
+
+Provide an introduction here. Remember to cite references (e.g.~Black
+and Scholes \cite{BS73} and Merton \cite{Me73,Me90}).
+
+\section{Literature Review}
+
+Provide a literature review here.
+
+\section{Another Section if Necessary}
+
+You can introduce other sections if necessary.
+
+\section{Research Method and Aims}
+
+End off by describing your proposed research methodology and aims.
+
+% BIBLIOGRAPHY ---------------------------------------------------
+
+\clearpage
+\setlinespacing{1}
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{amsplain}
+\bibliography{../references/references.bib}
+\end{document}
