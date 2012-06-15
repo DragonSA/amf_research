@@ -10,25 +10,11 @@
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage{url}
 
 % GRAPHICS HANDLING ----------------------------------------------
-
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-    \pdffalse                   % not running PDFTeX
-\else
-    \ifx\pdfoutput\relax
-        \pdffalse               % not running PDFTeX
-    \else
-        \ifnum\pdfoutput>0
-            \pdftrue            % running PDFTeX, with PDF output
-        \else
-            \pdffalse           % running PDFTeX, with DVI output
-        \fi
-    \fi
-\fi
 
 \ifpdf
     \usepackage[pdftex]{graphicx}
@@ -67,7 +53,7 @@
 Valuation of Convertible Bonds}
 
 \author{David Naylor\\[1cm]
-Supervisor: Dr. Tom McWalter\\[3cm]
+Supervisor: Dr. Thomas McWalter\\[3cm]
 Programme in Advanced Mathematics of Finance,\\
 University of the Witwatersrand,\\
 Johannesburg.\\[2cm]

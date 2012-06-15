@@ -10,25 +10,11 @@
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage{fancyhdr}
 
 % GRAPHICS HANDLING ----------------------------------------------
-
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-    \pdffalse                   % not running PDFTeX
-\else
-    \ifx\pdfoutput\relax
-        \pdffalse               % not running PDFTeX
-    \else
-        \ifnum\pdfoutput>0
-            \pdftrue            % running PDFTeX, with PDF output
-        \else
-            \pdffalse           % running PDFTeX, with DVI output
-        \fi
-    \fi
-\fi
 
 \ifpdf
     \usepackage[pdftex]{graphicx}
