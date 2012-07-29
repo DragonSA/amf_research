@@ -17,23 +17,18 @@
 %  \setbeamertemplate{navigation symbols}{}     % Switches off navigation icons
 }
 
+% PACKAGES -------------------------------------------------------
+
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{amsbsy}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{ifpdf}
+\usepackage{mathrsfs}
+
 % GRAPHICS HANDLING ----------------------------------------------
-
-\newif\ifpdf
-\ifx\pdfoutput\undefined
-    \pdffalse                   % not running PDFTeX
-\else
-    \ifx\pdfoutput\relax
-        \pdffalse               % not running PDFTeX
-    \else
-        \ifnum\pdfoutput>0
-            \pdftrue            % running PDFTeX, with PDF output
-        \else
-            \pdffalse           % running PDFTeX, with DVI output
-        \fi
-    \fi
-\fi
-
 \ifpdf
     \usepackage{graphicx}
     \DeclareGraphicsExtensions{.pdf}
@@ -43,16 +38,6 @@
     \DeclareGraphicsExtensions{.eps}
     \newcommand{\bb}{bb}
 \fi
-
-% PACKAGES -------------------------------------------------------
-
-\usepackage[english]{babel}
-\usepackage{amsmath}
-\usepackage{amsbsy}
-\usepackage{amsfonts}
-\usepackage{amssymb}
-\usepackage{mathrsfs}
-\usepackage{color}
 
 %\usepackage{pgf}
 %\usepackage{pgfpages}
