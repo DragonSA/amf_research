@@ -13,6 +13,7 @@
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage{url}
+\usepackage{xspace}
 
 % GRAPHICS HANDLING ----------------------------------------------
 
@@ -45,7 +46,18 @@
 
 
 % MACRO DEFINITIONS ----------------------------------------------
+\def\convK{\ensuremath{\kappa_t}\xspace}
+\def\convKS{\ensuremath{\convK S_t}\xspace}
+\def\convT{\ensuremath{\Omega_c}\xspace}
 
+\def\putK{\ensuremath{P_t}\xspace}
+\def\putT{\ensuremath{\Omega_p}\xspace}
+
+\def\callK{\ensuremath{K_t}\xspace}
+\def\callT{\ensuremath{\Omega_k}\xspace}
+
+\def\defN{\ensuremath{R}\xspace}
+\def\defS{\ensuremath{\eta}\xspace}
 
 % PREAMBLE -------------------------------------------------------
 
@@ -83,8 +95,33 @@ Provide an abstract here.
 % CONTENT --------------------------------------------------------
 
 \section{Introduction}
+A hybrid instrument available on financial markets is the convertible bond.  The convertible bond is an instrument that is similar to a normal bond except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy-back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
-Provide an introduction here. Remember to cite references (Ayache, et al \cite{AFV03}).
+More rigorously, as described by \cite{AKW08}, the convertible bond can be specified as having:
+\begin{itemize}
+ \item A nominal value of $N$.  Without loss of generality it is assumes the convertible bond always matures at par.
+ \item A maturity at time $T$.
+ \item A continuous conversion provision held by the investor to convert the bond into \convK shares (for a value of \convKS).  Conversion may only happen in time set \convT (typically $T \in \convT$).
+ \item A continuous call provision held by the issuer to buy-back the bond for \callK.  The investor may opt to convert the bond instead of received the buy-back value.  The call may only happen in the time set \callT.
+ \item A continuous put provision held by the investor to force early conversion of the bond for \putK.  The put may only happen in the time set \putT.
+\end{itemize}
+
+As assumed by \cite{AFV03}, the probably of default in time set $[t, dt]$ is $p\,dt$ where $p(S, t)$ is a deterministic hazard rate.  The following assumptions will be made about the behaviour of the bond in the event of default:
+\begin{itemize}
+ \item The bond has recovery ratio of \defN, for a recovery value of $\defN N$.
+ \item The share price reduced in value by \defS so that the share price after default $S^+ = S^- (1 - \defS)$ where $S^-$ is the share price immediately before default.
+ \item The investor has an option of either receiving:
+ \begin{itemize}
+  \item $\defN N$, or
+  \item $\convK S (1 - \defS)$
+ \end{itemize}
+\end{itemize}
+
+The stock price is assumed to follow a standard Wiener process of:
+\begin{displaymath}
+dS = \mu S dt + \sigma S dz
+\end{displaymath}
+with drift rate $\mu$, volatility of $\sigma$ and Wiener process increment of $dz$ \cite{AFV03}.
 
 \section{Literature Review}
 
