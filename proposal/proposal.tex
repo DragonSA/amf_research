@@ -96,7 +96,7 @@ Provide an abstract here.
 % CONTENT --------------------------------------------------------
 
 \section{Introduction}
-This research project is proposed to price convertible bonds based on the paper by \citet{AFV03}.
+This research project aims to price convertible bonds based on the paper by \citet{AFV03}.
 
 Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy-back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
@@ -127,16 +127,14 @@ dS = \mu S dt + \sigma S dz
 with drift rate $\mu$, volatility of $\sigma$ and Wiener process increment of $dz$ \cite{AFV03}.
 
 \section{Literature Review}
-
 Provide a literature review here.
 
-\section{Another Section if Necessary}
-
-You can introduce other sections if necessary.
-
 \section{Research Method and Aims}
+This research project aims to price convertible bonds with credit risk using a finite difference scheme to solve the difference equation numerically.
 
-End off by describing your proposed research methodology and aims.
+\Citet{AFV03} used a Crank-Nicolson scheme with modifications as described in \citet{R84}.  The BDF finite difference scheme \cite{B98} was proposed as an alternative finite difference scheme.  The Crank-Nicolson scheme will be implemented in Octave (a near Matlab compatible computer language).
+
+A best effort will include compatibility with Matlab and implementing a Monte Carlo simulation to compare pricing models.  \citet{AKW08} describes one such Monte Carlo based model.
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
