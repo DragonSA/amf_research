@@ -10,6 +10,7 @@
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amssymb}
+\usepackage{enumitem}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage[numbers]{natbib}
@@ -32,11 +33,11 @@
 
 % Page dimensions
 
-\setlength{\topmargin}{0.5cm}
-\setlength{\headsep}{1cm}
+\setlength{\topmargin}{0.0cm} % 0.5cm
+\setlength{\headsep}{0cm} % 1cm
 \setlength{\textwidth}{14.0cm}
 \setlength{\headheight}{14pt}
-\setlength{\textheight}{22cm}
+\setlength{\textheight}{23.5cm} % 22cm
 \setlength{\oddsidemargin}{1.3cm}
 \setlength{\evensidemargin}{0cm}
 
@@ -91,7 +92,7 @@ Johannesburg.\\[2cm]
 \begin{abstract}
 A convertible bond is a complex derivative that cannot be prices as a simple combination of bond and stock components.  Convertible bonds can be broken down as a bond with two embedded options (a put option for the investor and a call option for the issuer) and an option to convert the bond into stock.  Due to the multiple continuous options the pricing of the convertible bond is path dependent.
 
-This research project explores and implements a finite difference scheme to price the convertible bond, taking into account credit risk.
+This research project explores and implements a binary tree and finite difference scheme to price the convertible bond, taking into account credit risk.
 \end{abstract}
 
 
@@ -103,7 +104,7 @@ This research project aims to price convertible bonds based on the paper by \cit
 Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy-back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
 More rigorously, as described by \cite{AKW08}, the convertible bond can be specified as having:
-\begin{itemize}
+\begin{itemize}[noitemsep,nolistsep]
  \item A nominal value of $N$.  Without loss of generality it is assumes the convertible bond always matures at par.
  \item A maturity at time $T$.
  \item A continuous conversion provision held by the investor to convert the bond into \convK shares (for a value of \convKS).  Conversion may only happen in time set \convT (typically $T \in \convT$).
@@ -112,13 +113,13 @@ More rigorously, as described by \cite{AKW08}, the convertible bond can be speci
 \end{itemize}
 
 As assumed by \cite{AFV03}, the probably of default in time set $[t, dt]$ is $p\,dt$ where $p(S, t)$ is a deterministic hazard rate.  The following assumptions will be made about the behaviour of the bond in the event of default:
-\begin{itemize}
+\begin{itemize}[noitemsep,nolistsep]
  \item The bond has recovery ratio of \defN, for a recovery value of $\defN N$.
- \item The share price reduced in value by \defS so that the share price after default $S^+ = S^- (1 - \defS)$ where $S^-$ is the share price immediately before default.
+ \item The share price reduces in value by \defS so that the share price after default is $S^+ = S^- (1 - \defS)$ where $S^-$ is the share price immediately before default.
  \item The investor has an option of either receiving:
- \begin{itemize}
+ \begin{itemize}[noitemsep,nolistsep]
   \item $\defN N$, or
-  \item $\convK S (1 - \defS)$
+  \item $\convK S_t (1 - \defS)$
  \end{itemize}
 \end{itemize}
 
@@ -129,12 +130,18 @@ dS = \mu S dt + \sigma S dz
 with drift rate $\mu$, volatility of $\sigma$ and Wiener process increment of $dz$ \cite{AFV03}.
 
 \section{Literature Review}
-Provide a literature review here.
+\citet{I77} started the literature of pricing a convertible bond with extensions from \cite{BS77} and \cite{BS80}.  The original approach was to treat the bond and equity as components of the issuer's value and to treat default as when the issuer's value drops below a point where it can no longer meet it's financial obligations.  An overview of this type of approach is provided by \cite{N96} and criticisms are addressed by \cite{JT95}.  The main problems with this model is that the issuer's value is not directly observable, difficult to parameterise and all senior debt to the convertible bond also needs to be priced.
+
+A second approach was to price the convertible bond based on the issuer's stock price \cite{MS86}.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  The probability of the loss jump over a short period of time is described by a hazard rate.
+
+Also some Monte Carlo based pricing methods have been considered as proposed by \cite{B89} with \cite{G03} providing an optimisation approach to handle optimal early exercise of the American options.  Further improvements to the pricing methods were done by \cite{AKW08}.
+
+Other methods used for pricing include a finite element method by \cite{BBH03} and a binomial tree method by \cite{TKN01} and \cite{AFV02}.
 
 \section{Research Method and Aims}
 This research project aims to price convertible bonds with credit risk using a finite difference scheme to solve the difference equation numerically.
 
-\Citet{AFV03} used a Crank-Nicolson scheme with modifications as described in \citet{R84}.  The BDF finite difference scheme \cite{B98} was proposed as an alternative finite difference scheme.  The Crank-Nicolson scheme will be implemented in Octave (a near Matlab compatible computer language).
+Initially a binomial tree will be implemented in Octave (a near Matlab compatible computer language and interpreter) then a finite difference scheme will be implemented.  \Citet{AFV03} used a Crank-Nicolson scheme with modifications as described in \citet{R84}.  The BDF finite difference scheme \cite{B98} was proposed as an alternative finite difference scheme.  The Crank-Nicolson scheme will be implemented in Octave.
 
 A best effort will include compatibility with Matlab, pricing subject to credit risk and implementing a Monte Carlo simulation to compare pricing models.  \citet{AKW08} describes one such Monte Carlo based model.
 
