@@ -7,7 +7,7 @@
 %% merlin.mbs  (with options: `,ay,nat,seq-no,nm-init,dt-jnl,yr-par,note-yr,tit-it,jttl-rm,vol-bf,vnum-x,volp-com,jdt-vs,pp-last,jnm-x,pre-pub,edby,edbyy,blk-com,blknt,pp,ed,abr,ord,em-it,nfss')
 %% ----------------------------------------
 %% *** Natbib numberical style for AMS journals ***
-%% 
+%%
  %-------------------------------------------------------------------
  % The original source file contains the following version information:
  % \ProvidesFile{merlin.mbs}[1998/02/25 3.85a (PWD)]
@@ -1383,29 +1383,38 @@ FUNCTION {author.editor.sort}
   if$
 }
 
-FUNCTION {editor.sort}
-{ editor empty$
-    { key empty$
-        { "to sort, need editor or key in " cite$ * warning$
-          ""
+FUNCTION {author.organization.sort}
+{ author empty$
+    { organization empty$
+        { key empty$
+            { "to sort, need author, organization, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
         }
-        { key sortify }
+        { "The " #4 organization chop.word sortify }
+      if$
+    }
+    { author sort.format.names }
+  if$
+}
+
+FUNCTION {editor.organization.sort}
+{ editor empty$
+    { organization empty$
+        { key empty$
+            { "to sort, need editor, organization, or key in " cite$ * warning$
+              ""
+            }
+            { key sortify }
+          if$
+        }
+        { "The " #4 organization chop.word sortify }
       if$
     }
     { editor sort.format.names }
   if$
-}
-
-INTEGERS { seq.num }
-
-FUNCTION {init.seq}
-{ #0 'seq.num :=}
-
-EXECUTE {init.seq}
-
-FUNCTION {int.to.fix}
-{ "000000000" swap$ int.to.str$ *
-  #-1 #10 substring$
 }
 
 FUNCTION {presort}
@@ -1413,16 +1422,31 @@ FUNCTION {presort}
   label sortify
   "    "
   *
-  seq.num #1 + 'seq.num :=
-  seq.num  int.to.fix
-  'sort.label :=
-  sort.label
+  type$ "book" =
+  type$ "inbook" =
+  or
+    'author.editor.sort
+    { type$ "proceedings" =
+        'editor.organization.sort
+        { type$ "manual" =
+            'author.organization.sort
+            'author.sort
+          if$
+        }
+      if$
+    }
+  if$
+  "    "
+  *
+  year field.or.null sortify
   *
   "    "
   *
-  title field.or.null
-  sort.format.title
+  cite$
   *
+  #1 entry.max$ substring$
+  'sort.label :=
+  sort.label *
   #1 entry.max$ substring$
   'sort.key$ :=
 }
@@ -1477,18 +1501,7 @@ ITERATE {forward.pass}
 REVERSE {reverse.pass}
 
 FUNCTION {bib.sort.order}
-{ sort.label
-  "    "
-  *
-  year field.or.null sortify
-  *
-  "    "
-  *
-  title field.or.null
-  sort.format.title
-  *
-  #1 entry.max$ substring$
-  'sort.key$ :=
+{ sort.label  'sort.key$ :=
 }
 
 ITERATE {bib.sort.order}
