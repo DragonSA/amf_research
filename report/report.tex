@@ -14,6 +14,7 @@
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage[numbers]{natbib}
+\usepackage{xspace}
 
 % GRAPHICS HANDLING ----------------------------------------------
 
@@ -62,7 +63,30 @@
 
 % MACRO DEFINITIONS ----------------------------------------------
 
-% Place your personal macro definitions here.
+% Statistical
+\def\E{\mathbb{E}}
+\def\Var{\mathbb{V}\mathtt{ar}}
+
+% Derivatives
+\def\S{\ensuremath{S_t}\xspace}
+\def\dS{\ensuremath{dS_t}\xspace}
+\def\dt{\ensuremath{dt}\xspace}
+\def\dW{\ensuremath{dW_t}\xspace}
+\def\dq{\ensuremath{dq_t}\xspace}
+
+% Differences
+\def\DS{\ensuremath{\delta S_t}\xspace}
+\def\Dt{\ensuremath{\delta t}\xspace}
+\def\DW{\ensuremath{\delta W_t}\xspace}
+\def\Dq{\ensuremath{\delta q_t}\xspace}
+
+% Binomial model
+\def\u{\ensuremath{u}\xspace}
+\def\d{\ensuremath{d}\xspace}
+\def\o{\ensuremath{o}\xspace}
+\def\pu{\ensuremath{p_\u}\xspace}
+\def\pd{\ensuremath{p_\d}\xspace}
+\def\po{\ensuremath{p_\o}\xspace}
 
 % PREAMBLE -------------------------------------------------------
 
@@ -118,20 +142,102 @@ Place acknowledgements here.
 
 % CONTENT --------------------------------------------------------
 
-\chapter{Chapter Name}
+\chapter{Binomial Model with Credit Risk}
+\section{Specification}
+Consider a stock with the following stochastic model\footnote{Of note $\mathbb{E}[\frac{\dS}{\S}] = r\dt \Leftrightarrow \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq$}:
+\begin{displaymath}
+ \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq
+\end{displaymath}
+where:
 
-Place text here.
+\begin{tabular}{ll}
+ $r$            & is the risk free rate \\
+ $\sigma$       & is the log-volatility of the stock price \\
+ $\lambda$      & is the hazard rate \\
+ $\eta$         & is the percentage drop in stock price on a default event \\
+ \dW            & is a Wiener process \\
+ \dq            & is a Poisson jump process where the first jump is the default event \\
+\end{tabular}
 
-\section{Section Name}
+\noindent and
+\begin{displaymath}\begin{array}{rcl}
+ \E[\frac{\dS}{\S}]     &=& r\dt \\
+ \E[\frac{S_{t + \dt}}{\S}] &=& \E[\frac{\S}{\S} + \frac{\dS}{\S}] \\
+                        &=& 1 + \E[\frac{\dS}{\S}] \\
+ \Var[\frac{\dS}{\S}]   &=& (\sigma^2 + \lambda\eta^2)\dt \\
+ \Var[\frac{S_{t + \dt}}{\S}] &=& \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \\
+                        &=& \Var[\frac{\dS}{\S}] \\
+\end{array}\end{displaymath}
 
-Place text here. Add extra sections if necessary. If you really need to, you can use subsections.
+\noindent and consider a binomial model that has time step \Dt, jumps \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
+\begin{displaymath}\begin{array}{rcl}
+ \E[\frac{S_{t + \Dt}}{\S}]     &=& \u\pu + \d\pd + (1 - \eta)\po \\
+                                &=& \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \\
+ \Var[\frac{S_{t + \Dt}}{\S}]   &=& \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E^2[\frac{\DS}{\S}] \\
+                                &=& \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E^2[\frac{\DS}{\S}] \\
+\end{array}\end{displaymath}
 
-\chapter{Another Chapter Name}
+\section{Derivation}
+If we equate the first moment of the stochastic model with that of the binomial model, in \Dt time, we get:
+\begin{displaymath}\begin{array}{rcl}
+ e^{r\Dt}       &=& \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \\
+ \pu(\u - \d)   &=& e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \\
+ \pu            &=& \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
+ \Rightarrow\pd &=& -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
+\end{array}\end{displaymath}
+and if we equate the second moment about the mean of the stochastic model with that of the binomial model, in \Dt time, we get:
+\begin{displaymath}\begin{array}{rcl}
+ (\sigma^2 + \lambda\eta^2)\Dt &=& \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E^2[\frac{\DS}{\S}] \\
+                        &=& (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
+                        &=& (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \\
+                        & & + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
+                        &=& (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \\
+                        & & + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
+\end{array}\end{displaymath}
+If we make the assumption $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and replace all exponentials with Taylor series expansion we get:
+\begin{displaymath}\begin{array}{rcl}
+ \u                     &=& 1 + \sqrt{A\Dt} + \frac{A\Dt}{2!} + \frac{(A\Dt)^{\frac{3}{2}}}{3!} \\
+ \d                     &=& 1 - \sqrt{A\Dt} + \frac{A\Dt}{2!} - \frac{(A\Dt)^{\frac{3}{2}}}{3!} \\
+ \u + \d                &=& 2 + A\Dt \\
+ (\sigma^2 + \lambda\eta^2)\Dt &=& (2 + A\Dt)(1 + r\Dt - \lambda\Dt(1 - \eta)) - (1 - \lambda\Dt) \\
+                        & & + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \\
+                        &=& A\Dt + \lambda\Dt - \lambda\Dt(1 - \eta)(1 + \eta) \\
+                        &=& A\Dt + \lambda\eta^2\Dt \\
+ A\Dt                  &=& \sigma^2\Dt
+\end{array}\end{displaymath}
 
+\section{Parameterisation}
+Based on the above the following table specifies a binomial model with credit risk (TODO: include table in List of Tables):
 
-\section{Another Section Name}
+\begin{center}\begin{tabular}{|rcl|l|l|}\hline
+ \multicolumn{3}{|l|}{\textbf{Parameter}} & \textbf{Description} \\\hline
+ \u     &=& $e^{\sigma\sqrt{\Dt}}$ &
+    Multiplier for an up-step \\\hline
+ \d     &=& $e^{-\sigma\sqrt{\Dt}}$ &
+    Multiplier for a down-step \\\hline
+ \pu    &=& $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
+    Probability of an up-step \\\hline
+ \pd    &=& $e^{-\lambda\Dt} - \pu$ &
+    Probability of a down-step \\\hline
+ \po    &=& $1 - e^{-\lambda\Dt}$ &
+    Probability of a default \\\hline
+ \Dt    & & &
+    Time-step \\ \hline
+\end{tabular}\end{center}
 
-etc. etc.
+This model was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model:
+\begin{displaymath}
+ V_t = e^{-r\Dt}(\pu V^{+}_t + \pd V^{-}_t- + \po X_t)
+\end{displaymath}
+where
+
+\begin{tabular}{ll}
+ $V_t$          & is the value at time $t$ \\
+ $V^+_t$        & is the value of an up-step at time $t + \Dt$ \\
+ $V^-_t$        & is the value of a down-step at time $t + \Dt$ \\
+ $X_t$          & is the value of default at time $t$ \\
+\end{tabular}
+
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
