@@ -101,11 +101,11 @@ This research project explores and implements a binary tree and finite differenc
 \section{Introduction}
 This research project aims to price convertible bonds based on the paper by \citet{AFV03}.
 
-Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy-back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
+Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond, except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
 More rigorously, as described by \citet{AKW08}, the convertible bond can be specified as having:
 \begin{itemize}[noitemsep,nolistsep]
- \item A nominal value of $N$.  Without loss of generality it is assumes the convertible bond always matures at par.
+ \item A nominal value of $N$.  Without loss of generality it is assumed the convertible bond always matures at par.
  \item A maturity at time $T$.
  \item A continuous conversion provision held by the investor to convert the bond into \convK shares (for a value of \convKS).  Conversion may only happen in time set \convT (typically $T \in \convT$).
  \item A continuous call provision held by the issuer to buy-back the bond for \callK.  The investor may opt to convert the bond instead of received the buy-back value.  The call may only happen in the time set \callT.
