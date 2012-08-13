@@ -63,6 +63,8 @@
 
 % MACRO DEFINITIONS ----------------------------------------------
 
+\def\n{\nonumber\\}
+
 % Statistical
 \def\E{\mathbb{E}}
 \def\Var{\mathbb{V}\mathtt{ar}}
@@ -156,9 +158,9 @@ Describe the Binomial Model based on the paper by \citet{MK12}.
 
 \section{Definition}
 Consider a stock with the following stochastic model\footnote{Of note $\mathbb{E}[\frac{\dS}{\S}] = r\dt \Leftrightarrow \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq$}:
-\begin{displaymath}
+\begin{equation}
  \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq
-\end{displaymath}
+\end{equation}
 where:
 
 \begin{tabular}{ll}
@@ -171,51 +173,51 @@ where:
 \end{tabular}
 
 \noindent and
-\begin{displaymath}\begin{array}{rcl}
- \E[\frac{\dS}{\S}]     &=& r\dt \\
- \E[\frac{S_{t + \dt}}{\S}] &=& \E[\frac{\S}{\S} + \frac{\dS}{\S}] \\
-                        &=& 1 + \E[\frac{\dS}{\S}] \\
- \Var[\frac{\dS}{\S}]   &=& (\sigma^2 + \lambda\eta^2)\dt \\
- \Var[\frac{S_{t + \dt}}{\S}] &=& \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \\
-                        &=& \Var[\frac{\dS}{\S}] \\
-\end{array}\end{displaymath}
+\begin{align}
+ \E[\frac{\dS}{\S}]     &= r\dt \\
+ \E[\frac{S_{t + \dt}}{\S}] &= \E[\frac{\S}{\S} + \frac{\dS}{\S}] \n
+                        &= 1 + \E[\frac{\dS}{\S}] \label{eq:SM_E} \\
+ \Var[\frac{\dS}{\S}]   &= (\sigma^2 + \lambda\eta^2)\dt \\
+ \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
+                        &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
+\end{align}
 
-\noindent and consider a binomial model that has time step \Dt, jumps \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
-\begin{displaymath}\begin{array}{rcl}
- \E[\frac{S_{t + \Dt}}{\S}]     &=& \u\pu + \d\pd + (1 - \eta)\po \\
-                                &=& \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \\
- \Var[\frac{S_{t + \Dt}}{\S}]   &=& \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E^2[\frac{\DS}{\S}] \\
-                                &=& \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E^2[\frac{\DS}{\S}] \\
-\end{array}\end{displaymath}
+\noindent and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
+\begin{align}
+ \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
+                                &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
+ \Var[\frac{S_{t + \Dt}}{\S}]   &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\DS}{\S}]^2 \n
+                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\DS}{\S}]^2 \label{eq:BM_Var}
+\end{align}
 
 \section{Derivation}
-If we equate the first moment of the stochastic model with that of the binomial model, in \Dt time, we get:
-\begin{displaymath}\begin{array}{rcl}
- e^{r\Dt}       &=& \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \\
- \pu(\u - \d)   &=& e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \\
- \pu            &=& \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
- \Rightarrow\pd &=& -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
-\end{array}\end{displaymath}
-and if we equate the second moment about the mean of the stochastic model with that of the binomial model, in \Dt time, we get:
-\begin{displaymath}\begin{array}{rcl}
- (\sigma^2 + \lambda\eta^2)\Dt &=& \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E^2[\frac{\DS}{\S}] \\
-                        &=& (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
-                        &=& (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \\
-                        & & + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
-                        &=& (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \\
-                        & & + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \\
-\end{array}\end{displaymath}
+If we equate the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{S_{t + \Dt}}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} we get:
+\begin{align}
+ e^{r\Dt}       &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \n
+ \pu(\u - \d)   &= e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \\
+ \pu            &= \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
+ \Rightarrow\pd &= -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}
+\end{align}
+and if we equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} we get:
+\begin{align}
+ (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\DS}{\S}]^2 \n
+                        &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
+                        &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \n
+                        & + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
+                        &= (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \n
+                        & + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt}
+\end{align}
 If we make the assumption $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and replace all exponentials with Taylor series expansion we get:
-\begin{displaymath}\begin{array}{rcl}
- \u                     &=& 1 + \sqrt{A\Dt} + \frac{A\Dt}{2!} + \frac{(A\Dt)^{\frac{3}{2}}}{3!} \\
- \d                     &=& 1 - \sqrt{A\Dt} + \frac{A\Dt}{2!} - \frac{(A\Dt)^{\frac{3}{2}}}{3!} \\
- \u + \d                &=& 2 + A\Dt \\
- (\sigma^2 + \lambda\eta^2)\Dt &=& (2 + A\Dt)(1 + r\Dt - \lambda\Dt(1 - \eta)) - (1 - \lambda\Dt) \\
-                        & & + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \\
-                        &=& A\Dt + \lambda\Dt - \lambda\Dt(1 - \eta)(1 + \eta) \\
-                        &=& A\Dt + \lambda\eta^2\Dt \\
- A\Dt                  &=& \sigma^2\Dt
-\end{array}\end{displaymath}
+\begin{align}
+ \u                     &= 1 + \sqrt{A\Dt} + \frac{A\Dt}{2!} + \frac{(A\Dt)^{\frac{3}{2}}}{3!} \n
+ \d                     &= 1 - \sqrt{A\Dt} + \frac{A\Dt}{2!} - \frac{(A\Dt)^{\frac{3}{2}}}{3!} \n
+ \u + \d                &= 2 + A\Dt \\
+ (\sigma^2 + \lambda\eta^2)\Dt &= (2 + A\Dt)(1 + r\Dt - \lambda\Dt(1 - \eta)) - (1 - \lambda\Dt) \n
+                        & + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \n
+                        &= A\Dt + \lambda\Dt - \lambda\Dt(1 - \eta)(1 + \eta) \n
+                        &= A\Dt + \lambda\eta^2\Dt \n
+ A\Dt                  &= \sigma^2\Dt
+\end{align}
 
 \section{Parameterisation}
 Based on the above the following table specifies a binomial model with credit risk (TODO: include table in List of Tables):
@@ -237,9 +239,9 @@ Based on the above the following table specifies a binomial model with credit ri
 \end{tabular}\end{center}
 
 This model was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model:
-\begin{displaymath}
+\begin{equation}
  V_t = e^{-r\Dt}(\pu V^{+}_t + \pd V^{-}_t- + \po X_t)
-\end{displaymath}
+\end{equation}
 where
 
 \begin{tabular}{ll}
