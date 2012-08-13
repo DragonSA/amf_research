@@ -203,9 +203,9 @@ and if we equate the second moment about the mean of the stochastic model \eqref
  (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t + \Dt}}{\S}]^2 \n
                         &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
                         &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \n
-                        & + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
-                        &= (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \n
-                        & + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt}
+                        &\qquad + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
+                        &= (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \\
+                        &\qquad + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \nonumber
 \end{align}
 If we make the assumption $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and replace all exponentials with Taylor series expansion we get:
 \begin{align}
@@ -213,10 +213,10 @@ If we make the assumption $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and
  \d                     &= 1 - \sqrt{A\Dt} + \frac{A\Dt}{2!} - \frac{(A\Dt)^{\frac{3}{2}}}{3!} \n
  \u + \d                &= 2 + A\Dt \\
  (\sigma^2 + \lambda\eta^2)\Dt &= (2 + A\Dt)(1 + r\Dt - \lambda\Dt(1 - \eta)) - (1 - \lambda\Dt) \n
-                        & + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \n
+                        &\qquad + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \n
                         &= A\Dt + \lambda\Dt - \lambda\Dt(1 - \eta)(1 + \eta) \n
                         &= A\Dt + \lambda\eta^2\Dt \n
- A\Dt                  &= \sigma^2\Dt
+ A\Dt                   &= \sigma^2\Dt
 \end{align}
 
 \section{Parameterisation}
