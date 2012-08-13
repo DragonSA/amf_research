@@ -194,24 +194,27 @@ where:
 If we equate the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{S_{t + \Dt}}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} we get:
 \begin{align}
  e^{r\Dt}       &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \n
- \pu(\u - \d)   &= e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \\
+ \pu(\u - \d)   &= e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:p(u-d)}\\
  \pu            &= \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
  \Rightarrow\pd &= -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}
 \end{align}
-and if we equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} we get:
+and if we equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} we get\footnote{Substituting equation \eqref{eq:p(u-d)} into \eqref{eq:Var=1} one gets \eqref{eq:Var=2}}:
 \begin{align}
  (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t + \Dt}}{\S}]^2 \n
-                        &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
-                        &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \n
+                        &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \label{eq:Var=1} \\
+                        &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \label{eq:Var=2} \\
                         &\qquad + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
-                        &= (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \\
+                        &= (\u + \d)(e^{r\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) - \u\d e^{-\lambda\Dt} \label{eq:Var=} \\
                         &\qquad + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \nonumber
 \end{align}
-If we make the assumption $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and replace all exponentials with Taylor series expansion we get:
+If one assumes $\Dt^2 = 0$, $\u\d = 1$ and $\u = e^{\sqrt{A\Dt}}$ and the Taylor series expansion is taken, then:
 \begin{align}
  \u                     &= 1 + \sqrt{A\Dt} + \frac{A\Dt}{2!} + \frac{(A\Dt)^{\frac{3}{2}}}{3!} \n
  \d                     &= 1 - \sqrt{A\Dt} + \frac{A\Dt}{2!} - \frac{(A\Dt)^{\frac{3}{2}}}{3!} \n
- \u + \d                &= 2 + A\Dt \\
+ \u + \d                &= 2 + A\Dt \label{eq:u+d}
+\end{align}
+and substituting \eqref{eq:u+d} into \eqref{eq:Var=} with the appropriate expansions one gets:
+\begin{align}
  (\sigma^2 + \lambda\eta^2)\Dt &= (2 + A\Dt)(1 + r\Dt - \lambda\Dt(1 - \eta)) - (1 - \lambda\Dt) \n
                         &\qquad + \lambda\Dt(1 - \eta)^2 - (1 - 2r\Dt) \n
                         &= A\Dt + \lambda\Dt - \lambda\Dt(1 - \eta)(1 + \eta) \n
