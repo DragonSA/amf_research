@@ -160,10 +160,16 @@ What this paper shows and does.
 Describe and define (in maths) what a convertible bond with credit risk is.
 
 \section{Literature Review}
-Describe the current state of literature w/ Convertible Bonds with Credit Risk.
+Describe the current state of literature w/ Convertible Bonds with Credit Risk,
+possibly split this and include it at the beginning of each relevant section?
+
+\section{Example}
+Describe the standard example that will be covered by each valuation method.
 
 \chapter{Binomial Model with Credit Risk}
 The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
+
+TODO: add further explanation and references.
 
 \section{Definition}
 Consider a stock with the following stochastic model\footnote{Of note $\mathbb{E}[\frac{\dS}{\S}] = r\dt \Leftrightarrow \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq$}:
@@ -295,6 +301,9 @@ thus the pricing method of this binomial model is the same as the pricing method
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) \n
         &= e^{-r\Dt}\E[V_{t + \Dt}]
 \end{align}
+
+\section{Example and Hedging Strategy}
+Provide a numerical example (with diagrams) and provide example of the hedging strategy.
 
 \chapter{Finite Difference Model}
 Describe the finite difference model based on the paper by \citet{AFV03}.
