@@ -236,25 +236,6 @@ and substituting \eqref{eq:u+d} into \eqref{eq:Var=} with the appropriate expans
  A\Dt                   &= \sigma^2\Dt
 \end{align}
 
-\section{Parameterisation}
-Based on the above the following table specifies a binomial model with credit risk (TODO: include table in List of Tables):
-
-\begin{center}\begin{tabular}{|rcl|l|l|}\hline
- \multicolumn{3}{|l|}{\textbf{Parameter}} & \textbf{Description} \\\hline
- \u     &=& $e^{\sigma\sqrt{\Dt}}$ &
-    Multiplier for an up-step \\\hline
- \d     &=& $e^{-\sigma\sqrt{\Dt}}$ &
-    Multiplier for a down-step \\\hline
- \pu    &=& $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
-    Probability of an up-step \\\hline
- \pd    &=& $e^{-\lambda\Dt} - \pu$ &
-    Probability of a down-step \\\hline
- \po    &=& $1 - e^{-\lambda\Dt}$ &
-    Probability of a default \\\hline
- \Dt    & & &
-    Time-step \\ \hline
-\end{tabular}\end{center}
-
 \section{Valuation}
 Consider a portfolio with value \V at time $t$, \D invested in the stock \S and $\P = \V - \D\S$ invested at the risk neutral rate.  At time $t + \Dt$ one should have:
 \begin{equation*}
@@ -301,6 +282,45 @@ thus the pricing method of this binomial model is the same as the pricing method
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) \n
         &= e^{-r\Dt}\E[V_{t + \Dt}]
 \end{align}
+
+\section{Parameters and Formul\ae of Model}
+Based on the above the following tables specifies a binomial model with credit risk:
+
+\begin{table}
+\centering
+\caption{Parameters of the Binomial Model with Credit Risk}
+\begin{tabular}{|r|l|}\hline
+ \textbf{Parameter} & \textbf{Description} \\\hline
+ $r$            & Risk free rate \\\hline
+ $\sigma$       & Log-volatility of the stock price \\\hline
+ $\lambda$      & Hazard rate of default \\\hline
+ $\eta$         & Percentage drop of stock price in a default event \\\hline
+ \Dt            & Time-step \\\hline
+ \Vu            & Value of portfolio for an up-step at $t + \Dt$ \\\hline
+ \Vd            & Value of portfolio for a down-step at $t + \Dt$ \\\hline
+ \X             & Value of defaulted portfolio at $t$\\\hline
+\end{tabular}
+\end{table}
+
+\begin{table}
+\centering
+\caption{Formal\ae\ for the Binomial Model with Credit Risk}
+\begin{tabular}{|rcl|l|l|}\hline
+ \multicolumn{3}{|l|}{\textbf{Formul\ae}} & \textbf{Description} \\\hline
+ \u     &=& $e^{\sigma\sqrt{\Dt}}$ &
+    Multiplier for an up-step \\\hline
+ \d     &=& $e^{-\sigma\sqrt{\Dt}}$ &
+    Multiplier for a down-step \\\hline
+ \pu    &=& $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
+    Probability of an up-step \\\hline
+ \pd    &=& $e^{-\lambda\Dt} - \pu$ &
+    Probability of a down-step \\\hline
+ \po    &=& $1 - e^{-\lambda\Dt}$ &
+    Probability of default \\\hline
+ \V     &=& $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po)$ &
+    Value of portfolio at $t$ \\\hline
+\end{tabular}
+\end{table}
 
 \section{Example and Hedging Strategy}
 Provide a numerical example (with diagrams) and provide example of the hedging strategy.
