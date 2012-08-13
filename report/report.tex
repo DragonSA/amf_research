@@ -187,7 +187,7 @@ where:
  \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
                                 &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
  \Var[\frac{S_{t + \Dt}}{\S}]   &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\DS}{\S}]^2 \n
-                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\DS}{\S}]^2 \label{eq:BM_Var}
+                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t+\Dt}}{\S}]^2 \label{eq:BM_Var}
 \end{align}
 
 \section{Derivation}
@@ -200,7 +200,7 @@ If we equate the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$
 \end{align}
 and if we equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} we get:
 \begin{align}
- (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\DS}{\S}]^2 \n
+ (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t + \Dt}}{\S}]^2 \n
                         &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
                         &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \n
                         & + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
