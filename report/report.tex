@@ -86,9 +86,18 @@
 \def\u{\ensuremath{u}\xspace}
 \def\d{\ensuremath{d}\xspace}
 \def\o{\ensuremath{o}\xspace}
+
 \def\pu{\ensuremath{p_\u}\xspace}
 \def\pd{\ensuremath{p_\d}\xspace}
 \def\po{\ensuremath{p_\o}\xspace}
+
+% Binomial model valuation
+\def\V{\ensuremath{V_t}\xspace}
+\def\Vu{\ensuremath{V^{u}_t}\xspace}
+\def\Vd{\ensuremath{V^{d}_t}\xspace}
+\def\X{\ensuremath{X_t}\xspace}
+\def\P{\ensuremath{\Pi_t}\xspace}
+\def\D{\ensuremath{\Delta_t}\xspace}
 
 % PREAMBLE -------------------------------------------------------
 
@@ -154,7 +163,7 @@ Describe and define (in maths) what a convertible bond with credit risk is.
 Describe the current state of literature w/ Convertible Bonds with Credit Risk.
 
 \chapter{Binomial Model with Credit Risk}
-Describe the Binomial Model based on the paper by \citet{MK12}.
+The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
 
 \section{Definition}
 Consider a stock with the following stochastic model\footnote{Of note $\mathbb{E}[\frac{\dS}{\S}] = r\dt \Leftrightarrow \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq$}:
@@ -181,8 +190,7 @@ where:
  \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
                         &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
-
-\noindent and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
+and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
 \begin{align}
  \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
                                 &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
@@ -241,18 +249,52 @@ Based on the above the following table specifies a binomial model with credit ri
     Time-step \\ \hline
 \end{tabular}\end{center}
 
-This model was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model:
-\begin{equation}
- V_t = e^{-r\Dt}(\pu V^{+}_t + \pd V^{-}_t- + \po X_t)
-\end{equation}
+\section{Valuation}
+Consider a portfolio with value \V at time $t$, \D invested in the stock \S and $\P = \V - \D\S$ invested at the risk neutral rate.  At time $t + \Dt$ one should have:
+\begin{equation*}
+ \Pi_{t + \Dt} =
+ \begin{cases}
+  \Vu - \D\S u          & \text{with probability } \pu \\
+  \Vd - \D\S d          & \text{with probability } \pd\\
+  \X - (1 - \eta)\S     & \text{with probability } \po\\
+ \end{cases}
+\end{equation*}
 where
 
 \begin{tabular}{ll}
- $V_t$          & is the value at time $t$ \\
- $V^+_t$        & is the value of an up-step at time $t + \Dt$ \\
- $V^-_t$        & is the value of a down-step at time $t + \Dt$ \\
- $X_t$          & is the value of default at time $t$ \\
+ $\Vu$          & is the value of the portfolio an up-step at time $t + \Dt$ \\
+ $\Vd$          & is the value of the portfolio a down-step at time $t + \Dt$ \\
+ $\X$           & is the value of default at time $t$ \\
 \end{tabular}
+
+If one wishes to hedge against up and down movements of the stock then:
+\begin{align}
+    \Vu - \D\S u &= \Vd - \D\S d \n
+       \D(d - u) &= \Vd - \Vu \n
+              \D &= \frac{\Vu - \Vd}{u - d}
+\end{align}
+
+The required value of \P at time $t + \Dt$ is:
+\begin{align}
+ \Pi_{t + \Dt}  &= \P e^{r\Dt} \n
+                &= \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} \label{eq:P}
+\end{align}
+as \P is invested at the risk free rate, and taking the expected value of $\Pi_{t + \Dt}$, which must equal \eqref{eq:P}, one gets:
+\begin{align}
+ (\V - \frac{\Vu - \Vd}{u - d}) e^{r\Dt} &= \E[\Pi_{t + \Dt}] \n
+        &= \left(\Vu - \frac{\Vu - \Vd}{u - d}u\right) e^{-\lambda\Dt} \n
+        &\qquad + \left(\X - \frac{\Vu - \Vd}{u - d}(1 - \eta)\right)(1 - e^{-\lambda\Dt}) \n
+        &= \Vu\left(e^{-\lambda\Dt} - \frac{ue^{-\lambda\Dt} + (1 - \eta)(1 - e^{-\lambda\Dt})}{u - d}\right) \n
+        &\qquad + \Vd\left(\frac{ue^{-\lambda\Dt} + (1 - \eta)(1 - e^{-\lambda\Dt})}{u - d}\right) + \X(1 - e^{-\lambda\Dt}) \n
+ \V e^{r\Dt} &= \Vu\frac{e^{r\Dt} - de^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{u - d} \n
+        &\qquad + \Vd\frac{ue^{-\lambda\Dt} + (1 - \eta)(1 - e^{-\lambda\Dt}) - e^{r\Dt}}{u - d} + \X(1 - e^{-\lambda\Dt}) \n
+ \V     &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po)
+\end{align}
+thus the pricing method of this binomial model is the same as the pricing method of the classical binomial model:
+\begin{align}
+ V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) \n
+        &= e^{-r\Dt}\E[V_{t + \Dt}]
+\end{align}
 
 \chapter{Finite Difference Model}
 Describe the finite difference model based on the paper by \citet{AFV03}.
