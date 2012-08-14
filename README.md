@@ -29,6 +29,17 @@ This repository has the following layout:
 	(deadline: 2012/11/23)
  * src/: the code written for this project
 
+Source Code
+-----------
+The source code is distributed under a BSD 2-clause license, see src/COPYRIGHT
+for details.
+
+The code is written in Python 2.7, the following software and versions were
+used:
+ - Python 2.7.3
+ - PyPy 1.9.0
+ - pmake (as distributed with FreeBSD 9)
+
 Acknowledgements
 --------------
  - Tom McWalter (research supervisor)
