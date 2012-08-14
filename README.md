@@ -17,7 +17,6 @@ risk.
 Directory Layout
 ----------------
 This repository has the following layout:
- * code/: the code written for this project
  * common/: common objects (graphics) used by the proposal, presentation and
 	report
  * presentation/: the presentation (written in LaTex/Beamer) for this project
@@ -28,6 +27,7 @@ This repository has the following layout:
 	available
  * report/: the research report (written in LaTex) for this project
 	(deadline: 2012/11/23)
+ * src/: the code written for this project
 
 Acknowledgements
 --------------
