@@ -3,8 +3,9 @@ Framework for modelling payoff processes using either a binomial or finite-
 difference model.
 """
 import math
+import numpy as np
 
-__all__ = ["WienerJumpProcess"]
+__all__ = ["BinomialModel", "WienerJumpProcess"]
 
 class WienerJumpProcess(object):
     """
@@ -37,10 +38,49 @@ class WienerJumpProcess(object):
 
     def binomial(self, dt):
         """Parameters for the binomial model."""
+        # Up/down/loss multipliers
         u = math.exp(self.sigma * math.sqrt(dt))
         d = 1 / u
         l = 1 - self.eta
+
+        # Probability of up/down/loss
         po = 1 - math.exp(-self.lambd_ * dt)
         pu = (math.exp(self.r * dt) - d * (1 - po) - l * po) / (u - d)
         pd = 1 - pu - po
         return (u, d, l, pu, pd, po)
+
+class BinomialModel(object):
+    """
+    A binomial lattice model for pricing derivatives using a stock process and
+    intrinsic values of the stock.
+
+        N       is the number of increments
+        dt      is the time increments for the binomial lattice
+        dS      is the stock movement
+        V       is the intrinsic value of the derivative
+    """
+
+    def __init__(self, N, dS, V):
+        self.N = N
+        self.dt = float(V.T) / N
+        self.dS = dS
+        self.V = V
+
+    def price(self, S0):
+        u, d, l, pu, pd, po = self.dS.binomial(self.dt)
+        du = d / u
+        erdt = math.exp(-self.dS.r * self.dt)
+
+        # Terminal stock price and derivative value
+        S = np.array([S0 * u**i * d**(self.N - i) for i in range(self.N + 1)])
+        V = self.V.value(self.V.T, S)
+
+        # Discount price backwards
+        for i in range(self.N - 1, -1, -1):
+            # Discount previous derivative value
+            S = np.array([S0 * u**j * d ** (i - j) for j in range(i + 1)])
+            V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(self.dt * i, S * l) * po)
+            # Take greater of intrinsic and discounted price
+            V = np.maximum(V, self.V.value(self.dt * i, S))
+
+        return V[0]
