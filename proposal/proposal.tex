@@ -37,7 +37,7 @@
 \setlength{\headsep}{0cm} % 1cm
 \setlength{\textwidth}{14.0cm}
 \setlength{\headheight}{14pt}
-\setlength{\textheight}{23.5cm} % 22cm
+\setlength{\textheight}{24cm} % 22cm
 \setlength{\oddsidemargin}{1.3cm}
 \setlength{\evensidemargin}{0cm}
 
@@ -141,9 +141,11 @@ Other methods used for pricing include a finite element method by \citet{BBH03} 
 \section{Research Method and Aims}
 This research project aims to price convertible bonds with credit risk using a finite difference scheme to solve the difference equation numerically.
 
-Initially a binomial tree will be implemented in Octave (a near Matlab compatible computer language and interpreter) then a finite difference scheme will be implemented.  \Citet{AFV03} used a Crank-Nicolson scheme with modifications as described in \citet{R84}.  The BDF finite difference scheme \cite{B98} was proposed as an alternative finite difference scheme.  The Crank-Nicolson scheme will be implemented in Octave.
+Initially a binomial lattice will be implemented then a finite difference scheme will be implemented,  in Python 2.7.  \Citet{AFV03} used a Crank-Nicolson scheme with modifications as described in \citet{R84} for the finite difference scheme.  The BDF finite difference scheme \cite{B98} was proposed as an alternative finite difference scheme.
 
-A best effort will include compatibility with Matlab, pricing subject to credit risk and implementing a Monte Carlo simulation to compare pricing models.  \citet{AKW08} describes one such Monte Carlo based model.
+A best effort will include pricing subject to credit risk and implementing a Monte Carlo simulation to compare pricing models.  \citet{AKW08} describes one such Monte Carlo based model.
+
+The use of Octave (a near Matlab compatible language), as a language of implementing the numerical solution, was rejected as it does not support object-orientation via classes and Matlab was rejected as it is a proprietary platform.
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
