@@ -96,16 +96,17 @@ class Annuity(Payoff):
     Payment process that pays a fixed amount at specified times.
     """
 
-    def __init__(self, T, times, C, N=0):
+    def __init__(self, T, times, C, N=0, R=0):
         super(Annuity, self).__init__(T)
         self.times = times
         self.C = np.double(C)
         self.N = np.double(N)
+        self.R = np.double(R)
 
     def default(self, t, S):
         """Total default"""
         assert(t != self.T)
-        return np.zeros(S.shape)
+        return np.ones(S.shape) * self.N * self.R
 
     def transient(self, t, V, S):
         assert(t != self.T)

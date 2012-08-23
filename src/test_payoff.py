@@ -86,8 +86,8 @@ class TestAnnuity(unittest.TestCase):
     def test_default(self):
         """Test value of default."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
-        Vd = np.zeros(S.shape)
-        payoff = Annuity(T, (), 1, 10)
+        Vd = np.ones(S.shape) * 5
+        payoff = Annuity(T, (), 1, 10, 0.5)
         for t in np.linspace(0, 1, N, endpoint=False):
             self.assertTrue((payoff.default(t, S) == Vd).all())
         self.assertRaises(AssertionError, payoff.default, T, S)
