@@ -58,10 +58,10 @@ class WienerJumpProcess(object):
             raise ValueError("all parameters must be non-negative")
         if eta > 1:
             raise ValueError("eta must be between 0 and 1 inclusive")
-        self.r = r
-        self.sigma = sigma
-        self.lambd_ = lambd_
-        self.eta = eta
+        self.r = np.double(r)
+        self.sigma = np.double(sigma)
+        self.lambd_ = np.double(lambd_)
+        self.eta = np.double(eta)
 
     def binomial(self, dt):
         """Parameters for the binomial model."""
