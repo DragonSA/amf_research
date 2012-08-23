@@ -9,6 +9,8 @@ from scipy import stats
 from model import BinomialModel, WienerJumpProcess
 
 class TestWienerJumpProcess(unittest.TestCase):
+    """Test the Wiener Jump process."""
+
     def test_bad_values(self):
         """Test for bad input values."""
         r = 0.1
@@ -38,6 +40,8 @@ class TestWienerJumpProcess(unittest.TestCase):
 
 
 class TestBinomialModel(unittest.TestCase):
+    """Test the Binomial Model."""
+
     def test_call(self):
         """Test that the binomial model correctly prices a call option."""
         class Call(object):
