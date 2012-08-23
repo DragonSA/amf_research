@@ -19,7 +19,7 @@ class Forward(Payoff):
         self.K = np.double(K)
 
     def default(self, t, S):
-        """Total default in default."""
+        """Total default."""
         assert(t != self.T)
         return np.zeros(S.shape)
 
@@ -59,3 +59,34 @@ class CallA(CallE):
         """Transient payoff of ``max(S - K)''."""
         assert(t != self.T)
         return np.maximum(V, S - self.K)
+
+
+class UpAndOut(Payoff):
+    """
+    A Up-and-Out derivative.
+    """
+
+    def __init__(self, payoff, L):
+        super(UpAndOut, self).__init__(payoff.T)
+        self.payoff = payoff
+        self.L = L
+
+    def default(self, t, S):
+        """Default value of payoff."""
+        assert(t != self.T)
+        return self.payoff.default(t, S)
+
+    def transient(self, t, V, S):
+        """Transient payoff, 0 if above threshold, otherwise payoff."""
+        Vp = np.zeros(S.shape)
+        idx = S < self.L
+        Vp[idx] = self.payoff.transient(t, V[idx], S[idx])
+        return Vp
+
+    def terminal(self, S):
+        """Terminal payoff, 0 if above threshold, otherwise payoff."""
+        V = np.zeros(S.shape)
+        idx = S < self.L
+        V[idx] = self.payoff.terminal(S[idx])
+        return V
+
