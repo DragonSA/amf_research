@@ -18,7 +18,7 @@ class Forward(Payoff):
         super(Forward, self).__init__(T)
         self.K = np.double(K)
 
-    def default(self, t, _V, S):
+    def default(self, t, S):
         """Total default in default."""
         assert(t != self.T)
         return np.zeros(S.shape)
@@ -37,7 +37,7 @@ class CallE(Payoff):
         super(CallE, self).__init__(T)
         self.K = K
 
-    def default(self, t, _V, S):
+    def default(self, t, S):
         assert(t != self.T)
         """Total default in default."""
         return np.zeros(S.shape)

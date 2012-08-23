@@ -11,7 +11,7 @@ T = 1
 K = 100
 N = 128
 
-class TestForward(unittest.TestCase):
+class TestPayoff(unittest.TestCase):
     """Test a Forward."""
 
     def test_default(self):
@@ -21,8 +21,8 @@ class TestForward(unittest.TestCase):
         for Payoff in (Forward, CallE, CallA):
             payoff = Payoff(T, K)
             for t in np.linspace(0, 1, N + 1, endpoint=False):
-                self.assertTrue((payoff.default(t, S, S) == Vd).all())
-            self.assertRaises(AssertionError, payoff.default, T, S, S)
+                self.assertTrue((payoff.default(t, S) == Vd).all())
+            self.assertRaises(AssertionError, payoff.default, T, S)
 
     def test_zero_transient(self):
         """Test value of transient for European derivatives."""

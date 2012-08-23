@@ -19,7 +19,7 @@ class Payoff(object):
         self.T = T
 
     @abc.abstractmethod
-    def default(self, t, V, S):
+    def default(self, t, S):
         """Payoff in the event of default at time t"""
         pass
 
@@ -88,8 +88,8 @@ class BinomialModel(object):
     """
 
     def __init__(self, N, dS, V):
-        self.N = N
-        self.dt = float(V.T) / N
+        self.N = np.int(N)
+        self.dt = np.double(V.T) / N
         self.dS = dS
         self.V = V
 
@@ -100,14 +100,13 @@ class BinomialModel(object):
 
         # Terminal stock price and derivative value
         S = np.array([S0 * u**i * d**(self.N - i) for i in range(self.N + 1)])
-        V = self.V.value(self.V.T, S)
+        V = self.V.terminal(S)
 
         # Discount price backwards
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
             S = np.array([S0 * u**j * d ** (i - j) for j in range(i + 1)])
             V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(self.dt * i, S * l) * po)
-            # Take greater of intrinsic and discounted price
-            V = np.maximum(V, self.V.value(self.dt * i, S))
+            V = self.V.transient(self.dt * i, V, S)
 
         return V[0]

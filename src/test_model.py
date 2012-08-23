@@ -7,6 +7,7 @@ import unittest
 from scipy import stats
 
 from model import BinomialModel, WienerJumpProcess
+from payoff import CallE, Forward
 
 class TestWienerJumpProcess(unittest.TestCase):
     """Test the Wiener Jump process."""
@@ -44,20 +45,6 @@ class TestBinomialModel(unittest.TestCase):
 
     def test_call(self):
         """Test that the binomial model correctly prices a call option."""
-        class Call(object):
-            def __init__(self, T, K):
-                self.K = K
-                self.T = T
-
-            def value(self, t, S):
-                if t == self.T:
-                    return np.maximum(S - self.K, 0)
-                else:
-                    return np.zeros(S.shape)
-
-            def default(self, t, S):
-                return np.maximum(S - self.K, 0)
-
         def price(r):
             d1 = (np.log(100. / K) + r + 0.0005) / 0.1
             d2 = d1 - 0.1
@@ -76,7 +63,7 @@ class TestBinomialModel(unittest.TestCase):
                 accuracy -= 1
             elif K in step_up:
                 accuracy += 1
-            V = Call(1, K)
+            V = CallE(1, K)
             model = BinomialModel(128, dS, V)
             self.assertAlmostEqual(model.price(100), price(0.1), accuracy)
             model = BinomialModel(128, dSdq, V)
@@ -84,20 +71,6 @@ class TestBinomialModel(unittest.TestCase):
 
     def test_forward(self):
         """Test that the binomial model correctly prices a forward contract."""
-        class Forward(object):
-            def __init__(self, T, K):
-                self.K = K
-                self.T = T
-
-            def value(self, t, S):
-                if t == self.T:
-                    return S - self.K
-                else:
-                    return - float('inf') * np.ones(S.shape)
-
-            def default(self, t, S):
-                return np.zeros(S.shape)
-
         dS = WienerJumpProcess(0.1, 0.1, 0, 0)
         dSdq = WienerJumpProcess(0.1, 0.1, 0.1, 1)
 
