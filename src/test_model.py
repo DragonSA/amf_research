@@ -7,7 +7,7 @@ import unittest
 from scipy import stats
 
 from model import BinomialModel, WienerJumpProcess
-from payoff import CallE, Forward
+from payoff import Annuity, CallE, Forward
 
 class TestWienerJumpProcess(unittest.TestCase):
     """Test the Wiener Jump process."""
@@ -80,6 +80,19 @@ class TestBinomialModel(unittest.TestCase):
             self.assertAlmostEqual(model.price(100), 100 - K * math.exp(-0.1))
             model = BinomialModel(2, dSdq, V)
             self.assertAlmostEqual(model.price(100), 100 - K * math.exp(-0.2))
+
+    def test_annuity(self):
+        """Test the pricing of a series of payments."""
+        dS = WienerJumpProcess(0.1, 0.1, 0, 0)
+
+        # Semi-annual payments of 1
+        T = 10
+        V = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 1, 10)
+        model = BinomialModel(T * 2, dS, V)
+        erdt = math.exp(-0.05)
+        i = 1 / erdt - 1
+        price = (1 - erdt**(T * 2)) / i + 10 * erdt**(T * 2)
+        self.assertAlmostEqual(model.price(100), price)
 
 if __name__ == "__main__":
     unittest.main()

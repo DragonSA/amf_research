@@ -90,3 +90,32 @@ class UpAndOut(Payoff):
         V[idx] = self.payoff.terminal(S[idx])
         return V
 
+
+class Annuity(Payoff):
+    """
+    Payment process that pays a fixed amount at specified times.
+    """
+
+    def __init__(self, T, times, C, N=0):
+        super(Annuity, self).__init__(T)
+        self.times = times
+        self.C = np.double(C)
+        self.N = np.double(N)
+
+    def default(self, t, S):
+        """Total default"""
+        assert(t != self.T)
+        return np.zeros(S.shape)
+
+    def transient(self, t, V, S):
+        assert(t != self.T)
+        if t in self.times:
+            return V + self.C
+        else:
+            return V
+
+    def terminal(self, S):
+        payment = self.N
+        if self.T in self.times:
+            payment += self.C
+        return np.ones(S.shape) * payment
