@@ -103,10 +103,11 @@ class BinomialModel(object):
         V = self.V.terminal(S)
 
         # Discount price backwards
+        t = np.linspace(0, self.V.T, self.N, endpoint=False)
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
             S = np.array([S0 * u**j * d ** (i - j) for j in range(i + 1)])
-            V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(self.dt * i, S * l) * po)
-            V = self.V.transient(self.dt * i, V, S)
+            V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(t[i], S * l) * po)
+            V = self.V.transient(t[i], V, S)
 
         return V[0]
