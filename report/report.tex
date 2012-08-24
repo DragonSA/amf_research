@@ -251,8 +251,8 @@ Consider a portfolio with value \V at time $t$, \D invested in the stock \S and 
 where
 
 \begin{tabular}{ll}
- $\Vu$          & is the value of the portfolio an up-step at time $t + \Dt$ \\
- $\Vd$          & is the value of the portfolio a down-step at time $t + \Dt$ \\
+ $\Vu$          & is the value of the portfolio on an up-step at time $t + \Dt$ \\
+ $\Vd$          & is the value of the portfolio on a down-step at time $t + \Dt$ \\
  $\X$           & is the value of default at time $t$ \\
 \end{tabular}
 
@@ -285,7 +285,38 @@ thus the pricing method of this binomial model is the same as the pricing method
         &= e^{-r\Dt}\E[V_{t + \Dt}]
 \end{align}
 
-\section{Parameters and Formul\ae of Model}
+\section{Valuation with Coupon Cash-flow}
+Consider a portfolio with value \V at time $t$, as above, with an additional coupon cash flow.  At time $t + \Dt$ one should have:
+\begin{equation*}
+ \Pi_{t + \Dt} =
+ \begin{cases}
+  \Vu - \D\S u + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pu \\
+  \Vd - \D\S d + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pd\\
+  \X - (1 - \eta)\S     & \text{with probability } \po\\
+ \end{cases}
+\end{equation*}
+where
+
+\begin{tabular}{ll}
+ $c_i$          & is the i\textsuperscript{th} coupon value \\
+ $t^{c}_i$      & is the time of the i\textsuperscript{th} coupon, with $t^{c}_i \in (t, t + \Dt)$ \\
+\end{tabular}
+
+Using the above method it is trivial to show that:
+\begin{align}
+ V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-r(t^{c}_i - t) - \lambda \Dt} \n
+        &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-r(t^{c}_i - t)}(\pu + \pd) \n
+        &= e^{-r\Dt}\E[V_{t + \Dt}]
+\end{align}
+if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is trivially shown that:
+\begin{align}
+ V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i \n
+        &= e^{-r\Dt}\E[V_{t + \Dt}] + c_i
+\end{align}
+
+
+
+\section{Parameters and Formul\ae\ of Model}
 Based on the above the following tables specifies a binomial model with credit risk:
 
 \begin{table}
