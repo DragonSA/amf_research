@@ -317,9 +317,9 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
 
 
 \section{Parameters and Formul\ae\ of Model}
-Based on the above the following tables specifies a binomial model with credit risk:
+Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial table.
 
-\begin{table}
+\begin{table}[ht]
 \centering
 \caption{Parameters of the Binomial Model with Credit Risk}
 \begin{tabular}{|r|l|}\hline
@@ -331,11 +331,14 @@ Based on the above the following tables specifies a binomial model with credit r
  \Dt            & Time-step \\\hline
  \Vu            & Value of portfolio for an up-step at $t + \Dt$ \\\hline
  \Vd            & Value of portfolio for a down-step at $t + \Dt$ \\\hline
- \X             & Value of defaulted portfolio at $t$\\\hline
+ \X             & Value of defaulted portfolio at $t$ \\\hline
+ $c_i$          & Value of the i\textsuperscript{th} coupon payment \\\hline
+ $t^{c}_i$      & Time of the i\textsuperscript{th} coupon payment \\\hline
 \end{tabular}
+\label{tab:bin_parameter}
 \end{table}
 
-\begin{table}
+\begin{table}[ht]
 \centering
 \caption{Formal\ae\ for the Binomial Model with Credit Risk}
 \begin{tabular}{|rcl|l|l|}\hline
@@ -350,9 +353,10 @@ Based on the above the following tables specifies a binomial model with credit r
     Probability of a down-step \\\hline
  \po    &=& $1 - e^{-\lambda\Dt}$ &
     Probability of default \\\hline
- \V     &=& $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po)$ &
-    Value of portfolio at $t$ \\\hline
+ \V     &=& $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
+    Value of portfolio at $t$ for $t^{c}_i = t$ \\\hline
 \end{tabular}
+\label{tab:bin_formulae}
 \end{table}
 
 \section{Example and Hedging Strategy}
