@@ -67,6 +67,7 @@
 
 % Statistical
 \def\E[#1]{\mathbb{E}\left[#1\right]}
+\def\Et[#1]{\mathbb{E}_t\left[#1\right]}
 \def\Var[#1]{\mathbb{V}\mathtt{ar}\left[#1\right]}
 
 % Derivatives
@@ -282,7 +283,7 @@ as \P is invested at the risk free rate, and taking the expected value of $\Pi_{
 thus the pricing method of this binomial model is the same as the pricing method of the classical binomial model:
 \begin{align}
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) \n
-        &= e^{-r\Dt}\E[V_{t + \Dt}]
+        &= e^{-r\Dt}\Et[V_{t + \Dt}]
 \end{align}
 
 \section{Valuation with Coupon Cash-flow}
@@ -311,7 +312,7 @@ Using the above method it is trivial to show that:
 if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is trivially shown that:
 \begin{align}
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i \n
-        &= e^{-r\Dt}\E[V_{t + \Dt}] + c_i
+        &= e^{-r\Dt}\Et[V_{t + \Dt}] + c_i
 \end{align}
 
 
