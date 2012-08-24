@@ -38,8 +38,8 @@ class CallE(Payoff):
         self.K = K
 
     def default(self, t, S):
+        """Total default."""
         assert(t != self.T)
-        """Total default in default."""
         return np.zeros(S.shape)
 
     def terminal(self, S):
@@ -54,6 +54,11 @@ class CallA(CallE):
 
     def __init__(self, T, K):
         super(CallA, self).__init__(T, K)
+
+    def default(self, t, S):
+        """Residual value of default."""
+        assert(t != self.T)
+        return np.maximum(S - self.K, 0)
 
     def transient(self, t, V, S):
         """Transient payoff of ``max(S - K)''."""
@@ -74,7 +79,10 @@ class UpAndOut(Payoff):
     def default(self, t, S):
         """Default value of payoff."""
         assert(t != self.T)
-        return self.payoff.default(t, S)
+        V = np.zeros(S.shape)
+        idx = S < self.L
+        V[idx] = self.payoff.default(t, S[idx])
+        return V
 
     def transient(self, t, V, S):
         """Transient payoff, 0 if above threshold, otherwise payoff."""
@@ -104,7 +112,7 @@ class Annuity(Payoff):
         self.R = np.double(R)
 
     def default(self, t, S):
-        """Total default"""
+        """Residual value on default"""
         assert(t != self.T)
         return np.ones(S.shape) * self.N * self.R
 
