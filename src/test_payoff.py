@@ -111,26 +111,22 @@ class TestAnnuity(unittest.TestCase):
             self.assertTrue((payoff.default(t, S) == Vd).all())
         self.assertRaises(AssertionError, payoff.default, T, S)
 
-    def test_transient(self):
-        S = np.linspace(S0 - 10, S0 + 10, 21)
-        Vp = np.ones(S.shape)
-        Vo = np.zeros(S.shape)
-        payoff = Annuity(T, np.arange(0, 1, 2. / N), 1, 10)
+    def test_coupon(self):
+        """Test coupon value of annuity."""
+        payoff = Annuity(T, np.linspace(0, 1, N // 2 + 1), 1, 10)
         pay = True
-        for t in np.linspace(0, 1, N, endpoint=False):
+        for t in np.linspace(0, 1, N + 1):
             if pay:
-                V = Vp
+                V = 1
             else:
-                V = Vo
+                V = 0
             pay = not pay
-            self.assertTrue((payoff.transient(t, Vo, S) == V).all())
-        self.assertRaises(AssertionError, payoff.transient, T, Vo, S)
+            self.assertTrue(payoff.coupon(t) == V)
 
     def test_terminal(self):
+        """Test terminal value of annuity."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
-        Vp = np.ones(S.shape) * 11
         Vo = np.ones(S.shape) * 10
-        self.assertTrue((Annuity(T, (T,), 1, 10).terminal(S) == Vp).all())
         self.assertTrue((Annuity(T, (), 1, 10).terminal(S) == Vo).all())
 
 
@@ -372,10 +368,7 @@ class TestConvertibleBond(unittest.TestCase):
 
     def test_coupon(self):
         t = 8
-        S = self.S
-        V = self.V
-        Vm = V + 4
-        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+        self.assertTrue((self.payoff.coupon(t) == 4).all())
 
     def test_redemption(self):
         """Test redemption of convertible bond."""

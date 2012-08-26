@@ -137,6 +137,13 @@ class Stack(Payoff):
             V = np.maximum(V, payoff.terminal(S))
         return np.double(V)
 
+    def coupon(self, t):
+        """Coupon payoff of stacked payoffs."""
+        V = 0
+        for payoff in self.stack:
+            V += payoff.coupon(t)
+        return V
+
 
 class Time(Payoff):
     """
@@ -185,11 +192,18 @@ class Time(Payoff):
             return V
 
     def terminal(self, S):
-        """Terminal value of payoff, zero is out of time."""
+        """Terminal payoff, zero is out of time."""
         if self.T in self:
             return self.payoff.terminal(S)
         else:
-            return np.zeros(S.shape)
+            return 0
+
+    def coupon(self, t):
+        """Coupon payoff, zero is out of time."""
+        if t in self:
+            return self.payoff.coupon(t)
+        else:
+            return 0
 
 
 class UpAndOut(Payoff):
@@ -224,6 +238,13 @@ class UpAndOut(Payoff):
         V[idx] = self.payoff.terminal(S[idx])
         return V
 
+    def coupon(self, t):
+        """Coupon payoff."""
+        if t in self:
+            return self.payoff.coupon(t)
+        else:
+            return 0
+
 
 ###
 ### STOCK INDEPENDENT PAYOFFS
@@ -232,10 +253,10 @@ class UpAndOut(Payoff):
 
 class Annuity(Payoff):
     """
-    Payment process that pays a fixed amount at specified times.
+    Payment process that pays a coupon at specified times and nominal at end
     """
 
-    def __init__(self, T, times, C, N=0, R=0):
+    def __init__(self, T, times=(), C=0, N=0, R=0):
         super(Annuity, self).__init__(T)
         self.times = times
         self.C = np.double(C)
@@ -247,15 +268,13 @@ class Annuity(Payoff):
         assert(t != self.T)
         return np.ones(S.shape) * self.N * self.R
 
-    def transient(self, t, V, S):
-        assert(t != self.T)
-        if t in self.times:
-            return V + self.C
-        else:
-            return V
-
     def terminal(self, S):
-        payment = self.N
-        if self.T in self.times:
-            payment += self.C
-        return np.ones(S.shape) * payment
+        """Nominal value of bond."""
+        return np.ones(S.shape) * self.N
+
+    def coupon(self, t):
+        """Coupon payment."""
+        if t in self.times:
+            return self.C
+        else:
+            return 0

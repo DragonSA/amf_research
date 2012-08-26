@@ -33,6 +33,10 @@ class Payoff(object):
         assert(t != self.T)
         return V
 
+    def coupon(self, t):
+        """Payoff of coupon."""
+        return 0
+
 
 class WienerJumpProcess(object):
     """
@@ -100,7 +104,7 @@ class BinomialModel(object):
 
         # Terminal stock price and derivative value
         S = np.array([S0 * u**i * d**(self.N - i) for i in range(self.N + 1)])
-        V = self.V.terminal(S)
+        V = self.V.terminal(S) + self.V.coupon(self.V.T)
 
         # Discount price backwards
         t = np.linspace(0, self.V.T, self.N, endpoint=False)
@@ -108,6 +112,6 @@ class BinomialModel(object):
             # Discount previous derivative value
             S = np.array([S0 * u**j * d ** (i - j) for j in range(i + 1)])
             V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(t[i], S * l) * po)
-            V = self.V.transient(t[i], V, S)
+            V = self.V.transient(t[i], V, S) + self.V.coupon(t[i])
 
         return V[0]
