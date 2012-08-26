@@ -147,8 +147,15 @@ class Time(Payoff):
         super(Time, self).__init__(payoff.T)
         self.payoff = payoff
         self.times = times
-        self._time_discrete = set(i for i in times if type(i) != tuple)
-        self._time_continuous = tuple(i for i in times if type(i) == tuple)
+        self._time_discrete = set()
+        self._time_continuous = []
+        for time in times:
+            try:
+                l = np.double(time[0])
+                u = np.double(time[1])
+                self._time_continuous.append((l, u))
+            except (TypeError, IndexError):
+                self._time_discrete.add(np.double(time))
 
     def _intime(self, t):
         """Check if the current time is a valid time for the payoff."""
