@@ -1,7 +1,7 @@
 import numpy as np
 
 from model import WienerJumpProcess, BinomialModel, Payoff
-from payoff import Annuity, CallA, CallVR, PutV, Stack
+from payoff import Annuity, CallA, CallVR, PutV, Stack, Time
 
 # Time till maturity = 5 years
 T = 5
@@ -24,12 +24,12 @@ B = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 4, 100, 0)
 # American put option on portfolio
 #       Strike = 105
 #       Time = 3
-P = PutV(T, 105)
+P = Time(PutV(T, 105), [3])
 
 # Reversed American call option on portfolio
 #       Strike = 110
 #       Time = [2, 5]
-C = CallVR(T, 110)
+C = Time(CallVR(T, 110), [(2, 5)])
 
 # Stock option (conversion option into stock for portfolio)
 S = CallA(T, 0)
@@ -41,10 +41,10 @@ S = CallA(T, 0)
 #       Stock
 payoff = Stack([B, P, C, S])
 
-print "B, B+P, B+P+C, B+P+C+S"
-for N in (200, 400, 800, 1600, 3200):
-    prices = []
-    for i in range(1, len(payoff.stack) + 1):
-        model = BinomialModel(N, dS_total, Stack(payoff.stack[:i]))
-        prices.append(model.price(100))
-    print ", ".join(str(i) for i in prices)
+if __name__ == "__main__":
+    N = 200
+    print BinomialModel(N, dS_partial, Stack([B])).price(100), "(B)"
+    print BinomialModel(N, dS_partial, Stack([B, S])).price(100), "(B+S)"
+    print BinomialModel(N, dS_partial, Stack([B, C, S])).price(100), "(B+C+S)"
+    print BinomialModel(N, dS_partial, Stack([B, P, S])).price(100), "(B+P+S)"
+    print BinomialModel(N, dS_partial, Stack([B, P, C, S])).price(100), "(B+P+C+S)"
