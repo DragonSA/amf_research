@@ -43,8 +43,9 @@ payoff = Stack([B, P, C, S])
 
 if __name__ == "__main__":
     N = 200
-    print BinomialModel(N, dS_partial, Stack([B])).price(100), "(B)"
-    print BinomialModel(N, dS_partial, Stack([B, S])).price(100), "(B+S)"
-    print BinomialModel(N, dS_partial, Stack([B, C, S])).price(100), "(B+C+S)"
-    print BinomialModel(N, dS_partial, Stack([B, P, S])).price(100), "(B+P+S)"
-    print BinomialModel(N, dS_partial, Stack([B, P, C, S])).price(100), "(B+P+C+S)"
+    dS = dS_total
+    print BinomialModel(N, dS, Stack([B])).price(100), "(B)"
+    print BinomialModel(N, dS, Stack([B, S])).price(100), "(B+S)"
+    print BinomialModel(N, dS, Stack([B, C, S])).price(100), "(B+C+S)"
+    print BinomialModel(N, dS, Stack([B, P, S])).price(100), "(B+P+S)"
+    print BinomialModel(N, dS, Stack([B, P, C, S])).price(100), "(B+P+C+S)"
