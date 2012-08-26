@@ -8,6 +8,9 @@ from model import Payoff
 
 __all__ = ["Forward"]
 
+###
+### SIMPLE PAYOFFS
+###
 
 class Forward(Payoff):
     """
@@ -23,6 +26,11 @@ class Forward(Payoff):
         return S - self.K
 
 
+###
+### OPTIONAL PAYOFFS
+###
+
+
 class CallE(Payoff):
     """
     An European Call payoff, with total default and strike K.
@@ -30,7 +38,7 @@ class CallE(Payoff):
 
     def __init__(self, T, K):
         super(CallE, self).__init__(T)
-        self.K = K
+        self.K = np.double(K)
 
     def terminal(self, S):
         """Terminal payoff of ``max(S - K, 0)''."""
@@ -56,6 +64,11 @@ class CallA(CallE):
         return np.maximum(V, S - self.K)
 
 
+###
+### OPTIONAL PAYOFFS BASED ON PORTFOLIO VALUE
+###
+
+
 class PutV(Payoff):
     """
     An American Put payoff, with total default and strike K, on the value of
@@ -64,7 +77,7 @@ class PutV(Payoff):
 
     def __init__(self, T, K):
         super(PutV, self).__init__(T)
-        self.K = K
+        self.K = np.double(K)
 
     def transient(self, t, V, _S):
         """Transient payoff of ``V + max(K - V, 0)''."""
@@ -80,12 +93,49 @@ class CallVR(Payoff):
 
     def __init__(self, T, K):
         super(CallVR, self).__init__(T)
-        self.K = K
+        self.K = np.double(K)
 
     def transient(self, t, V, _S):
         """Transient payoff of ``V - max(V - K, 0)''."""
         assert(t != self.T)
         return np.minimum(V, self.K)
+
+
+###
+### COMPOUND PAYOFFS
+###
+
+
+class Stack(Payoff):
+    """
+    Stacked derivatives
+    """
+
+    def __init__(self, stack):
+        super(Stack, self).__init__(stack[0].T)
+        self.stack = stack
+
+    def default(self, t, S):
+        """Maximum default value of stacked payoffs."""
+        assert(t != self.T)
+        V = self.stack[0].default(t, S)
+        for payoff in self.stack[1:]:
+            V = np.maximum(V, payoff.default(t, S))
+        return np.double(V)
+
+    def transient(self, t, V, S):
+        """Transient payoff of stacked payoffs."""
+        assert(t != self.T)
+        for payoff in self.stack:
+            V = payoff.transient(t, V, S)
+        return V
+
+    def terminal(self, S):
+        """Maximum transient vale of stacked payoffs."""
+        V = self.stack[0].terminal(S)
+        for payoff in self.stack[1:]:
+            V = np.maximum(V, payoff.terminal(S))
+        return np.double(V)
 
 
 class UpAndOut(Payoff):
@@ -96,7 +146,7 @@ class UpAndOut(Payoff):
     def __init__(self, payoff, L):
         super(UpAndOut, self).__init__(payoff.T)
         self.payoff = payoff
-        self.L = L
+        self.L = np.double(L)
 
     def default(self, t, S):
         """Default value of payoff."""
@@ -119,6 +169,11 @@ class UpAndOut(Payoff):
         idx = S < self.L
         V[idx] = self.payoff.terminal(S[idx])
         return V
+
+
+###
+### STOCK INDEPENDENT PAYOFFS
+###
 
 
 class Annuity(Payoff):

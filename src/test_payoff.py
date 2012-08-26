@@ -4,7 +4,7 @@ Unit tests for payoff module.
 import numpy as np
 import unittest
 
-from payoff import Forward, CallE, CallA, CallVR, PutV, UpAndOut, Annuity
+from payoff import Forward, CallE, CallA, CallVR, PutV, Stack, UpAndOut, Annuity
 
 S0 = 100
 T = 1
@@ -133,10 +133,41 @@ class TestAnnuity(unittest.TestCase):
         self.assertTrue((Annuity(T, (), 1, 10).terminal(S) == Vo).all())
 
 
+class TestStack(unittest.TestCase):
+    """Test Stack payoff."""
+
+    def test_default(self):
+        """Test default value of stacked Forward and American call."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        Vd = np.maximum(S - K, 0)
+        payoff = Stack([Forward(T, K), CallA(T, K)])
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.default(t, S) == Vd).all())
+        self.assertRaises(AssertionError, payoff.default, T, S)
+
+    def test_transcient(self):
+        """Test value of transient for stacked normal and reversed American call."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        Vm = np.minimum(np.maximum(V, np.maximum(S - K, 0)), K + 5)
+        payoff = Stack([CallA(T, K), CallVR(T, K + 5)])
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_terminal(self):
+        """Test value of terminal for stacked Forward and American call."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.maximum(S - K + 5, 0)
+        payoff = Stack([Forward(T, K - 5), CallE(T, K)])
+        self.assertTrue((payoff.terminal(S) == V).all())
+
+
 class TestUpAndOut(unittest.TestCase):
     """Test UpAndOut payoff."""
 
     def test_default(self):
+        """Test default value for American up-and-out call."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         Vd = np.maximum(S - K, 0)
         Vd[S >= L] = 0
