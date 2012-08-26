@@ -16,6 +16,9 @@ class Payoff(object):
     def __init__(self, T):
         self.T = T
 
+    def __contains__(self, t):
+        return 0 <= t <= T
+
     def default(self, t, S):
         """Payoff in the event of default at time t"""
         assert(t != self.T)

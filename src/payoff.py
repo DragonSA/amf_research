@@ -151,13 +151,14 @@ class Time(Payoff):
         self._time_continuous = []
         for time in times:
             try:
-                l = np.double(time[0])
-                u = np.double(time[1])
+                l = max(np.double(time[0]), 0)
+                u = min(np.double(time[1]), self.T)
                 self._time_continuous.append((l, u))
             except (TypeError, IndexError):
-                self._time_discrete.add(np.double(time))
+                if 0 <= time <= self.T:
+                    self._time_discrete.add(np.double(time))
 
-    def _intime(self, t):
+    def __contains__(self, t):
         """Check if the current time is a valid time for the payoff."""
         if t in self._time_discrete:
             return True
@@ -170,7 +171,7 @@ class Time(Payoff):
     def default(self, t, S):
         """Default value of payoff, zero is out of time."""
         assert(t != self.T)
-        if self._intime(t):
+        if t in self:
             return self.payoff.default(t, S)
         else:
             return np.zeros(S.shape)
@@ -178,14 +179,14 @@ class Time(Payoff):
     def transient(self, t, V, S):
         """Transient value of payoff."""
         assert(t != self.T)
-        if self._intime(t):
+        if t in self:
             return self.payoff.transient(t, V, S)
         else:
             return V
 
     def terminal(self, S):
         """Terminal value of payoff, zero is out of time."""
-        if self._intime(self.T):
+        if self.T in self:
             return self.payoff.terminal(S)
         else:
             return np.zeros(S.shape)
