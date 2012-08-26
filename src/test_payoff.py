@@ -238,5 +238,151 @@ class TestUpAndOut(unittest.TestCase):
         self.assertTrue((payoff.terminal(S) == V).all())
 
 
+class TestConvertibleBond(unittest.TestCase):
+    """Test Payoff of unit tests, based on AKW08 Table 1"""
+
+    def setUp(self):
+        T = 9
+        B = Annuity(T, [8], 4, 100, 0.5)
+        P = Time(PutV(T, 105), [2, 4, 5, 6])
+        C = Time(CallVR(T, 110), [3, 4, 6, 7])
+        S = Time(CallA(T, 0), [1, 2, 3, 4, 9])
+        self.payoff = Stack([B, P, C, S])
+        Ssect = [np.linspace(0, 0.25, 10), np.linspace(0.25, -.25, 10),
+                 np.linspace(-.25, 0.75, 10), np.linspace(0.75, 1, 9, endpoint=False)]
+        Vsect = [np.linspace(0, -.25, 10), np.linspace(-.25, 0.25, 10),
+                 np.linspace(0.25, 0.50, 10), np.linspace(0.50, 1, 9, endpoint=False)]
+        Ssect = np.array(sum((list(i) for i in Ssect), []))
+        Vsect = np.array(sum((list(i) for i in Vsect), []))
+        critical = [10, 50, 100, 105, 110, 200]
+        S = []
+        V = []
+        for i in range(len(critical) - 1):
+            l, u = critical[i:i + 2]
+            lu = u -l
+            S.extend(Ssect * lu + l)
+            V.extend(Vsect * lu + l)
+        self.S = np.array(S)
+        self.V = np.array(V)
+
+    def test_SV(self):
+        """Test sample stock and portfolio values."""
+        S = self.S
+        V = self.V
+        for i in [50, 100, 105, 110]:
+            self.assertTrue((S > i).any())
+            self.assertTrue((S == i).any())
+            self.assertTrue((S < i).any())
+            self.assertTrue((V > i).any())
+            self.assertTrue((V == i).any())
+            self.assertTrue((V < i).any())
+            self.assertTrue(((S > i) & (V < i)).any())
+            self.assertTrue(((S < i) & (V > i)).any())
+
+    def test_conv(self):
+        """Test conversion option, without call or put option."""
+        t = 1
+        S = self.S
+        V = self.V
+        Vm = np.maximum(V, S)
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_conv_put(self):
+        """Test conversion and put option without call option."""
+        t = 2
+        S = self.S
+        V = self.V
+        Vm = np.maximum(V, S)  # Normal conversion
+        # Put option
+        put = (V < 105) & (S < 105)
+        self.assertTrue(put.any())
+        Vm[put] = 105
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_conv_call(self):
+        """Test conversion and call option, without put option."""
+        t = 3
+        S = self.S
+        V = self.V
+        Vm = np.maximum(V, S)  # Normal conversion
+        # Call option
+        call = (V > 110) & (S <= 110)
+        Vm[call] = 110
+        self.assertTrue(call.any())
+        # Conversion option (forced conversion)
+        conv = (V > 110) & (S > 110) & (V > S)
+        self.assertTrue(conv.any())
+        Vm[conv] = S[conv]
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_conv_call_put(self):
+        """Test conversion, call and put option,"""
+        t = 4
+        S = self.S
+        V = self.V
+        Vm = np.maximum(V, S)  # Normal conversion
+        # Put option
+        put = (V < 105) & (S < 105)
+        self.assertTrue(put.any())
+        Vm[put] = 105
+        # Call option
+        call = (V > 110) & (S <= 110)
+        Vm[call] = 110
+        self.assertTrue(call.any())
+        # Conversion option (forced conversion)
+        conv = (V > 110) & (S > 110) & (V > S)
+        self.assertTrue(conv.any())
+        Vm[conv] = S[conv]
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+        # Default
+        Vd = np.maximum(S, 50)
+        self.assertTrue((self.payoff.default(t, S) == Vd).all())
+
+    def test_put(self):
+        """Test put option, without conversion or call option."""
+        t = 5
+        S = self.S
+        V = self.V
+        Vm = np.maximum(V, 105)
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_put_call(self):
+        """Test put and call option, without conversion option."""
+        t = 6
+        S = self.S
+        V = self.V
+        Vm = V.copy()
+        # Put option
+        put = (V < 105)
+        Vm[put] = 105
+        # Call option
+        call = (V > 110)
+        Vm[call] = 110
+        self.assertTrue(call.any())
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_call(self):
+        """Test call option, without conversion or put option."""
+        t = 7
+        S = self.S
+        V = self.V
+        Vm = np.minimum(V, 110)
+        self.assertTrue((V > 110).any())
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_coupon(self):
+        t = 8
+        S = self.S
+        V = self.V
+        Vm = V + 4
+        self.assertTrue((self.payoff.transient(t, V, S) == Vm).all())
+
+    def test_redemption(self):
+        """Test redemption of convertible bond."""
+        S = self.S
+        V = np.maximum(100, S)
+        self.assertTrue((self.payoff.terminal(S) == V).all())
+
+
 if __name__ == "__main__":
     unittest.main()
