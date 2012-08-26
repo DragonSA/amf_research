@@ -1,7 +1,7 @@
 import numpy as np
 
 from model import WienerJumpProcess, BinomialModel, Payoff
-from payoff import Annuity, CallA, CallVR, PutV
+from payoff import Annuity, CallA, CallVR, PutV, Stack
 
 # Time till maturity = 5 years
 T = 5
@@ -31,9 +31,20 @@ P = PutV(T, 105)
 #       Time = [2, 5]
 C = CallVR(T, 110)
 
-# Call option (conversion option into stock for portfolio)
+# Stock option (conversion option into stock for portfolio)
 S = CallA(T, 0)
 
+# Convertible bond:
+#       Bond
+#       American put option on portfolio
+#       Reversed American call option on portfolio
+#       Stock
+payoff = Stack([B, P, C, S])
+
+print "B, B+P, B+P+C, B+P+C+S"
 for N in (200, 400, 800, 1600, 3200):
-    model = BinomialModel(N, dS_total, C)
-    print N, model.price(100)
+    prices = []
+    for i in range(1, len(payoff.stack) + 1):
+        model = BinomialModel(N, dS_total, Stack(payoff.stack[:i]))
+        prices.append(model.price(100))
+    print ", ".join(str(i) for i in prices)
