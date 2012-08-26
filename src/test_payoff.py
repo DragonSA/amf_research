@@ -4,7 +4,7 @@ Unit tests for payoff module.
 import numpy as np
 import unittest
 
-from payoff import Forward, CallE, CallA, UpAndOut, Annuity
+from payoff import Forward, CallE, CallA, CallVR, PutV, UpAndOut, Annuity
 
 S0 = 100
 T = 1
@@ -19,7 +19,7 @@ class TestPayoff(unittest.TestCase):
         """Test value of default."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         Vd = np.zeros(S.shape)
-        for Payoff in (Forward, CallE):
+        for Payoff in (Forward, CallE, CallVR, PutV):
             payoff = Payoff(T, K)
             for t in np.linspace(0, 1, N, endpoint=False):
                 self.assertTrue((payoff.default(t, S) == Vd).all())
@@ -53,6 +53,34 @@ class TestPayoff(unittest.TestCase):
         for t in np.linspace(0, 1, N, endpoint=False):
             self.assertTrue((payoff.transient(t, V, S) == Vm).all())
         self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_callvr_transcient(self):
+        """Test value of transient for reverse American call on portfolio."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        Vm = V - np.maximum(V - K, 0)
+        payoff = CallVR(T, K)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_putv_transcient(self):
+        """Test value of transient for American put on portfolio."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        Vm = V + np.maximum(K - V, 0)
+        payoff = PutV(T, K)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_zero_terminal(self):
+        """Test value of terminal for zero no terminal value."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.zeros(S.shape)
+        for Payoff in (CallVR, PutV):
+            payoff = Payoff(T, K)
+            self.assertTrue((payoff.terminal(S) == V).all())
 
     def test_forward_terminal(self):
         """Test value of terminal for a call."""

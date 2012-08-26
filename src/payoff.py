@@ -56,6 +56,38 @@ class CallA(CallE):
         return np.maximum(V, S - self.K)
 
 
+class PutV(Payoff):
+    """
+    An American Put payoff, with total default and strike K, on the value of
+    the portfolio,
+    """
+
+    def __init__(self, T, K):
+        super(PutV, self).__init__(T)
+        self.K = K
+
+    def transient(self, t, V, _S):
+        """Transient payoff of ``V + max(K - V, 0)''."""
+        assert(t != self.T)
+        return np.maximum(V, self.K)
+
+
+class CallVR(Payoff):
+    """
+    A reverse American Call payoff, with total default and strike K, on the
+    value of the portfolio.
+    """
+
+    def __init__(self, T, K):
+        super(CallVR, self).__init__(T)
+        self.K = K
+
+    def transient(self, t, V, _S):
+        """Transient payoff of ``V - max(V - K, 0)''."""
+        assert(t != self.T)
+        return np.minimum(V, self.K)
+
+
 class UpAndOut(Payoff):
     """
     A Up-and-Out derivative.
