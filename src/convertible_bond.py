@@ -1,7 +1,7 @@
 import numpy as np
 
 from model import WienerJumpProcess, BinomialModel, Payoff
-from payoff import Annuity, CallA
+from payoff import Annuity, CallA, CallVR, PutV
 
 # Time till maturity = 5 years
 T = 5
@@ -19,13 +19,20 @@ dS_partial = WienerJumpProcess(r=0.05, sigma=0.2, lambd_=0.02, eta=0)
 #       Nominal value = 100
 #       Semi-annual coupon = 4
 #       Recovery factor = 0
-C = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 4, 100, 0)
+B = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 4, 100, 0)
 
-# Call option (target for conversion of bond)
+# American put option on portfolio
+#       Strike = 105
+#       Time = 3
+P = PutV(T, 105)
+
+# Reversed American call option on portfolio
+#       Strike = 110
+#       Time = [2, 5]
+C = CallVR(T, 110)
+
+# Call option (conversion option into stock for portfolio)
 S = CallA(T, 0)
-
-# Conversion ratio of 1
-kappa = 1
 
 for N in (200, 400, 800, 1600, 3200):
     model = BinomialModel(N, dS_total, C)
