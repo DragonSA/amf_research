@@ -113,7 +113,7 @@ class Stack(Payoff):
 
     def __init__(self, stack):
         super(Stack, self).__init__(stack[0].T)
-        self.stack = stack
+        self.stack = tuple(stack)
 
     def default(self, t, S):
         """Maximum default value of stacked payoffs."""
@@ -136,6 +136,52 @@ class Stack(Payoff):
         for payoff in self.stack[1:]:
             V = np.maximum(V, payoff.terminal(S))
         return np.double(V)
+
+
+class Time(Payoff):
+    """
+    Derivative with time restrictions
+    """
+
+    def __init__(self, payoff, times):
+        super(Time, self).__init__(payoff.T)
+        self.payoff = payoff
+        self.times = times
+        self._time_discrete = set(i for i in times if type(i) != tuple)
+        self._time_continuous = tuple(i for i in times if type(i) == tuple)
+
+    def _intime(self, t):
+        """Check if the current time is a valid time for the payoff."""
+        if t in self._time_discrete:
+            return True
+        for l, u in self._time_continuous:
+            if l <= t <= u:
+                return True
+        else:
+            return False
+
+    def default(self, t, S):
+        """Default value of payoff, zero is out of time."""
+        assert(t != self.T)
+        if self._intime(t):
+            return self.payoff.default(t, S)
+        else:
+            return np.zeros(S.shape)
+
+    def transient(self, t, V, S):
+        """Transient value of payoff."""
+        assert(t != self.T)
+        if self._intime(t):
+            return self.payoff.transient(t, V, S)
+        else:
+            return V
+
+    def terminal(self, S):
+        """Terminal value of payoff, zero is out of time."""
+        if self._intime(self.T):
+            return self.payoff.terminal(S)
+        else:
+            return np.zeros(S.shape)
 
 
 class UpAndOut(Payoff):

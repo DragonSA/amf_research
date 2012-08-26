@@ -4,7 +4,8 @@ Unit tests for payoff module.
 import numpy as np
 import unittest
 
-from payoff import Forward, CallE, CallA, CallVR, PutV, Stack, UpAndOut, Annuity
+from payoff import Forward, CallE, CallA, CallVR, PutV, Stack, Time, UpAndOut, \
+                   Annuity
 
 S0 = 100
 T = 1
@@ -48,7 +49,7 @@ class TestPayoff(unittest.TestCase):
         """Test value of transient for American call."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         V = np.linspace(S0 + 10, S0 - 10, 21)
-        Vm = np.maximum(V, np.maximum(S - K, 0))
+        Vm = np.maximum(S - K, V)
         payoff = CallA(T, K)
         for t in np.linspace(0, 1, N, endpoint=False):
             self.assertTrue((payoff.transient(t, V, S) == Vm).all())
@@ -161,6 +162,47 @@ class TestStack(unittest.TestCase):
         V = np.maximum(S - K + 5, 0)
         payoff = Stack([Forward(T, K - 5), CallE(T, K)])
         self.assertTrue((payoff.terminal(S) == V).all())
+
+
+class TestTime(unittest.TestCase):
+    """Test Time payoff."""
+
+    def test_default(self):
+        """Test default value of American call with time restrictions."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        times = list(np.linspace(0, 1, N // 4, endpoint=False)) + [(0.5, 1)]
+        Vd = np.maximum(S - K, 0)
+        Vo = np.zeros(S.shape)
+        payoff = Time(CallA(T, K), times)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            if float(t) in times or t > 0.5:
+                self.assertTrue((payoff.default(t, S) == Vd).all())
+            else:
+                self.assertTrue((payoff.default(t, S) == Vo).all())
+        self.assertRaises(AssertionError, payoff.default, T, S)
+
+    def test_transcient(self):
+        """Test value of transient for American call with time restrictions."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        times = list(np.linspace(0, 1, N // 4, endpoint=False)) + [(0.5, 1)]
+        Vm = np.maximum(S - K, V)
+        payoff = Time(CallA(T, K), times)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            if float(t) in times or t > 0.5:
+                self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+            else:
+                self.assertTrue((payoff.transient(t, V, S) == V).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_terminal(self):
+        """Test value of terminal for American call with time restrictions."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.maximum(S - K, 0)
+        payoff = Time(CallE(T, K), (T,))
+        self.assertTrue((payoff.terminal(S) == V).all())
+        payoff = Time(CallE(T, K), ())
+        self.assertTrue((payoff.terminal(S) == np.zeros(S.shape)).all())
 
 
 class TestUpAndOut(unittest.TestCase):
