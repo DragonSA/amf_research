@@ -2,7 +2,6 @@
 Framework for modelling payoff processes using either a binomial or finite-
 difference model.
 """
-import abc
 import math
 import numpy as np
 
@@ -13,20 +12,18 @@ class Payoff(object):
     The payoff description for a derivative, handling terminal, transient
     and default payoffs.
     """
-    __metaclass__ = abc.ABCMeta
 
     def __init__(self, T):
         self.T = T
 
-    @abc.abstractmethod
     def default(self, t, S):
         """Payoff in the event of default at time t"""
-        pass
+        assert(t != self.T)
+        return np.zeros(S.shape)
 
-    @abc.abstractmethod
     def terminal(self, S):
         """Payoff at terminal time."""
-        pass
+        return np.zeros(S.shape)
 
     def transient(self, t, V, S):
         """Payoff during transient (non-terminal) time."""

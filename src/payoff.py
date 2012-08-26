@@ -18,11 +18,6 @@ class Forward(Payoff):
         super(Forward, self).__init__(T)
         self.K = np.double(K)
 
-    def default(self, t, S):
-        """Total default."""
-        assert(t != self.T)
-        return np.zeros(S.shape)
-
     def terminal(self, S):
         """Terminal payoff of ``S - K''."""
         return S - self.K
@@ -36,11 +31,6 @@ class CallE(Payoff):
     def __init__(self, T, K):
         super(CallE, self).__init__(T)
         self.K = K
-
-    def default(self, t, S):
-        """Total default."""
-        assert(t != self.T)
-        return np.zeros(S.shape)
 
     def terminal(self, S):
         """Terminal payoff of ``max(S - K, 0)''."""
