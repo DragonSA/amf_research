@@ -83,16 +83,22 @@ class TestBinomialModel(unittest.TestCase):
 
     def test_annuity(self):
         """Test the pricing of a series of payments."""
+        def price(r):
+            erdt = math.exp(-r)
+            i = 1 / erdt - 1
+            return (1 - erdt**(T * 2)) / i + 10 * erdt**(T * 2)
+
         dS = WienerJumpProcess(0.1, 0.1, 0, 0)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.1, 1)
 
         # Semi-annual payments of 1
         T = 10
         V = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 1, 10)
         model = BinomialModel(T * 2, dS, V)
-        erdt = math.exp(-0.05)
-        i = 1 / erdt - 1
-        price = (1 - erdt**(T * 2)) / i + 10 * erdt**(T * 2)
-        self.assertAlmostEqual(model.price(100), price)
+        self.assertAlmostEqual(model.price(100), price(0.05))
+        model = BinomialModel(T * 2, dSdq, V)
+        self.assertAlmostEqual(model.price(100), price(0.1))
+
 
 if __name__ == "__main__":
     unittest.main()
