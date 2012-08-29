@@ -7,6 +7,7 @@ import numpy as np
 
 __all__ = ["BinomialModel", "WienerJumpProcess"]
 
+
 class Payoff(object):
     """
     The payoff description for a derivative, handling terminal, transient
@@ -57,7 +58,7 @@ class WienerJumpProcess(object):
         \sigma  is the log-volatility of the stock price
     """
 
-    def __init__(self, r, sigma, lambd_, eta):
+    def __init__(self, r, sigma, lambd_=0, eta=1):
         if min(r, sigma, lambd_, eta) < 0:
             raise ValueError("all parameters must be non-negative")
         if eta > 1:
@@ -80,6 +81,7 @@ class WienerJumpProcess(object):
         pd = 1 - pu - po
         return (u, d, l, pu, pd, po)
 
+
 class BinomialModel(object):
     """
     A binomial lattice model for pricing derivatives using a stock process and
@@ -91,6 +93,29 @@ class BinomialModel(object):
         V       is the intrinsic value of the derivative
     """
 
+    class Value(object):
+        """
+        Valuation of the portfolio using the binomial model.
+
+            N   is the number of nodes (excluding base node)
+            t   is the node times
+            S   is the node prices
+            C   is the node coupons
+            X   is the the node default value
+            V   is the value of the portfolio
+        """
+
+        def __init__(self, T, N):
+            self.N = N
+            self.t = np.linspace(0, T, N + 1)
+            self.S = [None] * (N + 1)
+            self.C = [None] * (N + 1)
+            self.X = [None] * (self.N)
+            self.V = [None] * (N + 1)
+
+        def __float__(self):
+            return self.V[0][0]
+
     def __init__(self, N, dS, V):
         self.N = np.int(N)
         self.dt = np.double(V.T) / N
@@ -101,17 +126,21 @@ class BinomialModel(object):
         u, d, l, pu, pd, po = self.dS.binomial(self.dt)
         du = d / u
         erdt = math.exp(-self.dS.r * self.dt)
+        P = self.Value(self.V.T, self.N)
 
         # Terminal stock price and derivative value
-        S = np.array([S0 * u**i * d**(self.N - i) for i in range(self.N + 1)])
-        V = self.V.terminal(S) + self.V.coupon(self.V.T)
+        P.S[-1] = S = np.array([S0 * u**(self.N - i) * d**i for i in range(self.N + 1)])
+        P.C[-1] = C = self.V.coupon(self.V.T)
+        P.V[-1] = V = self.V.terminal(S) + C
 
         # Discount price backwards
-        t = np.linspace(0, self.V.T, self.N, endpoint=False)
+        t = P.t
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
-            S = np.array([S0 * u**j * d ** (i - j) for j in range(i + 1)])
-            V = erdt * (V[1:] * pu + V[:-1] * pd + self.V.default(t[i], S * l) * po)
-            V = self.V.transient(t[i], V, S) + self.V.coupon(t[i])
+            P.S[i] = S = np.array([S0 * u**(i - j) * d**j for j in range(i + 1)])
+            P.X[i] = X = self.V.default(t[i], S * l)
+            P.C[i] = C = self.V.coupon(t[i])
+            V = erdt * (V[:-1] * pu + V[1:] * pd + X * po)
+            P.V[i] = V = self.V.transient(t[i], V, S) + C
 
-        return V[0]
+        return P

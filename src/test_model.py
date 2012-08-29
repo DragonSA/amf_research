@@ -43,6 +43,10 @@ class TestWienerJumpProcess(unittest.TestCase):
 class TestBinomialModel(unittest.TestCase):
     """Test the Binomial Model."""
 
+    def test_value(self):
+        """Test the value object for the binomial model."""
+        # TODO
+
     def test_call(self):
         """Test that the binomial model correctly prices a call option."""
         def price(r):
@@ -52,8 +56,8 @@ class TestBinomialModel(unittest.TestCase):
             price -= stats.norm.cdf(d2) * K * math.exp(-r)
             return price
 
-        dS = WienerJumpProcess(0.1, 0.1, 0, 0)
-        dSdq = WienerJumpProcess(0.1, 0.1, 0.1, 1)
+        dS = WienerJumpProcess(0.1, 0.1)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.1)
 
         accuracy = 10
         step_down = set((59, 61, 64, 68, 72, 78, 83, 89, 100, 119))
@@ -65,21 +69,21 @@ class TestBinomialModel(unittest.TestCase):
                 accuracy += 1
             V = CallE(1, K)
             model = BinomialModel(128, dS, V)
-            self.assertAlmostEqual(model.price(100), price(0.1), accuracy)
+            self.assertAlmostEqual(float(model.price(100)), price(0.1), accuracy)
             model = BinomialModel(128, dSdq, V)
-            self.assertAlmostEqual(model.price(100), price(0.2), accuracy)
+            self.assertAlmostEqual(float(model.price(100)), price(0.2), accuracy)
 
     def test_forward(self):
         """Test that the binomial model correctly prices a forward contract."""
-        dS = WienerJumpProcess(0.1, 0.1, 0, 0)
-        dSdq = WienerJumpProcess(0.1, 0.1, 0.1, 1)
+        dS = WienerJumpProcess(0.1, 0.1)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.1)
 
         for K in range(200):
             V = Forward(1, K)
             model = BinomialModel(2, dS, V)
-            self.assertAlmostEqual(model.price(100), 100 - K * math.exp(-0.1))
+            self.assertAlmostEqual(float(model.price(100)), 100 - K * math.exp(-0.1))
             model = BinomialModel(2, dSdq, V)
-            self.assertAlmostEqual(model.price(100), 100 - K * math.exp(-0.2))
+            self.assertAlmostEqual(float(model.price(100)), 100 - K * math.exp(-0.2))
 
     def test_annuity(self):
         """Test the pricing of a series of payments."""
@@ -88,16 +92,16 @@ class TestBinomialModel(unittest.TestCase):
             i = 1 / erdt - 1
             return (1 - erdt**(T * 2)) / i + 10 * erdt**(T * 2)
 
-        dS = WienerJumpProcess(0.1, 0.1, 0, 0)
-        dSdq = WienerJumpProcess(0.1, 0.1, 0.1, 1)
+        dS = WienerJumpProcess(0.1, 0.1)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.1)
 
         # Semi-annual payments of 1
         T = 10
         V = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 1, 10)
         model = BinomialModel(T * 2, dS, V)
-        self.assertAlmostEqual(model.price(100), price(0.05))
+        self.assertAlmostEqual(float(model.price(100)), price(0.05))
         model = BinomialModel(T * 2, dSdq, V)
-        self.assertAlmostEqual(model.price(100), price(0.1))
+        self.assertAlmostEqual(float(model.price(100)), price(0.1))
 
 
 if __name__ == "__main__":
