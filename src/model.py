@@ -129,7 +129,7 @@ class BinomialModel(object):
             self.N = N
             self.t = np.linspace(0, T, N + 1)
             self.S = [None] * (N + 1)
-            self.C = [None] * (N + 1)
+            self.C = np.zeros(N + 1)
             self.X = [None] * (self.N)
             self.V = [None] * (N + 1)
 
