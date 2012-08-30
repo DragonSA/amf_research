@@ -8,7 +8,7 @@ import unittest
 from scipy import stats
 
 from model import BinomialModel, WienerJumpProcess
-from payoff import Annuity, CallE, Forward
+from payoff import Annuity, CallA, CallE, Forward, Stack
 
 class TestWienerJumpProcess(unittest.TestCase):
     """Test the Wiener Jump process."""
@@ -57,7 +57,42 @@ class TestBinomialModel(unittest.TestCase):
 
     def test_value(self):
         """Test the value object for the binomial model."""
-        # TODO
+        dS = WienerJumpProcess(0.1, 0.1, 0.02, 0)
+        N = 16
+        T = 1
+        ct = np.linspace(0, T, N // 2 + 1)
+        c = 1
+        S = 100
+        model = BinomialModel(N, dS, Stack([CallA(T, S), Annuity(T, ct, c)]))
+        P = model.price(S)
+        # Test N
+        self.assertEqual(P.N, N)
+        # Test time series
+        self.assertEqual(P.t[0], 0)
+        self.assertEqual(P.t[-1], T)
+        self.assertEqual(len(P.t), N + 1)
+        # Test Coupon sequence
+        self.assertTrue((P.C[::2] == c).all())
+        self.assertTrue((P.C[1::2] == 0).all())
+        # Test price sequence
+        self.assertEqual(P.S[0][0], S)
+        self.assertEqual(len(P.S), N + 1)
+        for i in range(1, N + 1):
+            self.assertGreaterEqual(P.S[i][0], P.S[i - 1][0])
+            self.assertLessEqual(P.S[i][-1], P.S[i - 1][-1])
+            self.assertTrue((P.S[i][:-1] > P.S[i][1:]).all())
+        # Test default sequence
+        self.assertEqual(len(P.V), N + 1)
+        for i in range(1, N + 1):
+            self.assertGreaterEqual(P.V[i][0] - P.C[i], P.V[i - 1][0])
+            self.assertLessEqual(P.V[i][-1] - P.C[i], P.V[i - 1][-1])
+            self.assertTrue((P.V[i][:-1] >= P.V[i][1:]).all())
+        self.assertEqual(len(P.X), N)
+        for i in range(1, N):
+            self.assertGreaterEqual(P.X[i][0], P.X[i - 1][0])
+            self.assertLessEqual(P.X[i][-1], P.X[i - 1][-1])
+            self.assertTrue((P.X[i][:-1] >= P.X[i][1:]).all())
+        # Test coupon sequence
 
     def test_call(self):
         """Test that the binomial model correctly prices a call option."""
