@@ -58,28 +58,48 @@ class WienerJumpProcess(object):
         \sigma  is the log-volatility of the stock price
     """
 
-    def __init__(self, r, sigma, lambd_=0, eta=1):
+    def __init__(self, r, sigma, lambd_=0, eta=1, cap_lambda=False):
         if min(r, sigma, lambd_, eta) < 0:
             raise ValueError("all parameters must be non-negative")
         if eta > 1:
             raise ValueError("eta must be between 0 and 1 inclusive")
         self.r = np.double(r)
         self.sigma = np.double(sigma)
-        self.lambd_ = np.double(lambd_)
+        self.lambd_ = lambd_ if callable(lambd_) else np.double(lambd_)
         self.eta = np.double(eta)
+        self.cap_lambda = cap_lambda
 
-    def binomial(self, dt):
+    def binomial(self, dt, S=None):
         """Parameters for the binomial model."""
         # Up/down/loss multipliers
-        u = math.exp(self.sigma * math.sqrt(dt))
+        if self.sigma <= self.r * np.sqrt(dt):
+            raise ValueError("Time step to big for given volatility")
+        u = np.exp(self.sigma * np.sqrt(dt))
         d = 1 / u
         l = 1 - self.eta
 
+        if not callable(self.lambd_):
+            lambd_ = self.lambd_
+        elif S is not None:
+            lambd_ = self.lambd_(S)
+            if (lambd_ < 0).any():
+                raise ValueError("Hazard rate most be non-negative")
+        else:
+            return (u, d, l, False)
+
         # Probability of up/down/loss
-        po = 1 - math.exp(-self.lambd_ * dt)
-        pu = (math.exp(self.r * dt) - d * (1 - po) - l * po) / (u - d)
+        lambda_limit = (np.log(u - l) - np.log(np.exp(self.r * dt) - l)) / dt
+        if self.cap_lambda:
+            lambd_ = np.minimum(lambd_, lambda_limit)
+        elif (lambd_ > lambda_limit).any():
+            raise ValueError("Time step to big for given hazard rate")
+        po = 1 - np.exp(-lambd_ * dt)
+        pu = (np.exp(self.r * dt) - d * (1 - po) - l * po) / (u - d)
         pd = 1 - pu - po
-        return (u, d, l, pu, pd, po)
+        if S is not None:
+            return (pu, pd, po)
+        else:
+            return (u, d, l, (pu, pd, po))
 
 
 class BinomialModel(object):
@@ -123,13 +143,16 @@ class BinomialModel(object):
         self.V = V
 
     def price(self, S0):
-        u, d, l, pu, pd, po = self.dS.binomial(self.dt)
-        du = d / u
+        u, d, l, prob = self.dS.binomial(self.dt)
         erdt = math.exp(-self.dS.r * self.dt)
         P = self.Value(self.V.T, self.N)
+        if prob:
+            pu, pd, po = prob
 
         # Terminal stock price and derivative value
         P.S[-1] = S = np.array([S0 * u**(self.N - i) * d**i for i in range(self.N + 1)])
+        if not prob:
+            pu, pd, po = self.dS.binomial(self.dt, P.S[-1])
         P.C[-1] = C = self.V.coupon(self.V.T)
         P.V[-1] = V = self.V.terminal(S) + C
 
@@ -140,6 +163,8 @@ class BinomialModel(object):
             P.S[i] = S = np.array([S0 * u**(i - j) * d**j for j in range(i + 1)])
             P.X[i] = X = self.V.default(t[i], S * l)
             P.C[i] = C = self.V.coupon(t[i])
+            if not prob:
+                pu, pd, po = self.dS.binomial(self.dt, S)
             V = erdt * (V[:-1] * pu + V[1:] * pd + X * po)
             P.V[i] = V = self.V.transient(t[i], V, S) + C
 
