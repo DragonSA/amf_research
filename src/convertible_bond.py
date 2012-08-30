@@ -3,6 +3,8 @@ import numpy as np
 from model import WienerJumpProcess, BinomialModel, Payoff
 from payoff import Annuity, CallA, CallVR, PutV, Stack, Time
 
+__all__ = ["dS_total", "dS_partial", "B", "P", "C", "S", "payoff", "T"]
+
 # Time till maturity = 5 years
 T = 5
 
@@ -42,11 +44,11 @@ S = CallA(T, 0)
 payoff = Stack([B, P, C, S])
 
 if __name__ == "__main__":
-    N = 200
+    N = 250
     dS = dS_total
     S0 = 100
-    print BinomialModel(N, dS, Stack([B])).price(S0), "(B)"
-    print BinomialModel(N, dS, Stack([B, S])).price(S0), "(B+S)"
-    print BinomialModel(N, dS, Stack([B, C, S])).price(S0), "(B+C+S)"
-    print BinomialModel(N, dS, Stack([B, P, S])).price(S0), "(B+P+S)"
-    print BinomialModel(N, dS, Stack([B, P, C, S])).price(S0), "(B+P+C+S)"
+    print float(BinomialModel(N, dS, Stack([B])).price(S0)), "(B)"
+    print float(BinomialModel(N, dS, Stack([B, S])).price(S0)), "(B+S)"
+    print float(BinomialModel(N, dS, Stack([B, C, S])).price(S0)), "(B+C+S)"
+    print float(BinomialModel(N, dS, Stack([B, P, S])).price(S0)), "(B+P+S)"
+    print float(BinomialModel(N, dS, Stack([B, P, C, S])).price(S0)), "(B+P+C+S)"
