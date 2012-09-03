@@ -11,6 +11,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{fancyhdr}
+\usepackage{footnote}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage[numbers]{natbib}
@@ -199,7 +200,7 @@ where:
  \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
                         &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
-and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution and has probability $1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
+and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\po = 1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
 \begin{align}
  \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
                                 &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
@@ -213,7 +214,7 @@ If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote
  e^{r\Dt}       &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \n
  \pu(\u - \d)   &= e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:p(u-d)}\\
  \pu            &= \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
- \Rightarrow\pd &= -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}
+ \therefore\quad\pd &= -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}
 \end{align}
 and if one equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} then\footnote{Substituting equation \eqref{eq:p(u-d)} into \eqref{eq:Var=1} one gets \eqref{eq:Var=2}}:
 \begin{align}
@@ -238,6 +239,41 @@ and substituting \eqref{eq:u+d} into \eqref{eq:Var=} with the appropriate expans
                         &= A\Dt + \lambda\eta^2\Dt \n
  A\Dt                   &= \sigma^2\Dt
 \end{align}
+
+\section{Limits}
+The time step \Dt is assumed to be strictly positive ($\Dt > 0$), as time is monotonically increasing.
+
+Although $\sigma$ could be positive or negative, the formul\ae\ use $\sigma$ where, strictly, $|\sigma|$ should be used.  If $\sigma = 0$ then the model is no longer useful.  The restriction $\sigma > 0$ may be introduced for convenience and without loss of generality.
+
+An implicit assumption this model makes is that \pu, \pd and \po are a valid probability measure.  This imposes the following conditions:
+\begin{align}
+ \min(\pu, \pd, \po) &\ge 0 \\
+ \pu + \pd + \po &= 1 \label{eq:bin_prob_limit}
+\end{align}
+
+Consider \po, the probability of default.  Its value is equal to the cumulative density function of an exponential distribution with intensity $\lambda$.  As such \po is already confined to the interval $[0, 1]$ with the restriction that $\lambda > 0$.  If $\lambda = 0$, no default is possible, then \po will have a value of 0 and is a valid probability thus the restriction on $\lambda$ can be relaxed to $\lambda \ge 0$.
+
+Consider \pd, the probability of a down movement.  Its value is defined in terms of \pu and \po.  If \pu and \po are valid probabilities, within bounds, then so will \pd.
+
+Consider \pu, the probability of an up movement.  Taking into account the definition of \pd, this requires that \pu satisfies:
+\begin{align}
+ 0 &\le \pu \le e^{-\lambda \Dt} \\
+ 0 &\le \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \le e^{-\lambda \Dt} \n
+ 0 &\le e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \le e^{-\lambda \Dt}(\u - \d) \n
+ e^{-\lambda\Dt}(\d - (1 - \eta)) &\le e^{r\Dt} - (1 - \eta) \le e^{-\lambda\Dt}(\u - (1 - \eta)) \n
+ \ln\left(\frac{d - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) &\le \lambda\Dt \le \ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) \\
+ \Dt &\le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)
+\end{align}
+Using the limit on both \Dt and $\lambda$ the inequalities around the $\lambda\Dt$ are also limited thus:
+\begin{align}
+ 0 &\le \ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) \n
+ e^{r\Dt} - (1 - \eta) &\le u - (1 - \eta) \n
+ r\Dt &\le \sigma \sqrt{\Dt} \n
+ \Dt &\le \frac{\sigma^2}{r^2}
+\end{align}
+The inequality of $\ln\left(\frac{d - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) \le 0$ results in the same inequality as above.
+
+Based on the probability limits \eqref{eq:bin_prob_limit} no restriction is placed on $r$, the risk free rate, or $\eta$, the percentage drop in stock price.
 
 \section{Valuation}
 Consider a portfolio with value \V at time $t$, \D invested in the stock \S and $\P = \V - \D\S$ invested at the risk neutral rate.  At time $t + \Dt$ one should have:
@@ -318,7 +354,7 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
 
 
 \section{Parameters and Formul\ae\ of Model}
-Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial table.
+Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial table.
 
 \begin{table}[ht]
 \centering
@@ -338,6 +374,22 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 \end{tabular}
 \label{tab:bin_parameter}
 \end{table}
+
+\begin{savenotes}
+\begin{table}[ht]
+\centering
+\caption{Limits of the Binomial Model with Credit Risk}
+\begin{tabular}{|c|l|}\hline
+ \textbf{Limit} & \textbf{Description} \\\hline
+ $0 < \sigma$ & Volatility must be positive \\\hline
+ $0 \le \lambda$ & Hazard rate must be non-negative \\\hline
+ $0 < \Dt$ & Time step must be positive \\\hline
+ $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \\\hline
+ $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \\\hline
+\end{tabular}
+\label{tab:bin_limit}
+\end{table}
+\end{savenotes}
 
 \begin{table}[ht]
 \centering
