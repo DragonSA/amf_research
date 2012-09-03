@@ -59,10 +59,10 @@ class WienerJumpProcess(object):
     """
 
     def __init__(self, r, sigma, lambd_=0, eta=1, cap_lambda=False):
-        if min(r, sigma, lambd_, eta) < 0:
-            raise ValueError("all parameters must be non-negative")
-        if eta > 1:
-            raise ValueError("eta must be between 0 and 1 inclusive")
+        if sigma <= 0:
+            raise ValueError("Volatility must be positive")
+        if lambd_ < 0:
+            raise ValueError("Hazard rate must be non-negative")
         self.r = np.double(r)
         self.sigma = np.double(sigma)
         self.lambd_ = lambd_ if callable(lambd_) else np.double(lambd_)
@@ -72,7 +72,9 @@ class WienerJumpProcess(object):
     def binomial(self, dt, S=None):
         """Parameters for the binomial model."""
         # Up/down/loss multipliers
-        if self.sigma <= self.r * np.sqrt(dt):
+        if dt <= 0:
+            raise ValueError("Time step must be positive")
+        if self.sigma**2 < self.r**2 * dt:
             raise ValueError("Time step to big for given volatility")
         u = np.exp(self.sigma * np.sqrt(dt))
         d = 1 / u
@@ -83,15 +85,15 @@ class WienerJumpProcess(object):
         elif S is not None:
             lambd_ = self.lambd_(S)
             if (lambd_ < 0).any():
-                raise ValueError("Hazard rate most be non-negative")
+                raise ValueError("Hazard rate must be non-negative")
         else:
             return (u, d, l, False)
 
         # Probability of up/down/loss
-        lambda_limit = (np.log(u - l) - np.log(np.exp(self.r * dt) - l)) / dt
+        lambda_limit = (np.log(u - l) - np.log(np.exp(self.r * dt) - l))
         if self.cap_lambda:
             lambd_ = np.minimum(lambd_, lambda_limit)
-        elif (lambd_ > lambda_limit).any():
+        elif (lambd_ * dt > lambda_limit).any():
             raise ValueError("Time step to big for given hazard rate")
         po = 1 - np.exp(-lambd_ * dt)
         pu = (np.exp(self.r * dt) - d * (1 - po) - l * po) / (u - d)

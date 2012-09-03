@@ -19,11 +19,14 @@ class TestWienerJumpProcess(unittest.TestCase):
         s = 0.2
         l = 0.1
         e = 0.3
-        self.assertRaises(ValueError, WienerJumpProcess, -r, s, l, e)
         self.assertRaises(ValueError, WienerJumpProcess, r, -s, l, e)
+        self.assertRaises(ValueError, WienerJumpProcess, r, 0, l, e)
         self.assertRaises(ValueError, WienerJumpProcess, r, s, -l, e)
-        self.assertRaises(ValueError, WienerJumpProcess, r, s, l, -e)
-        self.assertRaises(ValueError, WienerJumpProcess, r, s, l, 1.1)
+        WienerJumpProcess(0, s, l, e)
+        WienerJumpProcess(-r, s, l, e)
+        WienerJumpProcess(r, s, l, 0)
+        WienerJumpProcess(r, s, l, -e)
+        WienerJumpProcess(r, s, l, 1.1)
 
     def test_binomial(self):
         """Test parameters for the binomial model."""
@@ -39,6 +42,15 @@ class TestWienerJumpProcess(unittest.TestCase):
 
         self.assertGreaterEqual(min(pu, pd, po), 0)
         self.assertEqual(pu + pd + po, 1)
+
+        dS.r = 1
+        self.assertRaises(ValueError, dS.binomial, 0.2)
+
+        dS.lambd_ = np.double('inf')
+        self.assertRaises(ValueError, dS.binomial, 0.01)
+
+        self.assertRaises(ValueError, dS.binomial, 0)
+        self.assertRaises(ValueError, dS.binomial, -0.01)
 
     def test_binomial_variable_hazard(self):
         """Test variable hazard rate."""
