@@ -121,7 +121,7 @@ class Stack(Payoff):
         V = self.stack[0].default(t, S)
         for payoff in self.stack[1:]:
             V = np.maximum(V, payoff.default(t, S))
-        return np.double(V)
+        return V
 
     def transient(self, t, V, S):
         """Transient payoff of stacked payoffs."""
