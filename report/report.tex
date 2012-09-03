@@ -70,6 +70,7 @@
 \def\E[#1]{\mathbb{E}\left[#1\right]}
 \def\Et[#1]{\mathbb{E}_t\left[#1\right]}
 \def\Var[#1]{\mathbb{V}\mathtt{ar}\left[#1\right]}
+\def\Prob(#1){\mathbb{P}\left(#1\right)}
 
 % Derivatives
 \def\S{\ensuremath{S_t}\xspace}
@@ -329,21 +330,23 @@ Consider a portfolio with value \V at time $t$, as above, with an additional cou
  \begin{cases}
   \Vu - \D\S u + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pu \\
   \Vd - \D\S d + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pd\\
-  \X - (1 - \eta)\S     & \text{with probability } \po\\
+  \X - (1 - \eta)\S + c_i q_{t^{c}_i }e^{t + \Dt - t^{c}_i} & \text{with probability } \po\\
  \end{cases}
 \end{equation*}
 where
 
+\begin{savenotes}
 \begin{tabular}{ll}
  $c_i$          & is the i\textsuperscript{th} coupon value \\
  $t^{c}_i$      & is the time of the i\textsuperscript{th} coupon, with $t^{c}_i \in (t, t + \Dt)$ \\
+ $q_{t^{c}_i}$  & is an indicator variable that default happens after coupon payment\footnote{$\Prob(q_{t^{c}_i} = 1 | q \in [t, t + \Dt]) = \frac{e^{-\lambda(t^{c}_i - t)} - e^{-\lambda\Dt}}{1 - e^{-\lambda\Dt}}$, the probability that the coupon arrives before default occurs, given that default occurs within the interval}
 \end{tabular}
+\end{savenotes}
 
 Using the above method it is trivial to show that:
 \begin{align}
- V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-r(t^{c}_i - t) - \lambda \Dt} \n
-        &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-r(t^{c}_i - t)}(\pu + \pd) \n
-        &= e^{-r\Dt}\E[V_{t + \Dt}]
+ V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-(r + \lambda)(t^{c}_i - t)} \n
+        &= e^{-r\Dt}\E[V_{t + \Dt}] + c_i e^{-(r + \lambda)(t^{c}_i - t)}
 \end{align}
 if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is trivially shown that:
 \begin{align}
