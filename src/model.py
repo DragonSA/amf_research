@@ -162,7 +162,7 @@ class BinomialModel(object):
         t = P.t
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
-            P.S[i] = S = np.array([S0 * u**(i - j) * d**j for j in range(i + 1)])
+            P.S[i] = S = S[:-1] / u
             P.X[i] = X = self.V.default(t[i], S * l)
             P.C[i] = C = self.V.coupon(t[i])
             if not prob:
