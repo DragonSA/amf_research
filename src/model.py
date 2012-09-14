@@ -2,10 +2,15 @@
 Framework for modelling payoff processes using either a binomial or finite-
 difference model.
 """
-import math
 import numpy as np
+import scipy.sparse as sparse
+import scipy.sparse.linalg as linalg
 
-__all__ = ["BinomialModel", "WienerJumpProcess"]
+__all__ = [
+        "BinomialModel", "FDEModel",
+        "Payoff", "WienerJumpProcess",
+        "CrankNicolsonScheme", "ExplicitScheme", "ImplicitScheme",
+    ]
 
 
 class Payoff(object):
@@ -103,38 +108,76 @@ class WienerJumpProcess(object):
         else:
             return (u, d, l, (pu, pd, po))
 
+    def fde(self, dt, ds, S, scheme, boundary="diffequal"):
+        """Parameters for the finite difference scheme."""
+        if dt <= 0:
+            raise ValueError("Time step must be positive")
+        if ds <= 0:
+            raise ValueError("Stock step must be positive")
+        if (S < 0).any():
+            raise ValueError("Stock must be non-negative")
+        rdt = self.r * dt
+        rS = dt * self.r * S / ds / 2
+        sS = dt * self.sigma**2 * S**2 / ds**2 / 2
+        a = sS[1:] - rS[1:]
+        b = -rdt - sS * 2
+        c = sS[:-1] + rS[:-1]
+        if boundary == "equal":
+            b[0] += sS[0] - rS[0]
+            b[-1] += sS[-1] + rS[-1]
+        elif boundary == "diffequal":
+            b[0] += 2 * (sS[0] - rS[0])
+            c[0] -= sS[0] - rS[0]
+            b[-1] += 2 * (sS[-1] + rS[-1])
+            a[-1] -= sS[-1] + rS[-1]
+        elif boundary != "ignore":
+            raise ValueError("unknown boundary type: %s" % boundary)
+        return (np.append(a, sS[0] - rS[0]), b, np.append(sS[-1] + rS[-1], c))
+
+
+class Value(object):
+    """
+    Valuation of a portfolio.
+
+        N   is the number of time nodes (excluding base node)
+        t   is the node times
+        S   is the node prices
+        C   is the node coupons
+        X   is the the node default value
+        V   is the value of the portfolio
+    """
+
+    def __init__(self, T, N):
+        self.N = N
+        self.t = np.linspace(0, T, N + 1)
+        self.S = [None] * (N + 1)
+        self.C = np.zeros(N + 1)
+        self.X = [None] * (self.N)
+        self.V = [None] * (N + 1)
+
 
 class BinomialModel(object):
     """
     A binomial lattice model for pricing derivatives using a stock process and
     intrinsic values of the stock.
 
-        N       is the number of increments
+        N       is the number of time increments
         dt      is the time increments for the binomial lattice
         dS      is the stock movement
         V       is the intrinsic value of the derivative
     """
 
-    class Value(object):
+    class Value(Value):
         """
-        Valuation of the portfolio using the binomial model.
+        Valuation of a portfolio for the binomial model.
 
-            N   is the number of nodes (excluding base node)
+            N   is the number of time nodes (excluding base node)
             t   is the node times
             S   is the node prices
             C   is the node coupons
             X   is the the node default value
             V   is the value of the portfolio
         """
-
-        def __init__(self, T, N):
-            self.N = N
-            self.t = np.linspace(0, T, N + 1)
-            self.S = [None] * (N + 1)
-            self.C = np.zeros(N + 1)
-            self.X = [None] * (self.N)
-            self.V = [None] * (N + 1)
-
         def __float__(self):
             return self.V[0][0]
 
@@ -145,9 +188,11 @@ class BinomialModel(object):
         self.V = V
 
     def price(self, S0):
+        """Price the payoff for stock price S0 at time 0."""
+        So = np.double(S0)
         u, d, l, prob = self.dS.binomial(self.dt)
-        erdt = math.exp(-self.dS.r * self.dt)
-        P = self.Value(self.V.T, self.N)
+        erdt = np.exp(-self.dS.r * self.dt)
+        P = BinomialModel.Value(self.V.T, self.N)
         if prob:
             pu, pd, po = prob
 
@@ -168,6 +213,126 @@ class BinomialModel(object):
             if not prob:
                 pu, pd, po = self.dS.binomial(self.dt, S)
             V = erdt * (V[:-1] * pu + V[1:] * pd + X * po)
+            P.V[i] = V = self.V.transient(t[i], V, S) + C
+
+        return P
+
+
+class ExplicitScheme(object):
+    """
+    Explicit difference equation.
+    """
+
+    def __init__(self, dS, dt, ds, S):
+        a, b, c = dS.fde(dt, ds, S, "explicit")
+        self.L = sparse.dia_matrix(([a, 1 + b, c], [-1, 0, 1]), shape=S.shape*2)
+        if False and (abs(self.L) > 1).any():
+            raise ValueError("Time step to big for given stock increments")
+
+    def __call__(self, V):
+        return self.L.dot(V)
+
+
+class ImplicitScheme(object):
+    """
+    Implicit difference equation.
+    """
+
+    def __init__(self, dS, dt, ds, S):
+        K = S.shape*2
+        a, b, c = dS.fde(dt, ds, S, "implicit")
+        self.L = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+
+    def __call__(self, V):
+        return linalg.spsolve(self.L, V)
+
+
+class CrankNicolsonScheme(object):
+    """
+    Crank-Nicolson difference equation.
+    """
+
+    def __init__(self, dS, dt, ds, S):
+        a, b, c = dS.fde(dt, ds, S, "explicit")
+        self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
+        a, b, c = dS.fde(dt, ds, S, "implicit")
+        self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+
+    def __call__(self, V):
+        return linalg.spsolve(self.Li, self.Le.dot(V))
+
+
+class FDEModel(object):
+    """
+    A finite difference equation scheme for pricing derivatives using a stock
+    process and intrinsic values of the stock.
+
+        N       is the number of time increments
+        dt      is the time increments for the binomial lattice
+        dS      is the stock movement
+        V       is the intrinsic value of the derivative
+    """
+
+    class Value(Value):
+        """
+        Valuation of a portfolio for the finite difference equation model.
+
+            N   is the number of time nodes (excluding base node)
+            t   is the node times
+            K   is the number of stock nodes (excluding one boundary)
+            S   is the node prices
+            C   is the node coupons
+            X   is the the node default value
+            V   is the value of the portfolio
+            Z   is the log price
+        """
+        def __init__(self, T, N, Sl, Su, K, zspace):
+            super(FDEModel.Value, self).__init__(T, N)
+            self.K = K
+            if zspace:
+                assert(Su > Sl > 0)
+                Zl, Zu = np.log((Sl, Su))
+                self.S = np.exp(np.linspace(Zl, Zu, K + 1))
+            else:
+                assert(Su > Sl >= 0)
+                self.S = np.linspace(Sl, Su, K + 1)
+
+
+    def __init__(self, N, dS, V):
+        self.N = np.int(N)
+        self.dt = np.double(V.T) / N
+        self.dS = dS
+        self.V = V
+
+    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, zspace=False):
+        """
+        Price the payoff for prices in range [Sl, Su], and K increments, using
+        the given FD scheme, and possibility using exponential increments
+        (zspace) for the price range.
+        """
+        Sl = np.double(Sl)
+        Su = np.double(Su)
+        K = np.int(K)
+        P = FDEModel.Value(self.V.T, self.N, Sl, Su, K, zspace)
+        S = P.S
+        if zspace:
+            ds = (np.log(Su) - np.log(Sl)) / K
+            Z = np.ones(self.S.shape)
+        else:
+            ds = P.S[1] - P.S[0]
+            Z = P.S
+
+        # Terminal stock price and derivative value
+        P.C[-1] = C = self.V.coupon(self.V.T)
+        P.V[-1] = V = self.V.terminal(S) + C
+
+        # Discount price backwards
+        t = P.t
+        scheme = scheme(self.dS, self.dt, ds, Z)
+        for i in range(self.N - 1, -1, -1):
+            # Discount previous derivative value
+            P.C[i] = C = self.V.coupon(t[i])
+            V = scheme(V)
             P.V[i] = V = self.V.transient(t[i], V, S) + C
 
         return P
