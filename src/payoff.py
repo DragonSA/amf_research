@@ -6,7 +6,11 @@ import numpy as np
 
 from model import Payoff
 
-__all__ = ["Forward"]
+__all__ = [
+        "CallA", "CallE", "CallVR", "Forward", "PutA", "PutE", "PutV",
+        "Stack", "Time", "UpAndOut",
+        "Annuity",
+    ]
 
 ###
 ### SIMPLE PAYOFFS
@@ -59,9 +63,42 @@ class CallA(CallE):
         return np.maximum(S - self.K, 0)
 
     def transient(self, t, V, S):
-        """Transient payoff of ``max(S - K)''."""
+        """Transient payoff of ``max(S - K, V)''."""
         assert(t != self.T)
         return np.maximum(V, S - self.K)
+
+
+class PutE(Payoff):
+    """
+    An European Put payoff, with total default and strike K.
+    """
+
+    def __init__(self, T, K):
+        super(PutE, self).__init__(T)
+        self.K = np.double(K)
+
+    def terminal(self, S):
+        """Terminal payoff of ``max(K - S, 0)''."""
+        return np.maximum(self.K - S, 0)
+
+
+class PutA(PutE):
+    """
+    An American Put payoff, with total default and strike K.
+    """
+
+    def __init__(self, T, K):
+        super(PutA, self).__init__(T, K)
+
+    def default(self, t, S):
+        """Residual value of default."""
+        assert(t != self.T)
+        return np.maximum(self.K - S, 0)
+
+    def transient(self, t, V, S):
+        """Transient payoff of ``max(K - S, V)''."""
+        assert(t != self.T)
+        return np.maximum(V, self.K - S)
 
 
 ###

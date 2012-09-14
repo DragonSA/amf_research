@@ -4,7 +4,8 @@ Unit tests for payoff module.
 import numpy as np
 import unittest
 
-from payoff import Forward, CallE, CallA, CallVR, PutV, Stack, Time, UpAndOut, \
+from payoff import Forward, CallE, CallA, CallVR, PutA, PutE, PutV, \
+                   Stack, Time, UpAndOut, \
                    Annuity
 
 S0 = 100
@@ -20,7 +21,7 @@ class TestPayoff(unittest.TestCase):
         """Test value of default."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         Vd = np.zeros(S.shape)
-        for Payoff in (Forward, CallE, CallVR, PutV):
+        for Payoff in (Forward, CallE, CallVR, PutE, PutV):
             payoff = Payoff(T, K)
             for t in np.linspace(0, 1, N, endpoint=False):
                 self.assertTrue((payoff.default(t, S) == Vd).all())
@@ -35,11 +36,20 @@ class TestPayoff(unittest.TestCase):
             self.assertTrue((payoff.default(t, S) == Vd).all())
         self.assertRaises(AssertionError, payoff.default, T, S)
 
+    def test_put_default(self):
+        """Test value of default for a put."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        Vd = np.maximum(K - S, 0)
+        payoff = PutA(T, K)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.default(t, S) == Vd).all())
+        self.assertRaises(AssertionError, payoff.default, T, S)
+
     def test_zero_transient(self):
         """Test value of transient for European derivatives."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         V = np.linspace(S0 + 10, S0 - 10, 21)
-        for Payoff in (Forward, CallE):
+        for Payoff in (Forward, CallE, PutE):
             payoff = Payoff(T, K)
             for t in np.linspace(0, 1, N, endpoint=False):
                 self.assertTrue((payoff.transient(t, V, S) == V).all())
@@ -61,6 +71,16 @@ class TestPayoff(unittest.TestCase):
         V = np.linspace(S0 + 10, S0 - 10, 21)
         Vm = V - np.maximum(V - K, 0)
         payoff = CallVR(T, K)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+
+    def test_put_transient(self):
+        """Test value of transient for American put."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        Vm = np.maximum(K - S, V)
+        payoff = PutA(T, K)
         for t in np.linspace(0, 1, N, endpoint=False):
             self.assertTrue((payoff.transient(t, V, S) == Vm).all())
         self.assertRaises(AssertionError, payoff.transient, T, V, S)
@@ -96,6 +116,14 @@ class TestPayoff(unittest.TestCase):
         V = np.maximum(S - K, 0)
         for Call in (CallE, CallA):
             payoff = Call(T, K)
+            self.assertTrue((payoff.terminal(S) == V).all())
+
+    def test_put_terminal(self):
+        """Test value of terminal for a call."""
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.maximum(K - S, 0)
+        for Put in (PutE, PutA):
+            payoff = Put(T, K)
             self.assertTrue((payoff.terminal(S) == V).all())
 
 
