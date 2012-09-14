@@ -1,3 +1,15 @@
 *.asv
 *.pyc
 *.kate-swp
+*.svg
+*.kilepr
+*.aux
+*.bbl
+*.blg
+*.lof
+*.log
+*.lot
+*.toc
+*.nav
+*.out
+*.snm
