@@ -108,7 +108,7 @@ class WienerJumpProcess(object):
         else:
             return (u, d, l, (pu, pd, po))
 
-    def fde(self, dt, ds, S, scheme, boundary="diffequal"):
+    def fde(self, dt, ds, S, scheme, boundary="equal"):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
             raise ValueError("Time step must be positive")
