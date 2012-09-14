@@ -108,7 +108,7 @@ class WienerJumpProcess(object):
         else:
             return (u, d, l, (pu, pd, po))
 
-    def fde(self, dt, ds, S, scheme, boundary="equal"):
+    def fde(self, dt, ds, S, scheme, boundary):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
             raise ValueError("Time step must be positive")
@@ -223,8 +223,8 @@ class ExplicitScheme(object):
     Explicit difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S):
-        a, b, c = dS.fde(dt, ds, S, "explicit")
+    def __init__(self, dS, dt, ds, S, boundary):
+        a, b, c = dS.fde(dt, ds, S, "explicit", boundary)
         self.L = sparse.dia_matrix(([a, 1 + b, c], [-1, 0, 1]), shape=S.shape*2)
         if False and (abs(self.L) > 1).any():
             raise ValueError("Time step to big for given stock increments")
@@ -238,9 +238,9 @@ class ImplicitScheme(object):
     Implicit difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S):
+    def __init__(self, dS, dt, ds, S, boundary):
         K = S.shape*2
-        a, b, c = dS.fde(dt, ds, S, "implicit")
+        a, b, c = dS.fde(dt, ds, S, "implicit", boundary)
         self.L = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
 
     def __call__(self, V):
@@ -252,10 +252,10 @@ class CrankNicolsonScheme(object):
     Crank-Nicolson difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S):
-        a, b, c = dS.fde(dt, ds, S, "explicit")
+    def __init__(self, dS, dt, ds, S, boundary):
+        a, b, c = dS.fde(dt, ds, S, "explicit", boundary)
         self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
-        a, b, c = dS.fde(dt, ds, S, "implicit")
+        a, b, c = dS.fde(dt, ds, S, "implicit", boundary)
         self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
 
     def __call__(self, V):
@@ -304,7 +304,7 @@ class FDEModel(object):
         self.dS = dS
         self.V = V
 
-    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, zspace=False):
+    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, boundary="diffequal", zspace=False):
         """
         Price the payoff for prices in range [Sl, Su], and K increments, using
         the given FD scheme, and possibility using exponential increments
@@ -328,7 +328,7 @@ class FDEModel(object):
 
         # Discount price backwards
         t = P.t
-        scheme = scheme(self.dS, self.dt, ds, Z)
+        scheme = scheme(self.dS, self.dt, ds, Z, boundary)
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
             P.C[i] = C = self.V.coupon(t[i])

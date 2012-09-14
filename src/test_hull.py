@@ -12,9 +12,9 @@ from payoff import PutA
 class HullProcess(WienerJumpProcess):
     """Hull adapted Wiener process."""
 
-    def fde(self, dt, ds, S, scheme):
+    def fde(self, dt, ds, S, scheme, boundary):
         """Parameters for the finite difference scheme."""
-        a, b, c = super(HullProcess, self).fde(dt, ds, S, scheme, "ignore")
+        a, b, c = super(HullProcess, self).fde(dt, ds, S, scheme, boundary)
         if scheme == "explicit":
             rdt = 1 + self.r * dt
             return (a / rdt, b / rdt, c / rdt)
@@ -81,14 +81,14 @@ class TestHullCh20(unittest.TestCase):
     def test_table20_4(self):
         """Test Example 20.1 using implicit finite difference method."""
         model = FDEModel(10, self.dS, self.V)
-        P = model.price(0, 100, 20, scheme=ImplicitScheme)
+        P = model.price(0, 100, 20, scheme=ImplicitScheme, boundary="ignore")
         for i in reversed(range(len(P.V))):
             self.assertTrue((np.abs(self.table20_4[::-1, i] - P.V[i]) < 0.01).all())
 
     def test_table20_5(self):
         """Test Example 20.1 using explicit finite difference method."""
         model = FDEModel(10, self.dS, self.V)
-        P = model.price(0, 100, 20, scheme=ExplicitScheme)
+        P = model.price(0, 100, 20, scheme=ExplicitScheme, boundary="ignore")
         for i in reversed(range(len(P.V))):
             self.assertTrue((np.abs(self.table20_5[::-1, i] - P.V[i]) < 0.01).all())
 

@@ -74,7 +74,7 @@ class TestWienerJumpProcess(unittest.TestCase):
         S = np.linspace(0, 200, 401)
         ds = S[1] - S[0]
         for i in ("explicit", "implicit"):
-            a, b, c = dS.fde(dt, ds, S, i)
+            a, b, c = dS.fde(dt, ds, S, i, "equal")
             L = sparse.dia_matrix(([a, b, c], [-1, 0, 1]), shape=S.shape*2)
             self.assertTrue((np.abs(L.sum(1) + dS.r * dt) < 1e-13).all())
 
