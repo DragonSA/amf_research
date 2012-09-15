@@ -277,7 +277,7 @@ The inequality of $\ln\left(\frac{d - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) 
 Based on the probability limits \eqref{eq:bin_prob_limit} no restriction is placed on $r$, the risk free rate, or $\eta$, the percentage drop in stock price.
 
 \section{Valuation}
-Consider a portfolio with value \V at time $t$, \D invested in the stock \S and $\P = \V - \D\S$ invested at the risk neutral rate.  At time $t + \Dt$ one should have:
+Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  At time $t + \Dt$ one should have:
 \begin{equation*}
  \Pi_{t + \Dt} =
  \begin{cases}
@@ -297,8 +297,8 @@ where
 If one wishes to hedge against up and down movements of the stock then:
 \begin{align}
     \Vu - \D\S u &= \Vd - \D\S d \n
-       \D(d - u) &= \Vd - \Vu \n
-              \D &= \frac{\Vu - \Vd}{u - d}
+     \D\S(d - u) &= \Vd - \Vu \n
+              \D &= \frac{\Vu - \Vd}{\S(u - d)}
 \end{align}
 
 The required value of \P at time $t + \Dt$ is:
@@ -308,7 +308,7 @@ The required value of \P at time $t + \Dt$ is:
 \end{align}
 as \P is invested at the risk free rate, and taking the expected value of $\Pi_{t + \Dt}$, which must equal \eqref{eq:P}, one gets:
 \begin{align}
- (\V - \frac{\Vu - \Vd}{u - d}) e^{r\Dt} &= \E[\Pi_{t + \Dt}] \n
+ \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} &= \Et[\Pi_{t + \Dt}] \n
         &= \left(\Vu - \frac{\Vu - \Vd}{u - d}u\right) e^{-\lambda\Dt} \n
         &\qquad + \left(\X - \frac{\Vu - \Vd}{u - d}(1 - \eta)\right)(1 - e^{-\lambda\Dt}) \n
         &= \Vu\left(e^{-\lambda\Dt} - \frac{ue^{-\lambda\Dt} + (1 - \eta)(1 - e^{-\lambda\Dt})}{u - d}\right) \n
@@ -324,7 +324,7 @@ thus the pricing method of this binomial model is the same as the pricing method
 \end{align}
 
 \section{Valuation with Coupon Cash-flow}
-Consider a portfolio with value \V at time $t$, as above, with an additional coupon cash flow.  At time $t + \Dt$ one should have:
+Consider a portfolio, as above, with the add of coupon cash flows.  At time $t + \Dt$ one should have:
 \begin{equation*}
  \Pi_{t + \Dt} =
  \begin{cases}
@@ -346,15 +346,13 @@ where
 Using the above method it is trivial to show that:
 \begin{align}
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i e^{-(r + \lambda)(t^{c}_i - t)} \n
-        &= e^{-r\Dt}\E[V_{t + \Dt}] + c_i e^{-(r + \lambda)(t^{c}_i - t)}
+        &= e^{-r\Dt}\Et[V_{t + \Dt}] + c_i e^{-(r + \lambda)(t^{c}_i - t)}
 \end{align}
 if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is trivially shown that:
 \begin{align}
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i \n
         &= e^{-r\Dt}\Et[V_{t + \Dt}] + c_i
 \end{align}
-
-
 
 \section{Parameters and Formul\ae\ of Model}
 Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial table.
