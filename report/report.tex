@@ -67,10 +67,10 @@
 \def\n{\nonumber\\}
 
 % Statistical
-\def\E[#1]{\mathbb{E}\left[#1\right]}
-\def\Et[#1]{\mathbb{E}_t\left[#1\right]}
-\def\Var[#1]{\mathbb{V}\mathtt{ar}\left[#1\right]}
-\def\Prob(#1){\mathbb{P}\left(#1\right)}
+\def\E[#1]{\Tilde{\mathbb{E}}\!\left[#1\right]}
+\def\Et[#1]{\Tilde{\mathbb{E}}_t\!\left[#1\right]}
+\def\Var[#1]{\Tilde{\mathbb{V}}\mathtt{ar}\!\left[#1\right]}
+\def\Prob(#1){\Tilde{\mathbb{P}}\!\left(#1\right)}
 
 % Derivatives
 \def\S{\ensuremath{S_t}\xspace}
@@ -201,7 +201,7 @@ where:
  \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
                         &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
-and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\po = 1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
+and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
 \begin{align}
  \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
                                 &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
@@ -330,7 +330,7 @@ Consider a portfolio, as above, with the add of coupon cash flows.  At time $t +
  \begin{cases}
   \Vu - \D\S u + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pu \\
   \Vd - \D\S d + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pd\\
-  \X - (1 - \eta)\S + c_i q_{t^{c}_i }e^{t + \Dt - t^{c}_i} & \text{with probability } \po\\
+  \X - (1 - \eta)\S + c_i (1 - q_{t^{c}_i})e^{t + \Dt - t^{c}_i} & \text{with probability } \po\\
  \end{cases}
 \end{equation*}
 where
@@ -339,7 +339,7 @@ where
 \begin{tabular}{ll}
  $c_i$          & is the i\textsuperscript{th} coupon value \\
  $t^{c}_i$      & is the time of the i\textsuperscript{th} coupon, with $t^{c}_i \in (t, t + \Dt)$ \\
- $q_{t^{c}_i}$  & is an indicator variable that default happens after coupon payment\footnote{$\Prob(q_{t^{c}_i} = 1 | q \in [t, t + \Dt]) = \frac{e^{-\lambda(t^{c}_i - t)} - e^{-\lambda\Dt}}{1 - e^{-\lambda\Dt}}$, the probability that the coupon arrives before default occurs, given that default occurs within the interval}
+ $q_{t^{c}_i}$  & is an indicator variable that default happens after coupon payment\footnote{$\Prob(q_{t^{c}_i} = 0 | q_s = 1, s \in (t, t + \Dt]) = \frac{e^{-\lambda(t^{c}_i - t)} - e^{-\lambda\Dt}}{1 - e^{-\lambda\Dt}}$, the probability that the coupon arrives before default occurs, given that default occurs within the interval}
 \end{tabular}
 \end{savenotes}
 
