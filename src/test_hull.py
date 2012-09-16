@@ -14,12 +14,12 @@ class HullProcess(WienerJumpProcess):
 
     def fde(self, dt, ds, S, scheme, boundary):
         """Parameters for the finite difference scheme."""
-        a, b, c = super(HullProcess, self).fde(dt, ds, S, scheme, boundary)
+        a, b, c, d = super(HullProcess, self).fde(dt, ds, S, scheme, boundary)
         if scheme == "explicit":
             rdt = 1 + self.r * dt
-            return (a / rdt, b / rdt, c / rdt)
+            return (a / rdt, b / rdt, c / rdt, d / rdt)
         else:
-            return (a, b, c)
+            return (a, b, c, d)
 
 
 class TestHullCh20(unittest.TestCase):

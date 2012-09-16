@@ -97,7 +97,7 @@ class WienerJumpProcess(object):
         # Probability of up/down/loss
         lambda_limit = (np.log(u - l) - np.log(np.exp(self.r * dt) - l))
         if self.cap_lambda:
-            lambd_ = np.minimum(lambd_, lambda_limit)
+            lambd_ = np.minimum(lambd_, lambda_limit / dt)
         elif (lambd_ * dt > lambda_limit).any():
             raise ValueError("Time step to big for given hazard rate")
         po = 1 - np.exp(-lambd_ * dt)
@@ -108,6 +108,10 @@ class WienerJumpProcess(object):
         else:
             return (u, d, l, (pu, pd, po))
 
+    def fde_l(self):
+        """Parameter for stock jump on default."""
+        return 1 - self.eta
+
     def fde(self, dt, ds, S, scheme, boundary):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
@@ -116,12 +120,13 @@ class WienerJumpProcess(object):
             raise ValueError("Stock step must be positive")
         if (S < 0).any():
             raise ValueError("Stock must be non-negative")
-        rdt = self.r * dt
-        rS = dt * self.r * S / ds / 2
+        rdt = (self.r + self.lambd_) * dt
+        rS = dt * (self.r + self.lambd_ * self.eta) * S / ds / 2
         sS = dt * self.sigma**2 * S**2 / ds**2 / 2
         a = sS[1:] - rS[1:]
         b = -rdt - sS * 2
         c = sS[:-1] + rS[:-1]
+        d = self.lambd_ * dt
         if boundary == "equal":
             b[0] += sS[0] - rS[0]
             b[-1] += sS[-1] + rS[-1]
@@ -132,7 +137,7 @@ class WienerJumpProcess(object):
             a[-1] -= sS[-1] + rS[-1]
         elif boundary != "ignore":
             raise ValueError("unknown boundary type: %s" % boundary)
-        return (np.append(a, sS[0] - rS[0]), b, np.append(sS[-1] + rS[-1], c))
+        return (np.append(a, sS[0] - rS[0]), b, np.append(sS[-1] + rS[-1], c), d)
 
 
 class Value(object):
@@ -224,13 +229,14 @@ class ExplicitScheme(object):
     """
 
     def __init__(self, dS, dt, ds, S, boundary):
-        a, b, c = dS.fde(dt, ds, S, "explicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "explicit", boundary)
         self.L = sparse.dia_matrix(([a, 1 + b, c], [-1, 0, 1]), shape=S.shape*2)
+        self.d = d
         if False and (abs(self.L) > 1).any():
             raise ValueError("Time step to big for given stock increments")
 
-    def __call__(self, V):
-        return self.L.dot(V)
+    def __call__(self, V, X):
+        return self.L.dot(V) + self.d * X
 
 
 class ImplicitScheme(object):
@@ -240,11 +246,12 @@ class ImplicitScheme(object):
 
     def __init__(self, dS, dt, ds, S, boundary):
         K = S.shape*2
-        a, b, c = dS.fde(dt, ds, S, "implicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "implicit", boundary)
         self.L = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+        self.d = d
 
-    def __call__(self, V):
-        return linalg.spsolve(self.L, V)
+    def __call__(self, V, X):
+        return linalg.spsolve(self.L, V + self.d * X)
 
 
 class CrankNicolsonScheme(object):
@@ -253,13 +260,14 @@ class CrankNicolsonScheme(object):
     """
 
     def __init__(self, dS, dt, ds, S, boundary):
-        a, b, c = dS.fde(dt, ds, S, "explicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "explicit", boundary)
         self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
-        a, b, c = dS.fde(dt, ds, S, "implicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "implicit", boundary)
         self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+        self.d = d
 
-    def __call__(self, V):
-        return linalg.spsolve(self.Li, self.Le.dot(V))
+    def __call__(self, V, X):
+        return linalg.spsolve(self.Li, self.Le.dot(V) + self.d * X)
 
 
 class FDEModel(object):
@@ -317,10 +325,11 @@ class FDEModel(object):
         S = P.S
         if zspace:
             ds = (np.log(Su) - np.log(Sl)) / K
-            Z = np.ones(self.S.shape)
+            Z = np.ones(P.S.shape)
         else:
             ds = P.S[1] - P.S[0]
             Z = P.S
+        Sl = P.S * self.dS.fde_l()
 
         # Terminal stock price and derivative value
         P.C[-1] = C = self.V.coupon(self.V.T)
@@ -332,7 +341,8 @@ class FDEModel(object):
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
             P.C[i] = C = self.V.coupon(t[i])
-            V = scheme(V)
+            P.X[i] = X = self.V.default(t[i], Sl)
+            V = scheme(V, X)
             P.V[i] = V = self.V.transient(t[i], V, S) + C
 
         return P

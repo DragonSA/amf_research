@@ -74,9 +74,10 @@ class TestWienerJumpProcess(unittest.TestCase):
         S = np.linspace(0, 200, 401)
         ds = S[1] - S[0]
         for i in ("explicit", "implicit"):
-            a, b, c = dS.fde(dt, ds, S, i, "equal")
+            a, b, c, d = dS.fde(dt, ds, S, i, "equal")
             L = sparse.dia_matrix(([a, b, c], [-1, 0, 1]), shape=S.shape*2)
-            self.assertTrue((np.abs(L.sum(1) + dS.r * dt) < 1e-13).all())
+            self.assertTrue((np.abs(L.sum(1) + (dS.r + dS.lambd_) * dt) < 1e-13).all())
+            self.assertGreaterEqual(d, 0)
 
 
 class TestBinomialModel(unittest.TestCase):
@@ -216,10 +217,10 @@ class TestFDEModel(unittest.TestCase):
             self.assertLessEqual(P.V[i][-1] - P.C[i], P.V[i - 1][-1])
             self.assertTrue((P.V[i][:-1] - 1e14 <= P.V[i][1:]).all())
         self.assertEqual(len(P.X), N)
-        #for i in range(1, N):
-            #self.assertGreaterEqual(P.X[i][0], P.X[i - 1][0])
-            #self.assertLessEqual(P.X[i][-1], P.X[i - 1][-1])
-            #self.assertTrue((P.X[i][:-1] >= P.X[i][1:]).all())
+        for i in range(1, N):
+            self.assertGreaterEqual(P.X[i][0], P.X[i - 1][0])
+            self.assertLessEqual(P.X[i][-1], P.X[i - 1][-1])
+            self.assertTrue((P.X[i][:-1] <= P.X[i][1:]).all())
 
     def test_call(self):
         """Test that the finite difference model correctly prices a call option."""
@@ -232,32 +233,39 @@ class TestFDEModel(unittest.TestCase):
             return price
 
         dS = WienerJumpProcess(0.1, 0.1)
-        #dSdq = WienerJumpProcess(0.1, 0.1, 0.1)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.1)
 
         S = np.linspace(0, 200, 41)
         V = CallE(1, K)
         model = FDEModel(64, dS, V)
+        model2 = FDEModel(64, dSdq, V)
         accuracy = np.array((15, 15, 15, 14, 12, 11, 9, 8, 6, 5, 4, 3, 2, 2, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2))
+        accuracy2 = np.array((15, 15, 11, 10, 9, 8, 7, 5, 4, 3, 3, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1))
         for scheme in SCHEMES:
             P = model.price(0, 200, 40, scheme=scheme)
             self.assertTrue((abs(P.V[0] - price(0.1, S)) < 10.0**-accuracy).all())
+            P = model2.price(0, 200, 40, scheme=scheme)
+            self.assertTrue((abs(P.V[0] - price(0.2, S)) < 10.0**-accuracy2).all())
         return
 
     def test_forward(self):
         """Test that the finite difference model correctly prices a forward contract."""
         dS = WienerJumpProcess(0.1, 0.1)
-        #dSdq = WienerJumpProcess(0.1, 0.1, 0.02)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.02)
 
         S = np.linspace(0, 200, 41)
         V = Forward(1, 100)
         model = FDEModel(64, dS, V)
+        model2 = FDEModel(64, dSdq, V)
         for scheme in SCHEMES:
-            P = model.price(0, 200, 40, scheme=scheme)
             if scheme is CrankNicolsonScheme:
                 accuracy = 5
             else:
                 accuracy = 2
+            P = model.price(0, 200, 40, scheme=scheme)
             self.assertTrue((abs(P.V[0] - (S - 100 * np.exp(-0.1))) < 10.0**-accuracy).all())
+            P = model2.price(0, 200, 40, scheme=scheme)
+            self.assertTrue((abs(P.V[0] - (S - 100 * np.exp(-0.12))) < 10.0**-accuracy).all())
 
     def test_annuity(self):
         """Test the pricing of a series of payments."""
@@ -267,15 +275,18 @@ class TestFDEModel(unittest.TestCase):
             return (1 - erdt**(T * 2)) / i + 10 * erdt**(T * 2)
 
         dS = WienerJumpProcess(0.1, 0.1)
-        #dSdq = WienerJumpProcess(0.1, 0.1, 0.02)
+        dSdq = WienerJumpProcess(0.1, 0.1, 0.02)
 
         # Semi-annual payments of 1
         T = 10
         V = Annuity(T, np.arange(0.5, T + 0.5, 0.5), 1, 10)
         model = FDEModel(T * 8, dS, V)
+        model2 = FDEModel(T * 8, dSdq, V)
         for scheme in SCHEMES:
             P = model.price(0, 200, 25, scheme=scheme)
             self.assertTrue((np.abs(P.V[0] - price(0.05)) < 1e-1).all())
+            P = model2.price(0, 200, 25, scheme=scheme)
+            self.assertTrue((np.abs(P.V[0] - price(0.06)) < 1e-1).all())
 
 
 if __name__ == "__main__":
