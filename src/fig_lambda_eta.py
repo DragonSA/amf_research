@@ -2,7 +2,7 @@
 Graph showing the pricing for different lambda and eta values.
 """
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -40,8 +40,9 @@ def main():
         name.append("$\\lambda = %f$" % (lambd_))
     label(plt_binom, "Binomial", name)
     label(plt_fde, "FDE", name)
+    plt.savefig("../common/fig_lambda_eta.png")
     plt.savefig("../common/fig_lambda_eta.svg")
-    plt.show()
+    #plt.show()
 
 if __name__ == "__main__":
     main()
