@@ -6,7 +6,8 @@ import unittest
 
 from payoff import Forward, CallE, CallA, CallVR, PutA, PutE, PutV, \
                    Stack, Time, UpAndOut, \
-                   Annuity
+                   Annuity, \
+                   VariableStrike
 
 S0 = 100
 T = 1
@@ -260,6 +261,27 @@ class TestUpAndOut(unittest.TestCase):
         V[S >= L] = 0
         payoff = UpAndOut(CallA(T, K), L)
         self.assertTrue((payoff.terminal(S) == V).all())
+
+
+class TestVariableStrike(unittest.TestCase):
+    """Test the use of variable strike."""
+
+    def test_strike(self):
+        """Test the variable strike."""
+        class Call(CallA, VariableStrike):
+            def transient(self, t, V, S):
+                """Variable transient strike."""
+                with self._strike(self.K * (1 + t)):
+                    return super(Call, self).transient(t, V, S)
+        payoff = Call(1, K)
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        for t in np.linspace(0, 1, N, endpoint=False):
+            Vm = np.maximum(S - K * (1 + t), V)
+            self.assertTrue((payoff.transient(t, V, S) == Vm).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+        Vm = np.maximum(S - K, 0)
+        self.assertTrue((payoff.terminal(S) == Vm).all())
 
 
 class TestConvertibleBond(unittest.TestCase):

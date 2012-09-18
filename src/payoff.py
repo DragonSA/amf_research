@@ -2,6 +2,7 @@
 Various payoff functions.
 """
 
+import contextlib
 import numpy as np
 
 from model import Payoff
@@ -10,6 +11,7 @@ __all__ = [
         "CallA", "CallE", "CallVR", "Forward", "PutA", "PutE", "PutV",
         "Stack", "Time", "UpAndOut",
         "Annuity",
+        "VariableStrike",
     ]
 
 ###
@@ -315,3 +317,23 @@ class Annuity(Payoff):
             return self.C
         else:
             return 0
+
+
+###
+### BEHAVIOUR MUTATORS
+###
+
+
+class VariableStrike(object):
+    """
+    Allow easy implementation of variable strikes.
+    """
+
+    @contextlib.contextmanager
+    def _strike(self, K):
+        K_origin = self.K
+        try:
+            self.K = K
+            yield
+        finally:
+            self.K = K_origin
