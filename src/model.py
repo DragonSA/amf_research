@@ -268,7 +268,7 @@ class CrankNicolsonScheme(object):
         self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
         a, b, c, d = dS.fde(dt, ds, S, "implicit", boundary)
         self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
-        self.d = d
+        self.d = 2 * d
 
     def __call__(self, V, X):
         return linalg.spsolve(self.Li, self.Le.dot(V) + self.d * X)
