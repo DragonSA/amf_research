@@ -74,16 +74,47 @@
 
 % Derivatives
 \def\S{\ensuremath{S_t}\xspace}
+\def\dP{\ensuremath{dP_t}\xspace}
 \def\dS{\ensuremath{dS_t}\xspace}
 \def\dt{\ensuremath{dt}\xspace}
 \def\dW{\ensuremath{dW_t}\xspace}
 \def\dq{\ensuremath{dq_t}\xspace}
+\def\Vt{\frac{\partial V}{\partial t}}
+\def\Vs{\frac{\partial V}{\partial S}}
+\def\Vss{\frac{\partial^2 V}{\partial S^2}}
 
 % Differences
 \def\DS{\ensuremath{\delta S_t}\xspace}
 \def\Dt{\ensuremath{\delta t}\xspace}
 \def\DW{\ensuremath{\delta W_t}\xspace}
 \def\Dq{\ensuremath{\delta q_t}\xspace}
+
+% Finite difference
+\def\Vjn{\ensuremath{V^{n}_j}\xspace}
+\def\Vjnm{\ensuremath{V^{n - 1}_j}\xspace}
+\def\Vjnp{\ensuremath{V^{n + 1}_j}\xspace}
+\def\Vjmn{\ensuremath{V^{n}_{j - 1}}\xspace}
+\def\Vjpn{\ensuremath{V^{n}_{j + 1}}\xspace}
+\def\Vjmnm{\ensuremath{V^{n - 1}_{j - 1}}\xspace}
+\def\Vjpnm{\ensuremath{V^{n - 1}_{j + 1}}\xspace}
+\def\Vjmnp{\ensuremath{V^{n + 1}_{j - 1}}\xspace}
+\def\Vjpnp{\ensuremath{V^{n + 1}_{j + 1}}\xspace}
+
+\def\Von{\ensuremath{V^{n}_{0}\xspace}}
+\def\Vomn{\ensuremath{V^{n}_{-1}\xspace}}
+\def\Vopn{\ensuremath{V^{n}_{1}\xspace}}
+\def\VJn{\ensuremath{V^{n}_{J}\xspace}}
+\def\VJmn{\ensuremath{V^{n}_{J - 1}\xspace}}
+\def\VJpn{\ensuremath{V^{n}_{J + 1}\xspace}}
+\def\Vonm{\ensuremath{V^{n - 1}_{0}\xspace}}
+\def\Vomnm{\ensuremath{V^{n - 1}_{-1}\xspace}}
+\def\Vopnm{\ensuremath{V^{n - 1}_{1}\xspace}}
+\def\VJnm{\ensuremath{V^{n - 1}_{J}\xspace}}
+\def\VJmnm{\ensuremath{V^{n - 1}_{J - 1}\xspace}}
+\def\VJpnm{\ensuremath{V^{n - 1}_{J + 1}\xspace}}
+
+\def\Sj{\ensuremath{S_j}\xspace}
+\def\Xj{\ensuremath{X_j}\xspace}
 
 % Binomial model
 \def\u{\ensuremath{u}\xspace}
@@ -101,6 +132,10 @@
 \def\X{\ensuremath{X_t}\xspace}
 \def\P{\ensuremath{\Pi_t}\xspace}
 \def\D{\ensuremath{\Delta_t}\xspace}
+
+% Sundry
+\def\th{\textsuperscript{th}\xspace}
+\def\half{\tfrac{1}{2}}
 
 % PREAMBLE -------------------------------------------------------
 
@@ -168,22 +203,23 @@ Describe and define (in maths) what a convertible bond with credit risk is.
 Describe the current state of literature w/ Convertible Bonds with Credit Risk,
 possibly split this and include it at the beginning of each relevant section?
 
-\section{Example}
-Describe the standard example that will be covered by each valuation method.
 
-\chapter{Binomial Model with Credit Risk}
-The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
-
-TODO: add further explanation and references.
+\chapter{Finite Difference Model}
+Describe the finite difference model based on the paper by \citet{AFV03}.
 
 \section{Definition}
-Consider a stock with the following stochastic model\footnote{Of note $\mathbb{E}[\frac{\dS}{\S}] = r\dt \Leftrightarrow \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq$}:
+Consider a stock with the following stochastic model for stock price movements:
 \begin{equation}
- \frac{\dS}{\S} = (r + \lambda\eta)\dt + \sigma\dW - \eta\dq
+ \dS = \mu\S\dt + \sigma\S\dW - \eta\S\dq
+\end{equation}
+If we impose that the risk neutral expectation of the stock price evolve at the risk free rate $\E[\dS] = r\S\dt$ then $\mu = (r + \lambda\eta)$ and the differential equation becomes:
+\begin{equation}
+ \dS = (r + \lambda\eta)\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
 where:
 
 \begin{tabular}{ll}
+ $\mu$          & is the drift rate of the stock price \\
  $r$            & is the risk free rate \\
  $\sigma$       & is the log-volatility of the stock price \\
  $\lambda$      & is the hazard rate \\
@@ -192,7 +228,102 @@ where:
  \dq            & is a Poisson jump process where the first jump is the default event \\
 \end{tabular}
 
-\noindent and
+\section{Derivation}
+Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  This yields a differential equation for \P:
+\begin{align}
+ \dP &= r\P\dt \n
+     &= r(\V - \D\S)\dt \label{eq:rPdt}
+\end{align}
+
+In the event of default the portfolio holdings $\P^x$ have a long position in the derivative with residual value \X and a short position of \D in the residual stock with value of $(1 - \eta)\S$.  Thus the difference of the portfolio holdings when going into default is:
+\begin{align}
+ \dP^x &= \P^x - \P \n
+        &= \X - (\V - \eta\D\S) \label{eq:dPx}
+\end{align}
+
+At any given instant the portfolio can either default or evolve in the normal stochastic manner.  The probability of default in any given instant is $\lambda\dt$ and the probability of non-default is $(1 - \lambda)\dt$.  Taking the expectation of the differential of \P and applying Ito's lemma to the stochastic component:
+\begin{align}
+ \Et[\dP] &= (1 - \lambda\dt)[\left(\Vt + \mu\S\Vs + \half\sigma^2\S^2\Vss - \mu\S\D\right)\dt + \n
+          &\qquad \left(\sigma\S\Vs - \sigma\S\D\right)\dW] + \lambda\dt(\X - (\V - \eta\D\S))
+\end{align}
+By choosing \D to eliminate the \dW term, $\D = \Vs$, the differential simplifies to:
+\begin{equation}
+ \Et[\dP] = \left(\Vt + \half\sigma^2\S^2\Vss\right)\dt + \lambda\dt(\X - (\V - \eta\D\S)) \label{eq:EdP}
+\end{equation}
+
+Equating the differential \eqref{eq:rPdt} and the expected differential \eqref{eq:EdP} for \P the partial differential equation for a derivative with credit risk is derived:
+\begin{align}
+ r(\V - \D\S)\dt &= \left(\Vt + \half\sigma^2\S^2\Vss\right)\dt + \lambda\dt(\X - (\V - \eta\D\S)) \n
+ (r + \lambda)\V &= \Vt + (r + \lambda\eta)\S\Vs + \half\sigma^2\S^2\Vss + \lambda\X
+\end{align}
+
+\section{Finite Difference}
+The derived PDE can be solved numerically by constructing a lattice of stock prices and time.  \Vjn will denote the lattice value at the j\th stock node and n\th time node where the step between stock nodes is \DS and the step between time nodes is \Dt.  \Sj will denote the stock value at the j\th stock node and \Xj will denote the defaulted value at the j\th stock node.
+
+All finite difference equations derived here can be expressed as functions of $\alpha$, $\beta$ and $\kappa$ where:
+\begin{align*}
+ \alpha &= \half\sigma^2\Sj^2\frac{\Dt}{\DS^2} - (r + \lambda\eta)\Sj\frac{\Dt}{2\DS} \\
+ \beta  &= - (r + \lambda) - \sigma^2\Sj^2\frac{\Dt}{\DS^2} \\
+ \kappa &= \half\sigma^2\Sj^2\frac{\Dt}{\DS^2} + (r + \lambda\eta)\Sj\frac{\Dt}{2\DS} \\
+\end{align*}
+and it is assumed that for boundary nodes:
+\begin{align*}
+ \frac{\Von - \Vomn}{\DS} &= \frac{\Vopn - \Von}{\DS} \\
+                    \Vomn &= 2\Von - \Vopn \\
+ \frac{\VJn - \VJmn}{\DS} &= \frac{\VJpn - \VJn}{\DS} \\
+                    \VJpn &= 2\VJn - \VJmn \\
+\end{align*}
+
+\subsection{Explicit Scheme}
+Using the backwards difference equation for the temporal derivative the finite difference equation is:
+\begin{displaymath}
+ (r + \lambda)\Vjn = \frac{\Vjn - \Vjnm}{\Dt} + (r + \lambda\eta)\Sj\frac{\Vjpn - \Vjmn}{2\DS} + \half\sigma^2\Sj^2\frac{\Vjmn - 2\Vjn + \Vjpn}{\DS^2} + \lambda\Xj
+\end{displaymath}
+\begin{align}
+ \Vjnm &= \alpha\Vjmn + (1 + \beta)\Vjn + \kappa\Vjpn + \lambda\Dt\Xj \\
+ \Vonm &= (1 + \beta + 2\alpha)\Von + (\kappa - \alpha)\Vopn + \lambda\Dt\Xj \\
+ \VJnm &= (\alpha - \kappa)\Vjmn + (1 + \beta - 2\kappa)\VJn + \lambda\Dt\Xj
+\end{align}
+
+\subsection{Implicit Scheme}
+Using the backwards difference equation for the temporal derivative and evaluating the spacial differentials at the previous time step the finite difference equation is:
+\small\begin{displaymath}
+ (r + \lambda)\Vjnm = \frac{\Vjn - \Vjnm}{\Dt} + (r + \lambda\eta)\Sj\frac{\Vjpnm - \Vjmnm}{2\DS} + \half\sigma^2\Sj^2\frac{\Vjmnm - 2\Vjnm + \Vjpnm}{\DS^2} + \lambda\Xj
+\end{displaymath}\normalsize
+\begin{align}
+ -\alpha\Vjmnm + (1 - \beta)\Vjnm - \kappa\Vjpnm &= \Vjn + \lambda\Dt\X \\
+ (1 - \beta - 2\alpha)\Vonm - (\kappa - \alpha)\Vopnm &= \Von + \lambda\Dt\X \\
+ -(\alpha - \kappa)\VJmnm + (1 - \beta - 2\kappa)\VJnm &= \VJn + \lambda\Dt\X
+\end{align}
+
+\subsection{Crank-Nicolson Scheme}
+Using the backwards difference equation for the temporal derivative and taking the average of the spacial differentials at the current and previous time step the finite difference equation is:
+\small\begin{align*}
+ (r + \lambda)\half(\Vjn + \Vjnm) &= \frac{\Vjn - \Vjnm}{\Dt} + (r + \lambda\eta)\Sj\frac{1}{2}\left(\frac{\Vjpn - \Vjmn}{2\DS} + \frac{\Vjpnm - \Vjmnm}{2\DS}\right) + \\
+  &\quad \half\sigma^2\Sj^2\frac{1}{2}\left(\frac{\Vjmn - 2\Vjn + \Vjpn}{\DS^2} + \frac{\Vjmnm - 2\Vjnm + \Vjpnm}{\DS^2}\right) + \lambda\Xj
+\end{align*}
+\begin{align}
+ -\alpha\Vjmnm + (2 - \beta)\Vjnm - \kappa\Vjpnm &= \alpha\Vjmn + (2 + \beta)\Vjn + \kappa\Vjpn + 2\lambda\Dt\X \\
+ (2 - \beta - 2\alpha)\Vonm - (\kappa - \alpha)\Vopnm &= (2 + \beta + 2\alpha)\Von + (\kappa + \alpha)\Vopn + 2\lambda\Dt\X \\
+ -(\alpha - \kappa)\VJmnm + (2 - \beta - 2\kappa)\VJnm &= (\alpha - \kappa)\VJmn + (2 + \beta + 2\kappa)\VJn + 2\lambda\Dt\X
+\end{align}\normalsize
+
+
+\chapter{Binomial Model with Credit Risk}
+The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
+
+TODO: add further explanation and references.
+
+\section{Definition}
+Consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$}.  The mean and variance of this model is: (TODO: insert picture illustration)
+\begin{align}
+ \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
+                                &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
+ \Var[\frac{S_{t + \Dt}}{\S}]   &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\DS}{\S}]^2 \n
+                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t+\Dt}}{\S}]^2 \label{eq:BM_Var}
+\end{align}
+
+The mean and variance of the stock's stochastic differential equation is:
 \begin{align}
  \E[\frac{\dS}{\S}]     &= r\dt \\
  \E[\frac{S_{t + \dt}}{\S}] &= \E[\frac{\S}{\S} + \frac{\dS}{\S}] \n
@@ -201,13 +332,7 @@ where:
  \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
                         &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
-and consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$} and (TODO: insert picture illustration)
-\begin{align}
- \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
-                                &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
- \Var[\frac{S_{t + \Dt}}{\S}]   &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\DS}{\S}]^2 \n
-                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t+\Dt}}{\S}]^2 \label{eq:BM_Var}
-\end{align}
+
 
 \section{Derivation}
 If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{S_{t + \Dt}}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} then:
@@ -416,11 +541,10 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 \section{Example and Hedging Strategy}
 Provide a numerical example (with diagrams) and provide example of the hedging strategy.
 
-\chapter{Finite Difference Model}
-Describe the finite difference model based on the paper by \citet{AFV03}.
 
 \chapter{Numerical Example}
 Implement above models, explain implementation and results, by example.
+
 
 \chapter{Conclusion}
 Summarise what this paper shows and does (i.e. Introduction + Conclusion = Executive Summary).
