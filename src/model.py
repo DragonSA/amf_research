@@ -120,13 +120,17 @@ class WienerJumpProcess(object):
             raise ValueError("Stock step must be positive")
         if (S < 0).any():
             raise ValueError("Stock must be non-negative")
-        rdt = (self.r + self.lambd_) * dt
-        rS = dt * (self.r + self.lambd_ * self.eta) * S / ds / 2
+        if callable(self.lambd_):
+            lambd_ = self.lambd_(S)
+        else:
+            lambd_ = self.lambd_
+        rdt = (self.r + lambd_) * dt
+        rS = dt * (self.r + lambd_ * self.eta) * S / ds / 2
         sS = dt * self.sigma**2 * S**2 / ds**2 / 2
         a = sS[1:] - rS[1:]
         b = -rdt - sS * 2
         c = sS[:-1] + rS[:-1]
-        d = self.lambd_ * dt
+        d = lambd_ * dt
         if boundary == "equal":
             b[0] += sS[0] - rS[0]
             b[-1] += sS[-1] + rS[-1]
