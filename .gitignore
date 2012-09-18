@@ -1,6 +1,7 @@
 *.asv
 *.pyc
 *.kate-swp
+*.png
 *.svg
 *.kilepr
 *.aux
