@@ -6,7 +6,7 @@ import unittest
 
 from payoff import Forward, CallE, CallA, CallVR, PutA, PutE, PutV, \
                    Stack, Time, UpAndOut, \
-                   Annuity, \
+                   Annuity, AnnuityI, \
                    VariableStrike
 
 S0 = 100
@@ -135,14 +135,16 @@ class TestAnnuity(unittest.TestCase):
         """Test value of default."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         Vd = np.ones(S.shape) * 5
-        payoff = Annuity(T, (), 1, 10, 0.5)
-        for t in np.linspace(0, 1, N, endpoint=False):
-            self.assertTrue((payoff.default(t, S) == Vd).all())
-        self.assertRaises(AssertionError, payoff.default, T, S)
+        for Payoff in (Annuity, AnnuityI):
+            payoff = Payoff(T, (), 1, 10, 0.5)
+            for t in np.linspace(0, 1, N, endpoint=False):
+                self.assertTrue((payoff.default(t, S) == Vd).all())
+            self.assertRaises(AssertionError, payoff.default, T, S)
 
     def test_coupon(self):
         """Test coupon value of annuity."""
         payoff = Annuity(T, np.linspace(0, 1, N // 2 + 1), 1, 10)
+        payoffI = AnnuityI(T, np.linspace(0, 1, N // 2 + 1), 1, 10)
         pay = True
         for t in np.linspace(0, 1, N + 1):
             if pay:
@@ -151,12 +153,32 @@ class TestAnnuity(unittest.TestCase):
                 V = 0
             pay = not pay
             self.assertTrue(payoff.coupon(t) == V)
+            self.assertTrue(payoffI.coupon(t) == 0)
+
+    def test_transcient(self):
+        S = np.linspace(S0 - 10, S0 + 10, 21)
+        V = np.linspace(S0 + 10, S0 - 10, 21)
+        payoff = Annuity(T, np.linspace(0, 1, N // 2 + 1), 1, 10)
+        payoffI = AnnuityI(T, np.linspace(0, 1, N // 2 + 1), 1, 10)
+        pay = True
+        for t in np.linspace(0, 1, N, endpoint=False):
+            if pay:
+                C = 1
+            else:
+                C = 0
+            pay = not pay
+            self.assertTrue((payoff.transient(t, V, S) == V).all())
+            self.assertTrue((payoffI.transient(t, V, S) == V + C).all())
+        self.assertRaises(AssertionError, payoff.transient, T, V, S)
+        self.assertRaises(AssertionError, payoffI.transient, T, V, S)
 
     def test_terminal(self):
         """Test terminal value of annuity."""
         S = np.linspace(S0 - 10, S0 + 10, 21)
         Vo = np.ones(S.shape) * 10
         self.assertTrue((Annuity(T, (), 1, 10).terminal(S) == Vo).all())
+        self.assertTrue((AnnuityI(T, (), 1, 10).terminal(S) == Vo).all())
+        self.assertTrue((AnnuityI(T, (T,), 1, 10).terminal(S) == Vo + 1).all())
 
 
 class TestStack(unittest.TestCase):

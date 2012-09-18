@@ -10,7 +10,7 @@ from model import Payoff
 __all__ = [
         "CallA", "CallE", "CallVR", "Forward", "PutA", "PutE", "PutV",
         "Stack", "Time", "UpAndOut",
-        "Annuity",
+        "Annuity", "AnnuityI",
         "VariableStrike",
     ]
 
@@ -316,7 +316,43 @@ class Annuity(Payoff):
         if t in self.times:
             return self.C
         else:
-            return 0
+            return 0.0
+
+
+class AnnuityI(Payoff):
+    """
+    Payment process that pays a coupon at specified times and nominal at end.
+
+    The coupon payments are intrinsic (i.e. a Stack with AnnuityI may not have
+    coupons payed on due time if other payoffs overwrite coupon) and not
+    guaranteed to impact the portfolio value.
+    """
+
+    def __init__(self, T, times=(), C=0, N=0, R=0):
+        super(AnnuityI, self).__init__(T)
+        self.times = times
+        self.C = np.double(C)
+        self.N = np.double(N)
+        self.R = np.double(R)
+
+    def default(self, t, S):
+        """Residual value on default"""
+        assert(t != self.T)
+        return np.ones(S.shape) * self.N * self.R
+
+    def transient(self, t, V, S):
+        """Coupon payment added to payoff value."""
+        assert(t != self.T)
+        if t in self.times:
+            return V + self.C
+        return V
+
+    def terminal(self, S):
+        """Nominal value of bond."""
+        V = np.ones(S.shape) * self.N
+        if self.T in self.times:
+            V += self.C
+        return V
 
 
 ###
