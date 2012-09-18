@@ -9,7 +9,7 @@ import numpy
 numpy.seterr(divide="ignore")
 
 from convertible_bond import dS_total as dS, payoff, B
-from model import BinomialModel, FDEModel, ImplicitScheme
+from model import BinomialModel, FDEModel
 
 def main():
     N = 250
@@ -24,17 +24,19 @@ def main():
     model1 = BinomialModel(N, dS, payoff)
     model2 = BinomialModel(N, dSv, payoff)
     model3 = FDEModel(N, dS, payoff)
+    model4 = FDEModel(N, dSv, payoff)
     for s in S:
         P[0].append(float(model1.price(s)))
         P[1].append(float(model2.price(s)))
     plt.plot(S, P[0])
     plt.plot(S, P[1])
-    plt.plot(S, model3.price(0, 200, 200, scheme=ImplicitScheme).V[0][S])
+    plt.plot(S, model3.price(0, 200, 200).V[0][S])
+    plt.plot(S[1:], model4.price(1, 200, 200).V[0][S[:-1]])
     plt.ylim([40, 160])
     plt.xlabel("Share price")
     plt.ylabel("Convertible Bond Price")
     plt.title("Convertible Bond Price Profile, N = %i, R = %i%%" % (N, B.R * 100))
-    plt.legend(["Constant Hazard Rate", "Synthesis Hazard Rate", "FDE"])
+    plt.legend(["Binomial - Constant $\\lambda$", "Binomial - Synthesis $\\lambda$", "FDE - Constant $\\lambda$", "FDE - Synthesis $\\lambda$"])
     plt.savefig("../common/fig_mk12.png")
     plt.savefig("../common/fig_mk12.svg")
     #plt.show()
