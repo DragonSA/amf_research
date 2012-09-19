@@ -13,13 +13,13 @@ from model import FDEModel
 def gamma(S, model):
     Sl = 1
     Su = 201
-    K = 4
+    K = 8
     S = S - 1
     V = model.price(Sl, Su, 200 * K).V[0]
     return K * K * (V[S * K + 1] + V[S * K - 1] - 2 * V[S * K])
 
 def main():
-    N = 1024
+    N = 1280
     S = np.arange(20, 121)
     dS1 = copy.copy(dS)
     dS1.lambd_ = lambda S: 0.02 * (S / 100)**-1.2

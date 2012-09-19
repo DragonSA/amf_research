@@ -19,7 +19,7 @@ def delta(S, model):
     return K * (V[S * K + 1] - V[S * K - 1]) / 2
 
 def main():
-    N = 1024
+    N = 640
     S = np.arange(20, 121)
     dS1 = copy.copy(dS)
     dS1.lambd_ = lambda S: 0.02 * (S / 100)**-1.2
