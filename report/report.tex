@@ -74,7 +74,7 @@
 
 % Derivatives
 \def\S{\ensuremath{S_t}\xspace}
-\def\dP{\ensuremath{dP_t}\xspace}
+\def\dP{\ensuremath{d\Pi_t}\xspace}
 \def\dS{\ensuremath{dS_t}\xspace}
 \def\dt{\ensuremath{dt}\xspace}
 \def\dW{\ensuremath{dW_t}\xspace}
@@ -235,7 +235,7 @@ Consider a portfolio, \P, that has a long position in the derivative, \V, and a 
      &= r(\V - \D\S)\dt \label{eq:rPdt}
 \end{align}
 
-In the event of default the portfolio holdings $\P^x$ have a long position in the derivative with residual value \X and a short position of \D in the residual stock with value of $(1 - \eta)\S$.  Thus the difference of the portfolio holdings when going into default is:
+In the event of default the portfolio holdings $\P^x$ has a long position in the derivative with residual value \X and a short position of \D in the stock with residual value of $(1 - \eta)\S$.  Thus the difference of the portfolio holdings when going into default is:
 \begin{align}
  \dP^x &= \P^x - \P \n
         &= \X - (\V - \eta\D\S) \label{eq:dPx}
@@ -309,7 +309,7 @@ Using the backwards difference equation for the temporal derivative and taking t
 \end{align}\normalsize
 
 
-\chapter{Binomial Model with Credit Risk}
+\chapter{Binomial Model}
 The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
 
 TODO: add further explanation and references.
