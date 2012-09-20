@@ -112,7 +112,7 @@ class WienerJumpProcess(object):
         """Parameter for stock jump on default."""
         return 1 - self.eta
 
-    def fde(self, dt, ds, S, scheme, boundary):
+    def fde(self, dt, ds, S, scheme, boundary="diffequal"):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
             raise ValueError("Time step must be positive")
@@ -232,8 +232,8 @@ class ExplicitScheme(object):
     Explicit difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S, boundary):
-        a, b, c, d = dS.fde(dt, ds, S, "explicit", boundary)
+    def __init__(self, dS, dt, ds, S, **kwargs):
+        a, b, c, d = dS.fde(dt, ds, S, "explicit", **kwargs)
         self.L = sparse.dia_matrix(([a, 1 + b, c], [-1, 0, 1]), shape=S.shape*2)
         self.d = d
         if False and (abs(self.L) > 1).any():
@@ -248,9 +248,9 @@ class ImplicitScheme(object):
     Implicit difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S, boundary):
+    def __init__(self, dS, dt, ds, S, **kwargs):
         K = S.shape*2
-        a, b, c, d = dS.fde(dt, ds, S, "implicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "implicit", **kwargs)
         self.L = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
         self.d = d
 
@@ -263,10 +263,10 @@ class CrankNicolsonScheme(object):
     Crank-Nicolson difference equation.
     """
 
-    def __init__(self, dS, dt, ds, S, boundary):
-        a, b, c, d = dS.fde(dt, ds, S, "explicit", boundary)
+    def __init__(self, dS, dt, ds, S, **kwargs):
+        a, b, c, d = dS.fde(dt, ds, S, "explicit", **kwargs)
         self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
-        a, b, c, d = dS.fde(dt, ds, S, "implicit", boundary)
+        a, b, c, d = dS.fde(dt, ds, S, "implicit", **kwargs)
         self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
         self.d = 2 * d
 
@@ -298,16 +298,11 @@ class FDEModel(object):
             V   is the value of the portfolio
             Z   is the log price
         """
-        def __init__(self, T, N, Sl, Su, K, zspace):
+        def __init__(self, T, N, Sl, Su, K):
             super(FDEModel.Value, self).__init__(T, N)
+            assert(Su > Sl >= 0)
             self.K = K
-            if zspace:
-                assert(Su > Sl > 0)
-                Zl, Zu = np.log((Sl, Su))
-                self.S = np.exp(np.linspace(Zl, Zu, K + 1))
-            else:
-                assert(Su > Sl >= 0)
-                self.S = np.linspace(Sl, Su, K + 1)
+            self.S = np.linspace(Sl, Su, K + 1)
 
 
     def __init__(self, N, dS, V):
@@ -316,7 +311,7 @@ class FDEModel(object):
         self.dS = dS
         self.V = V
 
-    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, boundary="diffequal", zspace=False):
+    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, **kwargs):
         """
         Price the payoff for prices in range [Sl, Su], and K increments, using
         the given FD scheme, and possibility using exponential increments
@@ -325,14 +320,9 @@ class FDEModel(object):
         Sl = np.double(Sl)
         Su = np.double(Su)
         K = np.int(K)
-        P = FDEModel.Value(self.V.T, self.N, Sl, Su, K, zspace)
+        P = FDEModel.Value(self.V.T, self.N, Sl, Su, K)
         S = P.S
-        if zspace:
-            ds = (np.log(Su) - np.log(Sl)) / K
-            Z = np.ones(P.S.shape)
-        else:
-            ds = P.S[1] - P.S[0]
-            Z = P.S
+        ds = P.S[1] - P.S[0]
         Sl = P.S * self.dS.fde_l()
 
         # Terminal stock price and derivative value
@@ -341,7 +331,7 @@ class FDEModel(object):
 
         # Discount price backwards
         t = P.t
-        scheme = scheme(self.dS, self.dt, ds, Z, boundary)
+        scheme = scheme(self.dS, self.dt, ds, S, **kwargs)
         for i in range(self.N - 1, -1, -1):
             # Discount previous derivative value
             P.C[i] = C = self.V.coupon(t[i])
