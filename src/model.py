@@ -5,6 +5,7 @@ difference model.
 import numpy as np
 import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
+np.seterr(divide="ignore")
 
 __all__ = [
         "BinomialModel", "FDEModel",
@@ -112,7 +113,7 @@ class WienerJumpProcess(object):
         """Parameter for stock jump on default."""
         return 1 - self.eta
 
-    def fde(self, dt, ds, S, scheme, boundary="diffequal"):
+    def fde(self, dt, ds, S, scheme, boundary="diffequal", expfit=True):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
             raise ValueError("Time step must be positive")
@@ -126,7 +127,12 @@ class WienerJumpProcess(object):
             lambd_ = self.lambd_
         rdt = (self.r + lambd_) * dt
         rS = dt * (self.r + lambd_ * self.eta) * S / ds / 2
-        sS = dt * self.sigma**2 * S**2 / ds**2 / 2
+        if expfit:
+            x = (self.r + lambd_ * self.eta) * ds / self.sigma**2 / S
+            coth = 1. / np.tanh(x)
+            sS = dt * coth * (self.r + lambd_ * self.eta) * S / ds / 2
+        else:
+            sS = dt * self.sigma**2 * S**2 / ds**2 / 2
         a = sS[1:] - rS[1:]
         b = -rdt - sS * 2
         c = sS[:-1] + rS[:-1]
@@ -338,5 +344,4 @@ class FDEModel(object):
             P.X[i] = X = self.V.default(t[i], Sl)
             V = scheme(V, X)
             P.V[i] = V = self.V.transient(t[i], V, S) + C
-
         return P
