@@ -345,3 +345,61 @@ class FDEModel(object):
             V = scheme(V, X)
             P.V[i] = V = self.V.transient(t[i], V, S) + C
         return P
+
+
+class FDEBVModel(FDEModel):
+    """
+    A finite difference equation scheme for pricing derivatives using a stock
+    process and intrinsic values of the stock.  This process uses pricing by
+    splitting the intrinsic value into a bond and equity component
+
+        N       is the number of time increments
+        dt      is the time increments for the binomial lattice
+        dS      is the stock movement
+        B       is the bond value of the derivative
+        V       is the (total) intrinsic value of the derivative
+    """
+
+    def __init__(self, N, dS, B, V):
+        super(FDEBVModel, self).__init__(N, dS, V)
+        self.B = B
+
+    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, **kwargs):
+        """
+        Price the payoff for prices in range [Sl, Su], and K increments, using
+        the given FD scheme, and possibility using exponential increments
+        (zspace) for the price range.
+        """
+        Sl = np.double(Sl)
+        Su = np.double(Su)
+        K = np.int(K)
+        P = FDEModel.Value(self.V.T, self.N, Sl, Su, K)
+        S = P.S
+        ds = P.S[1] - P.S[0]
+        Sl = P.S * self.dS.fde_l()
+
+        # Terminal stock price and derivative value
+        P.C[-1] = C = self.V.coupon(self.V.T)
+        P.V[-1] = V = self.V.terminal(S) + C
+        B = self.B.terminal(S) + C
+        E = V - B
+
+        # Discount price backwards
+        t = P.t
+        scheme = scheme(self.dS, self.dt, ds, S, **kwargs)
+        for i in range(self.N - 1, -1, -1):
+            # Discount previous derivative value
+            P.C[i] = C = self.V.coupon(t[i])
+            P.X[i] = X = self.V.default(t[i], Sl)
+            XB = self.B.default(t[i], Sl)
+            XE = X - XB
+            B = scheme(B, XB)
+            E = scheme(E, XE)
+            B_ = self.B.transient(t[i], B, S)
+            B = np.minimum(B_, np.maximum(B_ - E, B))
+            E = self.V.transient(t[i], B + E, S) - B
+            B += C
+            #V = scheme(V, X)
+            #P.V[i] = V = self.V.transient(t[i], V, S) + C
+            P.V[i] = V = B + E
+        return P
