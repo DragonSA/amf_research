@@ -8,14 +8,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from convertible_bond import dS_total as dS, payoff, B
-from model import FDEModel
+from model import FDEModel, RannacherScheme
 
 def delta(S, model):
     Sl = 1
     Su = 201
-    K = 8
+    K = 32
     S = S - 1
-    V = model.price(Sl, Su, 200 * K).V[0]
+    V = model.price(Sl, Su, 200 * K, scheme=RannacherScheme).V[0]
     return K * (V[S * K + 1] - V[S * K - 1]) / 2
 
 def main():

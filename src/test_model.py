@@ -8,10 +8,11 @@ from scipy import stats
 import scipy.sparse as sparse
 
 from model import BinomialModel, FDEModel, WienerJumpProcess
-from model import CrankNicolsonScheme, ExplicitScheme, ImplicitScheme
+from model import CrankNicolsonScheme, ExplicitScheme, ImplicitScheme, \
+                    RannacherScheme
 from payoff import Annuity, CallA, CallE, Forward, Stack
 
-SCHEMES = (CrankNicolsonScheme, ExplicitScheme, ImplicitScheme)
+SCHEMES = (CrankNicolsonScheme, ExplicitScheme, ImplicitScheme, RannacherScheme)
 
 class TestWienerJumpProcess(unittest.TestCase):
     """Test the Wiener Jump process."""
@@ -258,7 +259,7 @@ class TestFDEModel(unittest.TestCase):
         model = FDEModel(64, dS, V)
         model2 = FDEModel(64, dSdq, V)
         for scheme in SCHEMES:
-            if scheme is CrankNicolsonScheme:
+            if isinstance(scheme, CrankNicolsonScheme):
                 accuracy = 5
             else:
                 accuracy = 2

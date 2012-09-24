@@ -2,6 +2,7 @@
 Framework for modelling payoff processes using either a binomial or finite-
 difference model.
 """
+import abc
 import numpy as np
 import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
@@ -11,6 +12,7 @@ __all__ = [
         "BinomialModel", "FDEModel",
         "Payoff", "WienerJumpProcess",
         "CrankNicolsonScheme", "ExplicitScheme", "ImplicitScheme",
+        "RannacherScheme",
     ]
 
 
@@ -113,7 +115,7 @@ class WienerJumpProcess(object):
         """Parameter for stock jump on default."""
         return 1 - self.eta
 
-    def fde(self, dt, ds, S, scheme, boundary="diffequal", expfit=True):
+    def fde(self, dt, ds, S, scheme, boundary="diffequal", expfit=False):
         """Parameters for the finite difference scheme."""
         if dt <= 0:
             raise ValueError("Time step must be positive")
@@ -233,51 +235,101 @@ class BinomialModel(object):
         return P
 
 
-class ExplicitScheme(object):
+class Scheme(object):
+    """
+    Difference equation.
+    """
+    __metaclass__ = abc.ABCMeta
+
+    def __init__(self, S):
+        super(Scheme, self).__init__()
+        self.S = S
+
+    def __call__(self, t, V, X, C, payoff):
+        return payoff(t, self.scheme(V, X), self.S) + C
+
+    @abc.abstractmethod
+    def scheme(self, V, X):
+        """Discount portfolio value back one period."""
+        pass
+
+
+class ExplicitScheme(Scheme):
     """
     Explicit difference equation.
     """
 
     def __init__(self, dS, dt, ds, S, **kwargs):
+        super(ExplicitScheme, self).__init__(S)
         a, b, c, d = dS.fde(dt, ds, S, "explicit", **kwargs)
         self.L = sparse.dia_matrix(([a, 1 + b, c], [-1, 0, 1]), shape=S.shape*2)
         self.d = d
         if False and (abs(self.L) > 1).any():
             raise ValueError("Time step to big for given stock increments")
 
-    def __call__(self, V, X):
+    def scheme(self, V, X):
         return self.L.dot(V) + self.d * X
 
 
-class ImplicitScheme(object):
+class ImplicitScheme(Scheme):
     """
     Implicit difference equation.
     """
 
     def __init__(self, dS, dt, ds, S, **kwargs):
+        super(ImplicitScheme, self).__init__(S)
         K = S.shape*2
         a, b, c, d = dS.fde(dt, ds, S, "implicit", **kwargs)
         self.L = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
         self.d = d
 
-    def __call__(self, V, X):
+    def scheme(self, V, X):
         return linalg.spsolve(self.L, V + self.d * X)
 
 
-class CrankNicolsonScheme(object):
+class CrankNicolsonScheme(Scheme):
     """
     Crank-Nicolson difference equation.
     """
 
     def __init__(self, dS, dt, ds, S, **kwargs):
+        super(CrankNicolsonScheme, self).__init__(S)
         a, b, c, d = dS.fde(dt, ds, S, "explicit", **kwargs)
         self.Le = sparse.dia_matrix(([a, 2 + b, c], [-1, 0, 1]), shape=S.shape*2)
         a, b, c, d = dS.fde(dt, ds, S, "implicit", **kwargs)
         self.Li = sparse.dia_matrix(([-a, 2 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
         self.d = 2 * d
 
-    def __call__(self, V, X):
+    def scheme(self, V, X):
         return linalg.spsolve(self.Li, self.Le.dot(V) + self.d * X)
+
+
+class RannacherScheme(CrankNicolsonScheme):
+    """
+    Crank-Nicolson difference equation with fully implicit quarter steps to
+    handle discontinuous payoffs.
+    """
+
+    def __init__(self, dS, dt, ds, S, **kwargs):
+        super(RannacherScheme, self).__init__(dS, dt, ds, S, **kwargs)
+        a, b, c, d = dS.fde(dt / 4, ds, S, "implicit")
+        self.Lq = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+        self.imp = 1
+
+    def __call__(self, t, V, X, C, payoff):
+        if self.imp > 0:
+            V = self.scheme_implicit(V, X)
+            self.imp -= 1
+        else:
+            V = self.scheme(V, X)
+        if C != 0:
+            self.imp += 1
+        return payoff(t, V, self.S) + C
+
+    def scheme_implicit(self, V, X):
+        for i in range(4):
+            V = linalg.spsolve(self.Lq, V + self.d * X)
+        return V
 
 
 class FDEModel(object):
@@ -342,8 +394,7 @@ class FDEModel(object):
             # Discount previous derivative value
             P.C[i] = C = self.V.coupon(t[i])
             P.X[i] = X = self.V.default(t[i], Sl)
-            V = scheme(V, X)
-            P.V[i] = V = self.V.transient(t[i], V, S) + C
+            P.V[i] = V = scheme(t[i], V, X, C, self.V.transient)
         return P
 
 
@@ -393,8 +444,8 @@ class FDEBVModel(FDEModel):
             P.X[i] = X = self.V.default(t[i], Sl)
             XB = self.B.default(t[i], Sl)
             XE = X - XB
-            B = scheme(B, XB)
-            E = scheme(E, XE)
+            B = scheme.scheme(B, XB)
+            E = scheme.scheme(E, XE)
             B_ = self.B.transient(t[i], B, S)
             B = np.minimum(B_, np.maximum(B_ - E, B))
             E = self.V.transient(t[i], B + E, S) - B
