@@ -1,6 +1,6 @@
 import numpy as np
 
-from model import WienerJumpProcess, BinomialModel, FDEModel, Payoff
+from model import WienerJumpProcess, BinomialModel, FDEModel, FDEBVModel
 from payoff import Annuity, CallA, CallVR, PutV, Stack, Time, VariableStrike
 
 __all__ = ["dS_total", "dS_partial", "B", "P", "C", "S", "payoff", "T"]
@@ -88,20 +88,19 @@ S = CallA(T, 0)
 payoff = Stack([B, P, C, S])
 
 if __name__ == "__main__":
-    N = 3200
-    dS = dS
-    S0 = 100
+    x = 8
     Sl = 0
     Su = 200
+    S0 = 100
+    N = 2**(x + 1) * T
+    K = 2**((x + 1) // 2) * (Su - Sl)
+    tol = 1. / 2**(2*x + 2)
+    Sk = K * (S0 - Sl) / (Su - Sl)
+    dS = dS_total
+    print "N = %i; K = %i\n" % (N, K)
     print "BINOMIAL"
-    print float(BinomialModel(N, dS, Stack([B])).price(S0)), "(B)"
-    print float(BinomialModel(N, dS, Stack([B, S])).price(S0)), "(B+S)"
-    print float(BinomialModel(N, dS, Stack([B, C, S])).price(S0)), "(B+C+S)"
-    print float(BinomialModel(N, dS, Stack([B, P, S])).price(S0)), "(B+P+S)"
-    print float(BinomialModel(N, dS, Stack([B, P, C, S])).price(S0)), "(B+P+C+S)"
+    print float(BinomialModel(N, dS, Stack([B, P, C, S])).price(S0))
     print "\nFDE"
-    print FDEModel(N, dS, Stack([B])).price(Sl, Su, N).V[0][N // 2], "(B)"
-    print FDEModel(N, dS, Stack([B, S])).price(Sl, Su, N).V[0][N // 2], "(B+S)"
-    print FDEModel(N, dS, Stack([B, C, S])).price(Sl, Su, N).V[0][N // 2], "(B+C+S)"
-    print FDEModel(N, dS, Stack([B, P, S])).price(Sl, Su, N).V[0][N // 2], "(B+P+S)"
-    print FDEModel(N, dS, Stack([B, P, C, S])).price(Sl, Su, N).V[0][N // 2], "(B+P+C+S)"
+    print FDEModel(N, dS, Stack([B, P, C, S])).price(Sl, Su, K).V[0][Sk]
+    print "\nFDE_BE"
+    print FDEBVModel(N, dS, Stack([B, P, C]), payoff).price(Sl, Su, K).V[0][Sk]
