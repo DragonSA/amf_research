@@ -315,6 +315,7 @@ class RannacherScheme(CrankNicolsonScheme):
         super(RannacherScheme, self).__init__(dS, dt, ds, S, **kwargs)
         a, b, c, d = dS.fde(dt / 4, ds, S, "implicit")
         self.Lq = sparse.dia_matrix(([-a, 1 - b, -c], [-1, 0, 1]), shape=S.shape*2).tocsr()
+        self.dq = d
         self.imp = 1
 
     def __call__(self, t, V, X, C, payoff):
@@ -329,7 +330,7 @@ class RannacherScheme(CrankNicolsonScheme):
 
     def scheme_implicit(self, V, X):
         for i in range(4):
-            V = linalg.spsolve(self.Lq, V + self.d * X)
+            V = linalg.spsolve(self.Lq, V + self.dq * X)
         return V
 
 
