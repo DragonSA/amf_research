@@ -6,6 +6,7 @@ import abc
 import numpy as np
 import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
+import warnings
 np.seterr(divide="ignore")
 
 __all__ = [
@@ -354,7 +355,7 @@ class PenaltyScheme(CrankNicolsonScheme):
         Pk = (Vs != Vk) / self.tol
         if (Pk == 0).all():
             return Vk + C
-        while True:
+        for _i in range(32):
             Vk1 = linalg.spsolve(self.Li + diag(Pk), Vx + Pk * Vs)
             if np.max(np.abs(Vk1 - Vk) / np.maximum(1, np.abs(Vk1))) < self.tol:
                 break
@@ -363,6 +364,8 @@ class PenaltyScheme(CrankNicolsonScheme):
             if (Pk1 == Pk).all():
                 break
             Pk, Vk = Pk1, Vk1
+        else:
+            warnings.warn("Implicit American iterations exceed limit")
         return Vk1 + C
 
 
