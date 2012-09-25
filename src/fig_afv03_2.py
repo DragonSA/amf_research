@@ -4,21 +4,24 @@ Comparative graph between AFV03 figure 2 and this model.
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
 
-from convertible_bond import dS, dS_partial, dS_total, payoff
+from convertible_bond import dS, dS_partial, dS_total, payoff, T
 from model import FDEModel
 
 def main():
-    N = 200
-    S = range(80, 121)
+    S = np.arange(80, 121)
     Sl = 0
     Su = 200
+    N = 128 * T
+    K = 8 * (Su - Sl)
+    Sk = K * (S - Sl) / (Su - Sl)
     model1 = FDEModel(N, dS, payoff)
     model2 = FDEModel(N, dS_partial, payoff)
     model3 = FDEModel(N, dS_total, payoff)
-    plt.plot(S, model1.price(Sl, Su, N).V[0][S])
-    plt.plot(S, model2.price(Sl, Su, N).V[0][S])
-    plt.plot(S, model3.price(Sl, Su, N).V[0][S])
+    plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
+    plt.plot(S, model2.price(Sl, Su, K).V[0][Sk])
+    plt.plot(S, model3.price(Sl, Su, K).V[0][Sk])
     plt.ylim([100, 150])
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")

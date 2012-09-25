@@ -5,26 +5,27 @@ import copy
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import numpy
-numpy.seterr(divide="ignore")
+import numpy as np
 
-from convertible_bond import dS, dS_total, payoff, B
+from convertible_bond import dS, dS_total, payoff, B, T
 from model import FDEModel
 
 def main():
-    N = 200
-    S = range(80, 121)
+    S = np.arange(80, 121)
     Sl = 0
     Su = 200
+    N = 128 * T
+    K = 8 * (Su - Sl)
+    Sk = K * (S - Sl) / (Su - Sl)
     model1 = FDEModel(N, dS_total, payoff)
     model2 = FDEModel(N, dS, payoff)
     B.R = 1.0
-    plt.plot(S, model1.price(Sl, Su, N).V[0][S])
-    plt.plot(S, model2.price(Sl, Su, N).V[0][S])
+    plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
+    plt.plot(S, model2.price(Sl, Su, K).V[0][Sk])
     B.R = 0.5
-    plt.plot(S, model1.price(Sl, Su, N).V[0][S])
+    plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     B.R = 0.0
-    plt.plot(S, model1.price(Sl, Su, N).V[0][S])
+    plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.ylim([100, 150])
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")

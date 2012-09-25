@@ -7,19 +7,19 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from convertible_bond import dS_total as dS, payoff, B
-from model import FDEModel, RannacherScheme
+from convertible_bond import dS_total as dS, payoff, B, T
+from model import FDEModel
 
 def delta(S, model):
     Sl = 1
-    Su = 201
-    K = 32
+    Su = 200
+    K = 8
     S = S - 1
-    V = model.price(Sl, Su, 200 * K, scheme=RannacherScheme).V[0]
+    V = model.price(Sl, Su, 199 * K).V[0]
     return K * (V[S * K + 1] - V[S * K - 1]) / 2
 
 def main():
-    N = 640
+    N = 128 * T
     S = np.arange(20, 121)
     dS1 = copy.copy(dS)
     dS1.lambd_ = lambda S: 0.02 * (S / 100)**-1.2
