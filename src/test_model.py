@@ -9,10 +9,11 @@ import scipy.sparse as sparse
 
 from model import BinomialModel, FDEModel, WienerJumpProcess
 from model import CrankNicolsonScheme, ExplicitScheme, ImplicitScheme, \
-                    RannacherScheme
+                    RannacherScheme, PenaltyScheme
 from payoff import Annuity, CallA, CallE, Forward, Stack
 
-SCHEMES = (CrankNicolsonScheme, ExplicitScheme, ImplicitScheme, RannacherScheme)
+SCHEMES = (CrankNicolsonScheme, ExplicitScheme, ImplicitScheme, RannacherScheme,
+            PenaltyScheme)
 
 class TestWienerJumpProcess(unittest.TestCase):
     """Test the Wiener Jump process."""

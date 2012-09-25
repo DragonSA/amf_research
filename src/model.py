@@ -12,7 +12,7 @@ __all__ = [
         "BinomialModel", "FDEModel",
         "Payoff", "WienerJumpProcess",
         "CrankNicolsonScheme", "ExplicitScheme", "ImplicitScheme",
-        "RannacherScheme",
+        "RannacherScheme", "PenaltyScheme",
     ]
 
 
@@ -330,6 +330,49 @@ class RannacherScheme(CrankNicolsonScheme):
         for i in range(4):
             V = linalg.spsolve(self.Lq, V + self.d * X)
         return V
+
+
+class PenaltyScheme(CrankNicolsonScheme):
+    """
+    Crank-Nicolson difference equation using penalty iterations to impose the
+    American constraints.
+    """
+
+    def __init__(self, dS, dt, ds, S, tol=None, **kwargs):
+        super(PenaltyScheme, self).__init__(dS, dt, ds, S, **kwargs)
+        if tol is None:
+            tol = min(dt, ds)**2
+        assert(tol > 0)
+        self.tol = np.double(tol)
+
+    def __call__(self, t, V, X, C, payoff):
+        # V after explicit step
+        diag = lambda x: sparse.dia_matrix(([x], [0]), shape=V.shape*2)
+        Vx = self.Le.dot(V) + self.d * X
+        Vk = linalg.spsolve(self.Li, Vx)
+        Vs = payoff(t, Vk, self.S)
+        Pk = (Vs != Vk) / self.tol
+        if (Pk == 0).all():
+            return Vk + C
+        while True:
+            Vk1 = linalg.spsolve(self.Li + diag(Pk), Vx + Pk * Vs)
+            if np.max(np.abs(Vk1 - Vk) / np.maximum(1, np.abs(Vk1))) < self.tol:
+                break
+            Vs = payoff(t, Vk1, self.S)
+            Pk1 = (Vs != Vk1) / self.tol
+            if (Pk1 == Pk).all():
+                break
+            Pk, Vk = Pk1, Vk1
+        return Vk1 + C
+
+    def scheme(self, V, X, P=None, Vs=None):
+        if P is None or Vs is None:
+            return super(PenaltyScheme, self).scheme(V, X)
+        L = self.Li + sparse.dia_matrix(([P], [0]), shape=V.shape*2)
+        return linalg.spsolve(L, self.Le.dot(V) + self.d * X + P * Vs)
+
+    def _P(self, Vn, Vs):
+        return (Vn != Vs) / self.tol
 
 
 class FDEModel(object):
