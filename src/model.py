@@ -12,7 +12,7 @@ __all__ = [
         "BinomialModel", "FDEModel",
         "Payoff", "WienerJumpProcess",
         "CrankNicolsonScheme", "ExplicitScheme", "ImplicitScheme",
-        "RannacherScheme", "PenaltyScheme",
+        "RannacherScheme", "PenaltyScheme", "PenaltyRannacherScheme",
     ]
 
 
@@ -365,14 +365,23 @@ class PenaltyScheme(CrankNicolsonScheme):
             Pk, Vk = Pk1, Vk1
         return Vk1 + C
 
-    def scheme(self, V, X, P=None, Vs=None):
-        if P is None or Vs is None:
-            return super(PenaltyScheme, self).scheme(V, X)
-        L = self.Li + sparse.dia_matrix(([P], [0]), shape=V.shape*2)
-        return linalg.spsolve(L, self.Le.dot(V) + self.d * X + P * Vs)
 
-    def _P(self, Vn, Vs):
-        return (Vn != Vs) / self.tol
+class PenaltyRannacherScheme(PenaltyScheme, RannacherScheme):
+    """
+    Crank-Nicolson difference equatioin using penalty iterations to impose the
+    American constrains and fully implicit quarter steps to handle discontinuous
+    payoffs.
+    """
+
+    def __call__(self, t, V, X, C, payoff):
+        if self.imp > 0:
+            V = payoff(t, self.scheme_implicit(V, X), self.S) + C
+            self.imp -= 1
+        else:
+            V = PenaltyScheme.__call__(self, t, V, X, C, payoff)
+        if C != 0:
+            self.imp += 1
+        return V
 
 
 class FDEModel(object):
@@ -412,7 +421,7 @@ class FDEModel(object):
         self.dS = dS
         self.V = V
 
-    def price(self, Sl, Su, K, scheme=CrankNicolsonScheme, **kwargs):
+    def price(self, Sl, Su, K, scheme=PenaltyRannacherScheme, **kwargs):
         """
         Price the payoff for prices in range [Sl, Su], and K increments, using
         the given FD scheme, and possibility using exponential increments
