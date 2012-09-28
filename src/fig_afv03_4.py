@@ -7,7 +7,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from convertible_bond import dS, dS_total, payoff, B, T
+from convertible_bond.afv03 import dS, dS_total, payoff, B, T
 from model import FDEModel
 
 def main():

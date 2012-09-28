@@ -1,14 +1,13 @@
 """
 Comparative graph between MK12 and this model.
 """
-import copy
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 np.seterr(divide="ignore")
 
-from convertible_bond import dS_total as dS, payoff, B, T
+from convertible_bond.mk12 import dS, dS_var, payoff, B, T
 from model import FDEModel
 
 def main():
@@ -18,14 +17,8 @@ def main():
     N = 128 * T
     K = 8 * (Su - Sl)
     Sk = (K * (S - Sl) / (Su - Sl)).astype(int)
-    dS.sigma = 0.25
-    dS.lambd_ = 0.062
-    dSv = copy.copy(dS)
-    dSv.lambd_ = lambda S: 0.062 * (S / 50)**-0.5
-    dSv.cap_lambda = True
-    B.R = 0.4
     model1 = FDEModel(N, dS, payoff)
-    model2 = FDEModel(N, dSv, payoff)
+    model2 = FDEModel(N, dS_var, payoff)
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, np.append(B.R * B.N, model2.price(Sl + 1, Su, K - 8).V[0][Sk[:-1]]))
     plt.ylim([40, 160])

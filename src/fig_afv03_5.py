@@ -7,11 +7,11 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from convertible_bond import dS_total as dS, payoff, B, T
+from convertible_bond.afv03  import dS_total as dS, payoff, T
 from model import FDEModel
 
 def main():
-    S = np.arange(20, 121)
+    S = np.arange(24, 121)
     Sl = 0
     Su = 200
     N = 128 * T
@@ -29,6 +29,7 @@ def main():
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, model2.price(Sl + 1, Su, K - 8).V[0][Sk - 8])
     plt.plot(S, model3.price(Sl + 1, Su, K - 8).V[0][Sk - 8])
+    plt.xlim(S[0], S[-1])
     plt.ylim(50, 150)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
