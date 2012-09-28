@@ -5,14 +5,49 @@ Various payoff functions.
 import contextlib
 import numpy as np
 
-from model import Payoff
-
 __all__ = [
+        "Payoff",
+        # Simple Payoffs
         "CallA", "CallE", "CallVR", "Forward", "PutA", "PutE", "PutV",
+        # Compound Payoffs
         "Stack", "Time", "UpAndOut",
+        # Stock Independent Payoffs
         "Annuity", "AnnuityI",
+        # Behaviour Mutators
         "VariableStrike",
     ]
+
+
+class Payoff(object):
+    """
+    The payoff description for a derivative, handling terminal, transient
+    and default payoffs.
+    """
+
+    def __init__(self, T):
+        self.T = T
+
+    def __contains__(self, t):
+        return 0 <= t <= T
+
+    def default(self, t, S):
+        """Payoff in the event of default at time t"""
+        assert(t != self.T)
+        return np.zeros(S.shape)
+
+    def terminal(self, S):
+        """Payoff at terminal time."""
+        return np.zeros(S.shape)
+
+    def transient(self, t, V, S):
+        """Payoff during transient (non-terminal) time."""
+        assert(t != self.T)
+        return V
+
+    def coupon(self, t):
+        """Payoff of coupon."""
+        return 0
+
 
 ###
 ### SIMPLE PAYOFFS
