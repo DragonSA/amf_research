@@ -20,7 +20,7 @@ def delta(S, model):
 
 def main():
     N = 128 * T
-    S = np.arange(20, 121)
+    S = np.arange(24, 121)
     dS1 = copy.copy(dS)
     dS1.lambd_ = lambda S: 0.02 * (S / 100)**-1.2
     dS1.cap_lambda = True
@@ -33,7 +33,8 @@ def main():
     plt.plot(S, delta(S, model3))
     plt.plot(S, delta(S, model2))
     plt.plot(S, delta(S, model1))
-    plt.ylim([-1.25, 1.25])
+    plt.xlim(S[0], S[-1])
+    plt.ylim(-1, 1)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["$\\alpha = -2.0$", "$\\alpha = -1.2$", "Constant hazard rate"], loc=4)

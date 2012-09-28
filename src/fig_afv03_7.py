@@ -20,7 +20,7 @@ def gamma(S, model):
 
 def main():
     N = 128 * T
-    S = np.arange(20, 121)
+    S = np.arange(24, 121)
     dS1 = copy.copy(dS)
     dS1.lambd_ = lambda S: 0.02 * (S / 100)**-1.2
     dS1.cap_lambda = True
@@ -33,7 +33,8 @@ def main():
     plt.plot(S, gamma(S, model1))
     plt.plot(S, gamma(S, model2))
     plt.plot(S, gamma(S, model3))
-    plt.ylim([-0.1, 0.1])
+    plt.xlim(S[0], S[-1])
+    plt.ylim(-0.1, 0.1)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Constant hazard rate", "$\\alpha = -1.2$", "$\\alpha = -2.0$"], loc=2)

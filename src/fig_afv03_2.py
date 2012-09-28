@@ -22,7 +22,7 @@ def main():
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, model2.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, model3.price(Sl, Su, K).V[0][Sk])
-    plt.ylim([100, 150])
+    plt.ylim(100, 150)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["No default", "Partial default", "Total Default"], loc=2)

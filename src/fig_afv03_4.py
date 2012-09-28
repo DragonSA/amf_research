@@ -26,7 +26,7 @@ def main():
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     B.R = 0.0
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
-    plt.ylim([100, 150])
+    plt.ylim(100, 150)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Total default (R=100%)", "No default", "Total default (R=50%)", "Total default (R=0%)"], loc=2)

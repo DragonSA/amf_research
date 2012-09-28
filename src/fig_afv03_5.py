@@ -29,7 +29,7 @@ def main():
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, model2.price(Sl + 1, Su, K - 8).V[0][Sk - 8])
     plt.plot(S, model3.price(Sl + 1, Su, K - 8).V[0][Sk - 8])
-    plt.ylim([50, 150])
+    plt.ylim(50, 150)
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Constant hazard rate", "$\\alpha = -1.2$", "$\\alpha = -2.0$"], loc=2)
