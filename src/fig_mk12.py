@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 np.seterr(divide="ignore")
 
-from convertible_bond.mk12 import dS, dS_var, payoff, B, T
+from convertible_bond.mk12 import dS, dS_var, payoff, A, T
 from model import FDEModel
 
 def main():
@@ -20,7 +20,7 @@ def main():
     model1 = FDEModel(N, dS, payoff)
     model2 = FDEModel(N, dS_var, payoff)
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
-    plt.plot(S, np.append(B.R * B.N, model2.price(Sl + 1, Su, K - 8).V[0][Sk[:-1]]))
+    plt.plot(S, np.append(A.R * A.N, model2.price(Sl + 1, Su, K - 8).V[0][Sk[:-1]]))
     plt.ylim([40, 160])
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")

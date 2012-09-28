@@ -7,7 +7,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
-from convertible_bond.afv03 import dS, dS_total, payoff, B, T
+from convertible_bond.afv03 import dS, dS_total, payoff, A, T
 from model import FDEModel
 
 def main():
@@ -19,12 +19,12 @@ def main():
     Sk = K * (S - Sl) / (Su - Sl)
     model1 = FDEModel(N, dS_total, payoff)
     model2 = FDEModel(N, dS, payoff)
-    B.R = 1.0
+    A.R = 1.0
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.plot(S, model2.price(Sl, Su, K).V[0][Sk])
-    B.R = 0.5
+    A.R = 0.5
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
-    B.R = 0.0
+    A.R = 0.0
     plt.plot(S, model1.price(Sl, Su, K).V[0][Sk])
     plt.ylim(100, 150)
     plt.xlabel("Stock Price")

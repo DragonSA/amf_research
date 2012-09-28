@@ -9,7 +9,11 @@ from model import WienerJumpProcess, BinomialModel, FDEModel, FDEBVModel
 from payoff import CallA, Stack, Time, VariableStrike
 from convertible_bond.payoff import Annuity, Call, Put
 
-__all__ = ["dS", "dS_total", "dS_partial", "B", "P", "C", "S", "payoff", "T"]
+__all__ = [
+        "T",
+        "dS", "dS_total", "dS_partial",
+        "A", "P", "C", "S", "B", "E", "payoff",
+    ]
 
 # Time till maturity = 5 years
 T = 5
@@ -29,7 +33,7 @@ dS = WienerJumpProcess(r=0.05, sigma=0.2)
 #       Nominal value = 100
 #       Semi-annual coupon = 4
 #       Recovery factor = 0
-B = Annuity(T, np.arange(0.5, T + 0.5, 0.5), C=4, N=100, R=0)
+A = Annuity(T, np.arange(0.5, T + 0.5, 0.5), C=4, N=100, R=0)
 
 # American put option on portfolio
 #       Strike = 105
@@ -44,9 +48,15 @@ C = Time(Call(T, 110, B), times=[(2, 5)])
 # Stock option (conversion option into stock for portfolio)
 S = CallA(T, 0)
 
+# Bond component of convertible bond
+B = Stack([A, P, C])
+
+# Equity component of convertible bond
+E = S
+
 # Convertible bond:
 #       Bond
 #       American put option on portfolio
 #       Reversed American call option on portfolio
 #       Stock
-payoff = Stack([B, P, C, S])
+payoff = Stack([A, P, C, S])
