@@ -1,0 +1,18 @@
+# Support Makefile for creating figures
+#
+# SRC		The path to src files
+PYLIB=		model.py payoff.py convertible_bond/__init__.py \
+		convertible_bond/payoff.py
+
+fig_afv03_2_LIB=	convertible_bond/afv03.py
+fig_afv03_4_LIB=	convertible_bond/afv03.py
+fig_afv03_5_LIB=	convertible_bond/afv03.py
+fig_afv03_6_LIB=	convertible_bond/afv03.py
+fig_afv03_7_LIB=	convertible_bond/afv03.py
+fig_mk12_LIB=	convertible_bond/mk12.py
+
+.py.pdf: ${PYLIB:S|^|${SRC}|} ${${.PREFIX}_LIB:S|^|${SRC}|}
+	@echo "[FIG] ${.PREFIX}"
+	@(cd ${SRC}; ${PYTHON} ${.PREFIX}.py)
+
+.include "../commands.mk"

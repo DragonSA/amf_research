@@ -1,0 +1,54 @@
+.PHONY:		all clean build
+.SUFFIXES:	.tex .pdf .aux .bbl .pdf
+
+CLEAN_SUFFIXES=	.aux .lof .log .lot .toc .bbl .blg
+
+# Extract dependencies from ${TEXFILE}
+FIGURES!=	sed -nE 's|.*\includegraphics(\[.*\])?{(../common/.*)}.*|\2.pdf|gp' ${NAME}.tex
+BIBLIOGRAPHY!=	sed -nE 's|.*\bibliography{(../references/.*)}.*|\1|gp' ${NAME}.tex
+BIBSTYLE!=	sed -nE 's|.*\bibliographystyle{(../references/.*)}.*|\1.bst|gp' ${NAME}.tex
+
+# Macros
+GETAUXCITE=	sed -nE 's|.*\citation{(.*)}.*|\1|gp' ${NAME}.aux 2> /dev/null | sort -u
+GETBBLCITE=	sed -nE 's|.*\bibitem\[.*\]{(.*)}|\1|gp' ${NAME}.bbl 2> /dev/null | sort -u
+RUN_PDFLATEX=	echo "[PDFTEX] ${NAME}"; \
+		${PDFLATEX} -interaction=batchmode -file-line-error ${NAME}.tex | \
+			sed -nE 's/(LaTeX Error:|Warning:|Underfull|Overfull)/&/gp'
+RERUN_PDFLATEX=	grep -Eq '^(.*Rerun .*|No file ${NAME}\.[^.]+\.|No file .+\.tex\.|LaTeX Warning: File.*)$$' ${NAME}.log | \
+		grep -v rerunfilecheck
+
+all:
+	@${MAKE} -C ../common FIGURES="${FIGURES:S|../common/||}"
+	@${MAKE} -f ../Makefile.incl build
+
+clean:
+	@echo "[${NAME}] clean"
+	@rm -f ${CLEAN_SUFFIXES:S/^/${NAME}/}
+
+build: ${NAME}.pdf
+
+.tex.pdf: ${FIGURES} ${NAME}.bbl
+
+.aux.bbl: ${BIBLIOGRAPHY} ${BIBSTYLE}
+	@set -e; \
+	if echo ${.OODATE} | grep -q "${BIBLIOGRAPHY}\|${BIBSTYLE}" || [ "`${GETAUXCITE}`" != "`${GETBBLCITE}`" ]; \
+	then \
+		echo "[BIBTEX] ${NAME}"; \
+		${BIBTEX} ${NAME}.aux | sed -nE 's/(Error|Warning)/&/gp'; \
+		${RUN_PDFLATEX}; \
+	else \
+		touch ${NAME}.bbl; \
+	fi; \
+	if ${RERUN_PDFLATEX}; \
+	then \
+		${RUN_PDFLATEX}; \
+	fi; \
+	if ${RERUN_PDFLATEX}; \
+	then \
+		${RUN_PDFLATEX}; \
+	fi
+
+.tex.aux:
+	@${RUN_PDFLATEX}
+
+.include "commands.mk"
