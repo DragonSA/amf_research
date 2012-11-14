@@ -7,7 +7,7 @@ SRC=		../src/
 all: ${FIGURES}
 
 clean:
-	@echo "[common] clean"
+	@echo "[CLEAN] common"
 	@rm -f fig*.pdf
 
 .PHONY:		all clean
