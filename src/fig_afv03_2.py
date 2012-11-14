@@ -26,8 +26,7 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["No default", "Partial default", "Total Default"], loc=2)
-    plt.savefig("../common/fig_afv03_2.png")
-    plt.savefig("../common/fig_afv03_2.svg")
+    plt.savefig("../common/fig_afv03_2.pdf")
     #plt.show()
 
 if __name__ == "__main__":

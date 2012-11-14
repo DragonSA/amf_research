@@ -30,8 +30,7 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Total default (R=100%)", "No default", "Total default (R=50%)", "Total default (R=0%)"], loc=2)
-    plt.savefig("../common/fig_afv03_4.png")
-    plt.savefig("../common/fig_afv03_4.svg")
+    plt.savefig("../common/fig_afv03_4.pdf")
     #plt.show()
 
 if __name__ == "__main__":

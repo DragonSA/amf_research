@@ -31,8 +31,7 @@ def main():
     plt.xlabel("$\\eta$")
     plt.ylabel("Price at $S=100$")
     plt.legend(name, loc=3)
-    plt.savefig("../common/fig_lambda_eta.png")
-    plt.savefig("../common/fig_lambda_eta.svg")
+    plt.savefig("../common/fig_lambda_eta.pdf")
     #plt.show()
 
 if __name__ == "__main__":

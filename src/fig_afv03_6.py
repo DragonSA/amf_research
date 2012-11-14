@@ -31,8 +31,7 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["$\\alpha = -2.0$", "$\\alpha = -1.2$", "Constant hazard rate"], loc=4)
-    plt.savefig("../common/fig_afv03_6.png")
-    plt.savefig("../common/fig_afv03_6.svg")
+    plt.savefig("../common/fig_afv03_6.pdf")
     #plt.show()
 
 if __name__ == "__main__":
