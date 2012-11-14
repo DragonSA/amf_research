@@ -23,16 +23,16 @@ class Annuity(Annuity):
 
 class Put(PutV, VariableStrike):
     """Customised PutV where strike price is adjusted for outstanding coupon."""
-    def __init__(self, T, K, B):
+    def __init__(self, T, K, A):
         super(Put, self).__init__(T, K)
-        self._B = B
+        self._A = A
 
     def transient(self, t, V, S):
         ti = 0
         accC = 0
-        for i in self._B.times:
+        for i in self._A.times:
             if i > t:
-                accC = self._B.C * (t - ti) / (i - ti)
+                accC = self._A.C * (t - ti) / (i - ti)
                 break
             ti = i
         with self._strike(self.K + accC):
@@ -41,16 +41,16 @@ class Put(PutV, VariableStrike):
 
 class Call(CallVR, VariableStrike):
     """Customised CallVR where strike price is adjusted for outstanding coupon."""
-    def __init__(self, T, K, B):
+    def __init__(self, T, K, A):
         super(Call, self).__init__(T, K)
-        self._B = B
+        self._A = A
 
     def transient(self, t, V, S):
         ti = 0
         accC = 0
-        for i in self._B.times:
+        for i in self._A.times:
             if i > t:
-                accC = self._B.C * (t - ti) / (i - ti)
+                accC = self._A.C * (t - ti) / (i - ti)
                 break
             ti = i
         with self._strike(self.K + accC):
