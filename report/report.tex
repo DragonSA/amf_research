@@ -66,6 +66,21 @@
 
 \def\n{\nonumber\\}
 
+% Bond descriptions
+\def\t{\ensuremath{t}\xspace}
+\def\ti{\ensuremath{t_i}\xspace}
+\def\T{\ensuremath{T}\xspace}
+\def\N{\ensuremath{N}\xspace}
+\def\R{\ensuremath{R}\xspace}
+\def\C{\ensuremath{C_i}\xspace}
+\def\Kp{\ensuremath{K^{p}_t}\xspace}
+\def\Kc{\ensuremath{K^{c}_t}\xspace}
+\def\Kv{\ensuremath{\kappa_t}\xspace}
+\def\Tp{\ensuremath{\Omega^{p}}\xspace}
+\def\Tc{\ensuremath{\Omega^{c}}\xspace}
+\def\Tv{\ensuremath{\Omega^{v}}\xspace}
+\def\ST{\ensuremath{S_T}\xspace}
+
 % Statistical
 \def\E[#1]{\Tilde{\mathbb{E}}\!\left[#1\right]}
 \def\Et[#1]{\Tilde{\mathbb{E}}_t\!\left[#1\right]}
@@ -197,7 +212,28 @@ Place acknowledgements here.
 What this paper shows and does.
 
 \section{Convertible Bonds with Credit Risk}
-Describe and define (in maths) what a convertible bond with credit risk is.
+A convertible bond is an annuity, which pays coupons \C at \ti and pays \R at maturity \T, with the following embedded options:
+\begin{itemize}
+ \item \emph{A put option for the bond holder:} the bond holder may redeem the bond early for \Kp, provided $\t \in \Tp$.  This option is not applicable at termination, $T \not\in \Tp$.
+ \item \emph{A call option for the bond issuer:} the bond issuer may force early redemption of the bond for \Kc, provided $\t \in \Tc$.  Normally $\Kc > \Kp$.  This option is not applicable at termination, $T \not\in \Tc$.
+ \item \emph{A convertion option:} the bond holer may convert the bond into \Kv shares, for a value of $\Kv\S$, provided $\t \in \Tv$.  To optimise profits the bond holder would rather convert than exercise if $\Kp < \Kv\S$.  This option supersedes the call option (i.e. if the bond issuer forces early redemption the bond holder may still convert the bond into shared).  This option is applicable at termination, $T \in \Tv$.
+\end{itemize}
+
+Table \ref{tab:choice} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  The impact coupons on the choices is left as an implementation detail.
+\begin{table}[ht]
+ \centering
+ \caption[Payoffs for the convertible bond]{The choices made by the bond holder and the bond issuer, the payoff of those choices and the conditions required for those choices.  \V is the intrinsic value of the bond at time \t.}
+ \begin{tabular}{|l|l|l|}\hline
+  \textbf{Choice}     & \textbf{Payoff} & \textbf{Condition} \\\hline
+  Redemption          & \Kp             & $(\V < \Kp)\wedge(\t \in \Tv)\wedge[(\Kv\S \le \V)\lor(\t \not\in \Tv)]$ \\\hline
+  Forced redemption   & \Kc             & $(\V > \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S \le \Kc)\lor(\t \not\in\Tv)]$ \\\hline
+  Conversion          & $\Kv\S$         & $(\Kv\S > \V)\wedge(\t \in \Tv)$ \\\hline
+  Forced conversion   & $\Kv\S$         & $(\V \ge \Kv\S > \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \\\hline
+  Terminal conversion & $\Kv\ST$        & $(\Kv\ST > \N)\wedge(\t = \T)$ \\\hline
+  Maturity            & \R              & $(\Kv\ST \le \N)\wedge(\t = \T)$ \\\hline
+ \end{tabular}
+ \label{tab:choice}
+\end{table}
 
 \section{Literature Review}
 Describe the current state of literature w/ Convertible Bonds with Credit Risk,
