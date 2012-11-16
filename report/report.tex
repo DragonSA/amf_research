@@ -128,7 +128,9 @@
 \def\VJmnm{\ensuremath{V^{n - 1}_{J - 1}\xspace}}
 \def\VJpnm{\ensuremath{V^{n - 1}_{J + 1}\xspace}}
 
+\def\Sz{\ensuremath{S_0}\xspace}
 \def\Sj{\ensuremath{S_j}\xspace}
+\def\SJ{\ensuremath{S_J}\xspace}
 \def\Xj{\ensuremath{X_j}\xspace}
 
 % Binomial model
@@ -294,7 +296,7 @@ Equating the differential \eqref{eq:rPdt} and the expected differential \eqref{e
 \end{align}
 
 \section{Finite Difference}
-The derived PDE can be solved numerically by constructing a lattice of stock prices and time.  \Vjn will denote the lattice value at the j\th stock node and n\th time node where the step between stock nodes is \DS and the step between time nodes is \Dt.  \Sj will denote the stock value at the j\th stock node and \Xj will denote the defaulted value at the j\th stock node.
+The derived PDE can be solved numerically by constructing a lattice of stock prices and time.  \Vjn will denote the lattice value at the j\th stock node and n\th time node where the step between stock nodes is \DS and the step between time nodes is \Dt.  \Sj will denote the stock value at the j\th stock node and \Xj will denote the defaulted value at the j\th stock node.  The stock prices go from a minimum of \Sz to a maximum of \SJ.
 
 All finite difference equations derived here can be expressed as functions of $\alpha$, $\beta$ and $\kappa$ where:
 \begin{align*}
