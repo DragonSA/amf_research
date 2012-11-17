@@ -224,12 +224,18 @@ A convertible bond is an annuity, which pays coupons \C at \ti and pays \R at ma
  \item \emph{A conversion option:} the bond holder may convert the bond into \Kv shares, for a value of $\Kv\S$, provided $\t \in \Tv$.  To optimise profits the bond holder would rather convert than exercise if $\Kp < \Kv\S$.  This option supersedes the call option (i.e. if the bond issuer forces early redemption the bond holder may still convert the bond into shared).  This option is applicable at termination, $T \in \Tv$.
 \end{itemize}
 
-TODO: credit risk
+In the event of default the bond holder may either recover the remains of the annuity or convert into the stock, which ever is worth more.  Default is considered terminal.
 
-Table \ref{tab:choice} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  The impact coupons on the choices is left as an implementation detail.
+Suppose the recovery of the bond is $\gamma$, and the drop in share price is $\eta$, then the value of the convertible bond in default is\footnote{This is assuming the bond recovery is based on the redemption value.  Another possibility is to base the recovery on the bond value at time \t}:
+\begin{equation}
+ \X = \max(\gamma\R, (1 - \eta)\Kv\S)
+\end{equation}
+
+
+Table \ref{tab:choice} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  \V is assumed to be the intrinsic value in this context only.  The impact of coupons is left as an implementation detail.
 \begin{table}[ht]
  \centering
- \caption[Payoffs for the convertible bond]{The choices made by the bond holder and the bond issuer, the payoff of those choices and the conditions required for those choices.  \V is the intrinsic value of the bond at time \t.}
+ \caption{Payoffs for the convertible bond}
  \begin{tabular}{|l|l|l|}\hline
   \theader{Action}    & \theader{Payoff} & \theader{Condition} \h
   Put                 & \Kp              & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \h
@@ -603,7 +609,7 @@ and it is assumed that embedded options can only be exercised after receiving th
                               & Coupon\footnote{$\C = 4$} & 8\% \\
                               & Coupon frequency\footnote{$\ti = \{0.5, 1, \ldots, 4.5\}$} & Semi-annually \\
                               & Maturity            & $\T = 5$ \\
-                              & Recovery            & $\X = 0\%$ \h
+                              & Recovery            & $\gamma = 0\%$ \h
   \multirow{2}{*}{Put}        & Strike              & $\Kp = 105$ \\
                               & Period(s)           & $\t \in \{3\}$ \h
   \multirow{2}{*}{Call}       & Strike\footnote{The strike of 110 is the clean price and needs to be adjusted for accrued interest, on a simple interest basis} & $\Kc = 110 + \C\tfrac{t \pmod {0.5}}{0.5}$ \\
