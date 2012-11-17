@@ -12,8 +12,8 @@ BIBSTYLE!=	sed -nE 's|.*\bibliographystyle{(../references/[^}]*)}.*|\1.bst|gp' $
 GETAUXCITE=	sed -nE 's|.*\citation{(.*)}.*|\1|gp' ${NAME}.aux 2> /dev/null | sort -u
 GETBBLCITE=	sed -nE 's|.*\bibitem\[.*\]{(.*)}|\1|gp' ${NAME}.bbl 2> /dev/null | sort -u
 RUN_PDFLATEX=	echo "[PDFTEX] ${NAME}"; \
-		${PDFLATEX} -interaction=batchmode -file-line-error ${NAME}.tex | \
-			sed -nE 's/(LaTeX Error:|Warning:|Underfull|Overfull)/&/gp'
+		${PDFLATEX} -interaction=nonstopmode -file-line-error ${NAME}.tex | \
+			sed -nE 's/(LaTeX Error:|Warning:|Underfull|Overfull|^\.\/${NAME}\.tex:)/&/gp'
 RERUN_PDFLATEX=	[ -n "`grep -E '^.*Rerun .*$$' ${NAME}.log | grep -v rerunfilecheck`" ]
 
 all:
