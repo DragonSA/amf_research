@@ -232,10 +232,9 @@ Suppose the recovery of the bond is $\gamma$, and the drop in share price is $\e
 \end{equation}
 
 
-Table \ref{tab:choice} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  \V is assumed to be the intrinsic value in this context only.  The impact of coupons is left as an implementation detail.
+Table \ref{tab:choices} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  Figure \ref{fig:choices} illustrates the actions taken on the bond over the lifetime of a convertible bond.  The impact of coupons is left as an implementation detail.
 \begin{table}[ht]
  \centering
- \caption{Payoffs for the convertible bond}
  \begin{tabular}{|l|l|l|}\hline
   \theader{Action}    & \theader{Payoff} & \theader{Condition} \h
   Put                 & \Kp              & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \h
@@ -243,8 +242,10 @@ Table \ref{tab:choice} illustrated the various choices made by the bond holder a
   Conversion          & $\Kv\S$          & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \h
   Forced conversion   & $\Kv\S$          & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \h
   Redemption          & \R               & $(\t = \T)\wedge[(\Kv\S \le \R)\lor(\t \not\in \Tv)]$ \h
+  Hold                &                  & \emph{otherwise} \h
  \end{tabular}
- \label{tab:choice}
+ \caption[Payoff for the convertible bond]{Payoff for the convertible bond.  \V is assumed to be the intrinsic value in this context only}
+ \label{tab:choices}
 \end{table}
 
 \section{Literature Review}
@@ -635,6 +636,28 @@ and it is assumed that embedded options can only be exercised after receiving th
  \end{tabular}
  \label{tab:stock_parameters}
 \end{table}
+
+\section{Payoff}
+Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it's lifetime, and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
+
+The figure has clear jumps at each coupon payment, producing a saw effect.  The other influencing factors are shown below:
+\begin{itemize}
+ \item \emph{Put:} the ``Put'' action is taken at time $\t = 3$ at stock prices from $\S = 0$ till $\S \approxeq 75$.  This option causes the value of the convertible bond prior to time $\t = 3$ to be elevated due to the higher payoff than the intrinsic value.
+ \item \emph{Call:} the ``Call'' action is taken from time $\t = 2$ till almost $\t = 5$ with a narrow plateau around stock prices around $\S = 110$.  The call option does reduce the intrinsic value as apposed to being just the base for the forced conversion.
+ \item \emph{Conversion:} on termination the ``Conversion'' action is taken for $\S \ge 104$.  At no other time is there voluntary conversion as, at time $\t = 2$ the upper payoff is similar to that of a forward and for similar reasons the value of the convertible bond increases.  Due to the increasing value the intrinsic value is never below the conversion threshold.
+ \item \emph{Forced conversion:} the ``Forced conversion'' action is taken from time $\t = 2$ till almost $\t = 5$ above stock price $\S \approxeq 110$.
+ \item \emph{Redemption:} on termination the ``Redemption'' action is taken for $\S < 104$.
+ \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ having minimal impact.
+\end{itemize}
+
+
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=14cm]{../common/fig_choices}
+ \caption[Payoff]{Payoff of the convertible bond with total default and colours indicating the action taken for that payoff.  $\Dt = 2^{-3}$, $\DS = 2^{1}$ and $\S \in [0, 250]$.}
+ \label{fig:choices}
+\end{figure}
+
 
 
 \chapter{Conclusion}
