@@ -14,6 +14,7 @@
 \usepackage{footnote}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
+\usepackage{multirow}
 \usepackage[numbers]{natbib}
 \usepackage{xspace}
 
@@ -65,6 +66,8 @@
 % MACRO DEFINITIONS ----------------------------------------------
 
 \def\n{\nonumber\\}
+\def\h{\\\hline}
+\newcommand{\theader}[1]{\multicolumn{1}{|c|}{\textbf{#1}}}
 
 % Bond descriptions
 \def\t{\ensuremath{t}\xspace}
@@ -221,13 +224,15 @@ A convertible bond is an annuity, which pays coupons \C at \ti and pays \R at ma
  \item \emph{A conversion option:} the bond holder may convert the bond into \Kv shares, for a value of $\Kv\S$, provided $\t \in \Tv$.  To optimise profits the bond holder would rather convert than exercise if $\Kp < \Kv\S$.  This option supersedes the call option (i.e. if the bond issuer forces early redemption the bond holder may still convert the bond into shared).  This option is applicable at termination, $T \in \Tv$.
 \end{itemize}
 
+TODO: credit risk
+
 Table \ref{tab:choice} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  The impact coupons on the choices is left as an implementation detail.
 \begin{table}[ht]
  \centering
  \caption[Payoffs for the convertible bond]{The choices made by the bond holder and the bond issuer, the payoff of those choices and the conditions required for those choices.  \V is the intrinsic value of the bond at time \t.}
  \begin{tabular}{|l|l|l|}\hline
   \textbf{Action}     & \textbf{Payoff} & \textbf{Condition} \\\hline
-  Put                 & \Kp             & $(\V \le \Kp)\wedge(\t \in \Tv)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \\\hline
+  Put                 & \Kp             & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \\\hline
   Call                & \Kc             & $(\V \ge \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S < \Kc)\lor(\t \not\in\Tv)]$ \\\hline
   Conversion          & $\Kv\S$         & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \\\hline
   Forced conversion   & $\Kv\S$         & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \\\hline
@@ -580,7 +585,50 @@ Provide a numerical example (with diagrams) and provide example of the hedging s
 
 
 \chapter{Numerical Example}
-Implement above models, explain implementation and results, by example.
+In the following analysis of the numerical results Table \ref{tab:bond_parameters}, the bond parameters, and Table \ref{tab:stock_parameters}, the stock parameters, are used as a basis.  There are three different types of stock price decreases that are used: total default when the stock losses all value, typical default when the stock losses 40\% and partial default where the stock price doesn't lose any value.
+
+If $\t^+$ is the time immediately after a coupon payment and $\t^-$ is the immediately before a coupon payment then the coupon payment is handled as follows:
+\begin{equation}
+ V_{t^{-}_i} = V_{t^{+}_i} + \C
+\end{equation}
+and it is assumed that embedded options can only be exercised after receiving the coupon payment (i.e. at $t^{+}_i$).
+
+\begin{savenotes}
+\begin{table}[ht]
+ \centering
+ \caption{Convertible Bond Parameters}
+ \begin{tabular}{|c|l|c|} \hline
+  \theader{Component}         & \theader{Parameter} & \theader{Value} \h
+  \multirow{5}{*}{Annuity}    & Notional\footnote{$\R = 104$} & $100$ \\
+                              & Coupon\footnote{$\C = 4$} & 8\% \\
+                              & Coupon frequency\footnote{$\ti = \{0.5, 1, \ldots, 4.5\}$} & Semi-annually \\
+                              & Maturity            & $\T = 5$ \\
+                              & Recovery            & $\X = 0\%$ \h
+  \multirow{2}{*}{Put}        & Strike              & $\Kp = 105$ \\
+                              & Period(s)           & $\t \in \{3\}$ \h
+  \multirow{2}{*}{Call}       & Strike\footnote{The strike of 110 is the clean price and needs to be adjusted for accrued interest, on a simple interest basis} & $\Kc = 110 + \C\tfrac{t \pmod {0.5}}{0.5}$ \\
+                              & Period(s)           & $\t \in [2, 5)$ \h
+  \multirow{2}{*}{Conversion} & Quantity            & $\Kv = 1$ \\
+                              & Period(s)           & $\t \in [0, 5]$ \h
+ \end{tabular}
+ \label{tab:bond_parameters}
+\end{table}
+\end{savenotes}
+
+\begin{table}[ht]
+ \centering
+ \caption{Stock Parameters}
+ \begin{tabular}{|l|l|} \hline
+  \theader{Parameter} & \theader{Value} \h
+  Risk free rate      & $r = 5\%$ \h
+  Volatility          & $\sigma = 20\%$ \h
+  Hazard rate         & $\lambda = 2\%$ \h
+  Default (total)     & $\eta = 100\%$ \h
+  Default (typical)   & $\eta = 40\%$ \h
+  Default (partial)   & $\eta = 0\%$ \h
+ \end{tabular}
+ \label{tab:stock_parameters}
+\end{table}
 
 
 \chapter{Conclusion}
