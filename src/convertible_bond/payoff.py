@@ -21,37 +21,28 @@ class Annuity(Annuity):
         return V
 
 
-class Put(PutV, VariableStrike):
+class DirtyStrike(VariableStrike):
+    """Create a strike that is adjusted for outstanding interest."""
+    def __init__(self, T, K, A):
+        super(DirtyStrike, self).__init__(T, K)
+        self._A = A
+
+    def strike(self, t):
+        ti = 0
+        accC = 0
+        for i in self._A.times:
+            if i > t:
+                accC = self._A.C * (t - ti) / (i - ti)
+                break
+            ti = i
+        return self.K + accC
+
+
+class Put(DirtyStrike, PutV):
     """Customised PutV where strike price is adjusted for outstanding coupon."""
-    def __init__(self, T, K, A):
-        super(Put, self).__init__(T, K)
-        self._A = A
-
-    def transient(self, t, V, S):
-        ti = 0
-        accC = 0
-        for i in self._A.times:
-            if i > t:
-                accC = self._A.C * (t - ti) / (i - ti)
-                break
-            ti = i
-        with self._strike(self.K + accC):
-            return super(Put, self).transient(t, V, S)
+    pass
 
 
-class Call(CallVR, VariableStrike):
+class Call(DirtyStrike, CallVR):
     """Customised CallVR where strike price is adjusted for outstanding coupon."""
-    def __init__(self, T, K, A):
-        super(Call, self).__init__(T, K)
-        self._A = A
-
-    def transient(self, t, V, S):
-        ti = 0
-        accC = 0
-        for i in self._A.times:
-            if i > t:
-                accC = self._A.C * (t - ti) / (i - ti)
-                break
-            ti = i
-        with self._strike(self.K + accC):
-            return super(Call, self).transient(t, V, S)
+    pass
