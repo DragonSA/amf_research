@@ -34,17 +34,17 @@ def choices(Z):
             if t in A and t != T:
                 V -= A.C
 
-            if t != T and t in P and V == Kp:
-                colours[x, y] = PUT
-            elif t != T and t in C and V == Kc:
-                colours[x, y] = CALL
-            elif V == S:
+            if V == S:
                 if t in C and t != T and Z.I[y][x] > S:
                     colours[x, y] = FCONV
                 else:
                     colours[x, y] = CONV
             elif t == T:
                 colours[x, y] = REDEM
+            elif t in P and V == Kp:
+                colours[x, y] = PUT
+            elif t in C and V == Kc:
+                colours[x, y] = CALL
             else:
                 colours[x, y] = HOLD
 
@@ -104,16 +104,16 @@ def plot_strips(ax, X, Y, Z, padding=0, facecolors=None):
 
 
 def main():
-    N = 80
+    N = 40
     model = FDEModel(N, dS, payoff)
-    P = model.price(0, 200, 100, scheme=CrankNicolsonScheme)
+    P = model.price(0, 250, 125, scheme=CrankNicolsonScheme)
     colours, window = choices(P)
     if "--window" in sys.argv:
         print window
         exit(0)
     fig = plt.figure()
     ax = fig.add_subplot(111, projection="3d")
-    plot_strips(ax, P.t, P.S, np.array(P.V).T, facecolors=colours)
+    plot_strips(ax, P.t, P.S[:100], np.array(P.V)[:, :100].T, facecolors=colours[:100])
     ax.set_xlabel("Time")
     ax.set_ylabel("Stock Price")
     ax.set_zlabel("Portfolio Value")
