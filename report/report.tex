@@ -227,10 +227,10 @@ Table \ref{tab:choice} illustrated the various choices made by the bond holder a
  \caption[Payoffs for the convertible bond]{The choices made by the bond holder and the bond issuer, the payoff of those choices and the conditions required for those choices.  \V is the intrinsic value of the bond at time \t.}
  \begin{tabular}{|l|l|l|}\hline
   \textbf{Action}     & \textbf{Payoff} & \textbf{Condition} \\\hline
-  Put                 & \Kp             & $(\V < \Kp)\wedge(\t \in \Tv)\wedge[(\Kv\S \le \V)\lor(\t \not\in \Tv)]$ \\\hline
-  Call                & \Kc             & $(\V > \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S \le \Kc)\lor(\t \not\in\Tv)]$ \\\hline
-  Conversion          & $\Kv\S$         & $(\Kv\S > \V)\wedge(\t \in \Tv)$ \\\hline
-  Forced conversion   & $\Kv\S$         & $(\V \ge \Kv\S > \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \\\hline
+  Put                 & \Kp             & $(\V \le \Kp)\wedge(\t \in \Tv)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \\\hline
+  Call                & \Kc             & $(\V \ge \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S < \Kc)\lor(\t \not\in\Tv)]$ \\\hline
+  Conversion          & $\Kv\S$         & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \\\hline
+  Forced conversion   & $\Kv\S$         & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \\\hline
   Redemption          & \R              & $(\t = \T)\wedge[(\Kv\S \le \R)\lor(\t \not\in \Tv)]$ \\\hline
  \end{tabular}
  \label{tab:choice}
