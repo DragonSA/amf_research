@@ -622,6 +622,7 @@ and it is assumed that embedded options can only be exercised after receiving th
 \end{table}
 \end{savenotes}
 
+\begin{savenotes}
 \begin{table}[ht]
  \centering
  \caption{Stock Parameters}
@@ -631,25 +632,15 @@ and it is assumed that embedded options can only be exercised after receiving th
   Volatility          & $\sigma := 20\%$ \h
   Hazard rate         & $\lambda := 2\%$ \h
   Default (total)     & $\eta := 100\%$ \h
-  Default (typical\footnote{\citet{BP95} found that stock prices typically drop 30\% on announcement of default} & $\eta := 30\%$ \h
+  Default (typical\footnote{\citet{BP95} found that stock prices typically drop 30\% on announcement of default}) & $\eta := 30\%$ \h
   Default (partial)   & $\eta := 0\%$ \h
  \end{tabular}
  \label{tab:stock_parameters}
 \end{table}
+\end{savenotes}
 
 \section{Payoff}
 Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it's lifetime, and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
-
-The figure has clear jumps at each coupon payment, producing a saw effect.  The other influencing factors are shown below:
-\begin{itemize}
- \item \emph{Put:} the ``Put'' action is taken at time $\t = 3$ at stock prices from $\S = 0$ till $\S \approxeq 75$.  This option causes the value of the convertible bond prior to time $\t = 3$ to be elevated due to the higher payoff than the intrinsic value.
- \item \emph{Call:} the ``Call'' action is taken from time $\t = 2$ till almost $\t = 5$ with a narrow plateau around stock prices around $\S = 110$.  The call option does reduce the intrinsic value as apposed to being just the base for the forced conversion.
- \item \emph{Conversion:} on termination the ``Conversion'' action is taken for $\S \ge 104$.  At no other time is there voluntary conversion as, at time $\t = 2$ the upper payoff is similar to that of a forward and for similar reasons the value of the convertible bond increases.  Due to the increasing value the intrinsic value is never below the conversion threshold.
- \item \emph{Forced conversion:} the ``Forced conversion'' action is taken from time $\t = 2$ till almost $\t = 5$ above stock price $\S \approxeq 110$.
- \item \emph{Redemption:} on termination the ``Redemption'' action is taken for $\S < 104$.
- \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ having minimal impact.
-\end{itemize}
-
 
 \begin{figure}[ht]
  \centering
@@ -658,24 +649,25 @@ The figure has clear jumps at each coupon payment, producing a saw effect.  The 
  \label{fig:choices}
 \end{figure}
 
+The figure has clear jumps at each coupon payment, producing a saw effect.  The other influencing factors are shown below:
+\begin{itemize}
+ \item \emph{Put:} the ``Put'' action is taken at time $\t = 3$ at stock prices from $\S = 0$ till $\S \approxeq 75$.  This option causes the value of the convertible bond prior to time $\t = 3$ to be elevated due to the higher payoff than the intrinsic value.
+ \item \emph{Call:} the ``Call'' action is taken from time $\t = 2$ till almost $\t = 5$ with a narrow plateau around stock prices around $\S = 110$.  The call option does reduce the intrinsic value as apposed to being just the base for the forced conversion.
+ \item \emph{Conversion:} on termination the ``Conversion'' action is taken for $\S \ge 104$.  At no other time is there voluntary conversion as, at time $\t = 2$ the upper payoff is similar to that of a forward and for similar reasons the value of the convertible bond increases.  Due to the increasing value the intrinsic value is never below the conversion threshold.
+ \item \emph{Forced conversion:} the ``Forced conversion'' action is taken from time $\t = 2$ until almost $\t = 5$ above stock price $\S \approxeq 110$.
+ \item \emph{Redemption:} on termination the ``Redemption'' action is taken for $\S < 104$.
+ \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ having minimal impact.
+\end{itemize}
 
 
 \chapter{Conclusion}
 Summarise what this paper shows and does (i.e. Introduction + Conclusion = Executive Summary).
 
 \appendix
-\chapter{Software and Hardware}
+\chapter{Appendix}
+\section{Software}
 
-\chapter{Source Code}
-\section{model.py}
-
-\section{payoff.py}
-
-\section{convertible\_bond/\_\_init\_\_.py}
-
-\section{convertible\_bond/payoff.py}
-
-\section{fig\_choices.py}
+\section{Hardware}
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
