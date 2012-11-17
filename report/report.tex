@@ -612,11 +612,11 @@ and it is assumed that embedded options can only be exercised after receiving th
                               & Maturity            & $\T = 5$ \\
                               & Recovery            & $\gamma = 0\%$ \h
   \multirow{2}{*}{Put}        & Strike              & $\Kp = 105$ \\
-                              & Period(s)           & $\t \in \{3\}$ \h
+                              & Period(s)           & $\Tp \in \{3\}$ \h
   \multirow{2}{*}{Call}       & Strike\footnote{The strike of 110 is the clean price and needs to be adjusted for accrued interest, on a simple interest basis} & $\Kc = 110 + \C\tfrac{t \pmod {0.5}}{0.5}$ \\
-                              & Period(s)           & $\t \in [2, 5)$ \h
-  \multirow{2}{*}{Conversion} & Quantity            & $\Kv = 1$ \\
-                              & Period(s)           & $\t \in [0, 5]$ \h
+                              & Period(s)           & $\Tc \in [2, 5)$ \h
+  \multirow{2}{*}{Conversion} & Quantity of stocks  & $\Kv = 1$ \\
+                              & Period(s)           & $\Tv \in [0, 5]$ \h
  \end{tabular}
  \label{tab:bond_parameters}
 \end{table}
