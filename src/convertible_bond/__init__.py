@@ -46,7 +46,7 @@ P = Time(Put(T, 105, A), times=[3])
 C = Time(Call(T, 110, A), times=[(2, 5)])
 
 # Stock option (conversion option into stock for portfolio)
-S = Time(CallA(T, 0), times=[(0, 1), (2.5, 5)])
+S = CallA(T, 0)
 
 # Bond component of convertible bond
 B = Stack([A, P, C])
