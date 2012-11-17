@@ -231,12 +231,12 @@ Table \ref{tab:choice} illustrated the various choices made by the bond holder a
  \centering
  \caption[Payoffs for the convertible bond]{The choices made by the bond holder and the bond issuer, the payoff of those choices and the conditions required for those choices.  \V is the intrinsic value of the bond at time \t.}
  \begin{tabular}{|l|l|l|}\hline
-  \textbf{Action}     & \textbf{Payoff} & \textbf{Condition} \\\hline
-  Put                 & \Kp             & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \\\hline
-  Call                & \Kc             & $(\V \ge \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S < \Kc)\lor(\t \not\in\Tv)]$ \\\hline
-  Conversion          & $\Kv\S$         & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \\\hline
-  Forced conversion   & $\Kv\S$         & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \\\hline
-  Redemption          & \R              & $(\t = \T)\wedge[(\Kv\S \le \R)\lor(\t \not\in \Tv)]$ \\\hline
+  \theader{Action}    & \theader{Payoff} & \theader{Condition} \h
+  Put                 & \Kp              & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \h
+  Call                & \Kc              & $(\V \ge \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S < \Kc)\lor(\t \not\in\Tv)]$ \h
+  Conversion          & $\Kv\S$          & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \h
+  Forced conversion   & $\Kv\S$          & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \h
+  Redemption          & \R               & $(\t = \T)\wedge[(\Kv\S \le \R)\lor(\t \not\in \Tv)]$ \h
  \end{tabular}
  \label{tab:choice}
 \end{table}
@@ -522,23 +522,23 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
 \end{align}
 
 \section{Parameters and Formul\ae\ of Model}
-Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial table.
+Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
 
 \begin{table}[ht]
 \centering
 \caption{Parameters of the Binomial Model with Credit Risk}
 \begin{tabular}{|r|l|}\hline
- \textbf{Parameter} & \textbf{Description} \\\hline
- $r$            & Risk free rate \\\hline
- $\sigma$       & Log-volatility of the stock price \\\hline
- $\lambda$      & Hazard rate of default \\\hline
- $\eta$         & Percentage drop of stock price in a default event \\\hline
- \Dt            & Time-step \\\hline
- \Vu            & Value of portfolio for an up-step at $t + \Dt$ \\\hline
- \Vd            & Value of portfolio for a down-step at $t + \Dt$ \\\hline
- \X             & Value of defaulted portfolio at $t$ \\\hline
- $c_i$          & Value of the i\textsuperscript{th} coupon payment \\\hline
- $t^{c}_i$      & Time of the i\textsuperscript{th} coupon payment \\\hline
+ \theader{Parameter} & \theader{Description} \h
+ $r$                 & Risk free rate \h
+ $\sigma$            & Log-volatility of the stock price \h
+ $\lambda$           & Hazard rate of default \h
+ $\eta$              & Percentage drop of stock price in a default event \h
+ \Dt                 & Time-step \h
+ \Vu                 & Value of portfolio for an up-step at $t + \Dt$ \h
+ \Vd                 & Value of portfolio for a down-step at $t + \Dt$ \h
+ \X                  & Value of defaulted portfolio at $t$ \h
+ $c_i$               & Value of the i\textsuperscript{th} coupon payment \h
+ $t^{c}_i$           & Time of the i\textsuperscript{th} coupon payment \h
 \end{tabular}
 \label{tab:bin_parameter}
 \end{table}
@@ -548,12 +548,12 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 \centering
 \caption{Limits of the Binomial Model with Credit Risk}
 \begin{tabular}{|c|l|}\hline
- \textbf{Limit} & \textbf{Description} \\\hline
- $0 < \sigma$ & Volatility must be positive \\\hline
- $0 \le \lambda$ & Hazard rate must be non-negative \\\hline
- $0 < \Dt$ & Time step must be positive \\\hline
- $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \\\hline
- $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \\\hline
+ \theader{Limit}                & \theader{Description} \h
+ $0 < \sigma$                   & Volatility must be positive \h
+ $0 \le \lambda$                & Hazard rate must be non-negative \h
+ $0 < \Dt$                      & Time step must be positive \h
+ $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \h
+ $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \h
 \end{tabular}
 \label{tab:bin_limit}
 \end{table}
@@ -562,20 +562,20 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 \begin{table}[ht]
 \centering
 \caption{Formal\ae\ for the Binomial Model with Credit Risk}
-\begin{tabular}{|rcl|l|l|}\hline
- \multicolumn{3}{|l|}{\textbf{Formul\ae}} & \textbf{Description} \\\hline
- \u     &=& $e^{\sigma\sqrt{\Dt}}$ &
-    Multiplier for an up-step \\\hline
- \d     &=& $e^{-\sigma\sqrt{\Dt}}$ &
-    Multiplier for a down-step \\\hline
- \pu    &=& $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
-    Probability of an up-step \\\hline
- \pd    &=& $e^{-\lambda\Dt} - \pu$ &
-    Probability of a down-step \\\hline
- \po    &=& $1 - e^{-\lambda\Dt}$ &
-    Probability of default \\\hline
- \V     &=& $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
-    Value of portfolio at $t$ for $t^{c}_i = t$ \\\hline
+\begin{tabular}{|r@{ = }l|l|l|}\hline
+ \multicolumn{2}{|c|}{\textbf{Formul\ae}} & \theader{Description} \h
+ \u     & $e^{\sigma\sqrt{\Dt}}$ &
+    Multiplier for an up-step \h
+ \d     & $e^{-\sigma\sqrt{\Dt}}$ &
+    Multiplier for a down-step \h
+ \pu    & $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
+    Probability of an up-step \h
+ \pd    & $e^{-\lambda\Dt} - \pu$ &
+    Probability of a down-step \h
+ \po    & $1 - e^{-\lambda\Dt}$ &
+    Probability of default \h
+ \V     & $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
+    Value of portfolio at $t$ for $t^{c}_i = t$ \h
 \end{tabular}
 \label{tab:bin_formulae}
 \end{table}
@@ -633,6 +633,20 @@ and it is assumed that embedded options can only be exercised after receiving th
 
 \chapter{Conclusion}
 Summarise what this paper shows and does (i.e. Introduction + Conclusion = Executive Summary).
+
+\appendix
+\chapter{Software and Hardware}
+
+\chapter{Source Code}
+\section{model.py}
+
+\section{payoff.py}
+
+\section{convertible\_bond/\_\_init\_\_.py}
+
+\section{convertible\_bond/payoff.py}
+
+\section{fig\_choices.py}
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
