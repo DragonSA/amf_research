@@ -132,6 +132,7 @@ class Value(object):
         C   is the node coupons
         X   is the the node default value
         V   is the value of the portfolio
+        I   is the implicit value of the portfolio
     """
 
     def __init__(self, T, N):
@@ -141,6 +142,7 @@ class Value(object):
         self.C = np.zeros(N + 1)
         self.X = [None] * (self.N)
         self.V = [None] * (N + 1)
+        self.I = [None] * (N + 1)
 
 
 class BinomialModel(object):
@@ -189,6 +191,7 @@ class BinomialModel(object):
             pu, pd, po = self.dS.binomial(self.dt, P.S[-1])
         P.C[-1] = C = self.V.coupon(self.V.T)
         P.V[-1] = V = self.V.terminal(S) + C
+        P.I[-1] = I = V
 
         # Discount price backwards
         t = P.t
@@ -200,6 +203,7 @@ class BinomialModel(object):
             if not prob:
                 pu, pd, po = self.dS.binomial(self.dt, S)
             V = erdt * (V[:-1] * pu + V[1:] * pd + X * po)
+            P.I[i] = I = V
             P.V[i] = V = self.V.transient(t[i], V, S) + C
 
         return P
@@ -216,7 +220,8 @@ class Scheme(object):
         self.S = S
 
     def __call__(self, t, V, X, C, payoff):
-        return payoff(t, self.scheme(V, X), self.S) + C
+        I = self.scheme(V, X)
+        return payoff(t, I, self.S) + C, I
 
     @abc.abstractmethod
     def scheme(self, V, X):
@@ -289,13 +294,13 @@ class RannacherScheme(CrankNicolsonScheme):
 
     def __call__(self, t, V, X, C, payoff):
         if self.imp > 0:
-            V = self.scheme_implicit(V, X)
+            I = self.scheme_implicit(V, X)
             self.imp -= 1
         else:
-            V = self.scheme(V, X)
+            I = self.scheme(V, X)
         if C != 0:
             self.imp += 1
-        return payoff(t, V, self.S) + C
+        return payoff(t, I, self.S) + C, I
 
     def scheme_implicit(self, V, X):
         for i in range(4):
@@ -320,11 +325,11 @@ class PenaltyScheme(CrankNicolsonScheme):
         # V after explicit step
         diag = lambda x: sparse.dia_matrix(([x], [0]), shape=V.shape*2)
         Vx = self.Le.dot(V) + self.d * X
-        Vk = linalg.spsolve(self.Li, Vx)
+        I = Vk = linalg.spsolve(self.Li, Vx)
         Vs = payoff(t, Vk, self.S)
         Pk = (Vs != Vk) / self.tol
         if (Pk == 0).all():
-            return Vk + C
+            return Vk + C, I
         for _i in range(32):
             Vk1 = linalg.spsolve(self.Li + diag(Pk), Vx + Pk * Vs)
             if np.max(np.abs(Vk1 - Vk) / np.maximum(1, np.abs(Vk1))) < self.tol:
@@ -336,25 +341,26 @@ class PenaltyScheme(CrankNicolsonScheme):
             Pk, Vk = Pk1, Vk1
         else:
             warnings.warn("Implicit American iterations exceed limit")
-        return Vk1 + C
+        return Vk1 + C, I
 
 
 class PenaltyRannacherScheme(PenaltyScheme, RannacherScheme):
     """
-    Crank-Nicolson difference equatioin using penalty iterations to impose the
+    Crank-Nicolson difference equation using penalty iterations to impose the
     American constrains and fully implicit quarter steps to handle discontinuous
     payoffs.
     """
 
     def __call__(self, t, V, X, C, payoff):
         if self.imp > 0:
-            V = payoff(t, self.scheme_implicit(V, X), self.S) + C
+            I = self.scheme_implicit(V, X)
+            V = payoff(t, I, self.S) + C
             self.imp -= 1
         else:
-            V = PenaltyScheme.__call__(self, t, V, X, C, payoff)
+            V, I = PenaltyScheme.__call__(self, t, V, X, C, payoff)
         if C != 0:
             self.imp += 1
-        return V
+        return V, I
 
 
 class FDEModel(object):
@@ -419,7 +425,9 @@ class FDEModel(object):
             # Discount previous derivative value
             P.C[i] = C = self.V.coupon(t[i])
             P.X[i] = X = self.V.default(t[i], Sl)
-            P.V[i] = V = scheme(t[i], V, X, C, self.V.transient)
+            V, I = scheme(t[i], V, X, C, self.V.transient)
+            P.V[i] = V
+            P.I[i] = I
         return P
 
 
