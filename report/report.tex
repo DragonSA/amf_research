@@ -532,59 +532,59 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
 Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
 
 \begin{table}[ht]
-\centering
-\caption{Parameters of the Binomial Model with Credit Risk}
-\begin{tabular}{|r|l|}\hline
- \theader{Parameter} & \theader{Description} \h
- $r$                 & Risk free rate \h
- $\sigma$            & Log-volatility of the stock price \h
- $\lambda$           & Hazard rate of default \h
- $\eta$              & Percentage drop of stock price in a default event \h
- \Dt                 & Time-step \h
- \Vu                 & Value of portfolio for an up-step at $t + \Dt$ \h
- \Vd                 & Value of portfolio for a down-step at $t + \Dt$ \h
- \X                  & Value of defaulted portfolio at $t$ \h
- $c_i$               & Value of the i\textsuperscript{th} coupon payment \h
- $t^{c}_i$           & Time of the i\textsuperscript{th} coupon payment \h
-\end{tabular}
-\label{tab:bin_parameter}
+ \centering
+ \begin{tabular}{|r|l|}\hline
+  \theader{Parameter} & \theader{Description} \h
+  $r$                 & Risk free rate \h
+  $\sigma$            & Log-volatility of the stock price \h
+  $\lambda$           & Hazard rate of default \h
+  $\eta$              & Percentage drop of stock price in a default event \h
+  \Dt                 & Time-step \h
+  \Vu                 & Value of portfolio for an up-step at $t + \Dt$ \h
+  \Vd                 & Value of portfolio for a down-step at $t + \Dt$ \h
+  \X                  & Value of defaulted portfolio at $t$ \h
+  $c_i$               & Value of the i\textsuperscript{th} coupon payment \h
+  $t^{c}_i$           & Time of the i\textsuperscript{th} coupon payment \h
+ \end{tabular}
+ \caption{Parameters of the Binomial Model with Credit Risk}
+ \label{tab:bin_parameter}
 \end{table}
 
 \begin{savenotes}
 \begin{table}[ht]
-\centering
-\caption{Limits of the Binomial Model with Credit Risk}
-\begin{tabular}{|c|l|}\hline
- \theader{Limit}                & \theader{Description} \h
- $0 < \sigma$                   & Volatility must be positive \h
- $0 \le \lambda$                & Hazard rate must be non-negative \h
- $0 < \Dt$                      & Time step must be positive \h
- $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \h
- $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \h
-\end{tabular}
-\label{tab:bin_limit}
+ \centering
+ \begin{tabular}{|c|l|}\hline
+  \theader{Limit}                & \theader{Description} \h
+  $0 < \sigma$                   & Volatility must be positive \h
+  $0 \le \lambda$                & Hazard rate must be non-negative \h
+  $0 < \Dt$                      & Time step must be positive \h
+  $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \h
+  $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \h
+ \end{tabular}
+ \caption{Limits of the Binomial Model with Credit Risk}
+ \label{tab:bin_limit}
 \end{table}
 \end{savenotes}
 
 \begin{table}[ht]
-\centering
-\caption{Formal\ae\ for the Binomial Model with Credit Risk}
-\begin{tabular}{|r@{ = }l|l|l|}\hline
- \multicolumn{2}{|c|}{\textbf{Formul\ae}} & \theader{Description} \h
- \u     & $e^{\sigma\sqrt{\Dt}}$ &
-    Multiplier for an up-step \h
- \d     & $e^{-\sigma\sqrt{\Dt}}$ &
-    Multiplier for a down-step \h
- \pu    & $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
-    Probability of an up-step \h
- \pd    & $e^{-\lambda\Dt} - \pu$ &
-    Probability of a down-step \h
- \po    & $1 - e^{-\lambda\Dt}$ &
-    Probability of default \h
- \V     & $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
-    Value of portfolio at $t$ for $t^{c}_i = t$ \h
-\end{tabular}
-\label{tab:bin_formulae}
+ \centering
+ \begin{tabular}{|r@{ = }l|l|l|}\hline
+  \multicolumn{2}{|c|}{\textbf{Formul\ae}} & \theader{Description} \h
+  \u     & $e^{\sigma\sqrt{\Dt}}$ &
+     Multiplier for an up-step \h
+  \d     & $e^{-\sigma\sqrt{\Dt}}$ &
+     Multiplier for a down-step \h
+  \pu    & $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
+     Probability of an up-step \h
+  \pd    & $e^{-\lambda\Dt} - \pu$ &
+     Probability of a down-step \h
+  \po    & $1 - e^{-\lambda\Dt}$ &
+     Probability of default \h
+  \V     & $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
+     Value of portfolio at $t$ for $t^{c}_i = t$ \h
+ \end{tabular}
+ \caption{Formal\ae\ for the Binomial Model with Credit Risk}
+ \label{tab:bin_formulae}
 \end{table}
 
 \section{Example and Hedging Strategy}
@@ -603,7 +603,6 @@ and it is assumed that embedded options can only be exercised after receiving th
 \begin{savenotes}
 \begin{table}[ht]
  \centering
- \caption{Convertible Bond Parameters}
  \begin{tabular}{|c|l|c|} \hline
   \theader{Component}         & \theader{Parameter} & \theader{Value} \h
   \multirow{5}{*}{Annuity}    & Notional\footnote{$\R := 104$} & $100$ \\
@@ -618,6 +617,7 @@ and it is assumed that embedded options can only be exercised after receiving th
   \multirow{2}{*}{Conversion} & Quantity of stocks  & $\Kv := 1$ \\
                               & Period(s)           & $\Tv := [0, 5]$ \h
  \end{tabular}
+ \caption{Convertible Bond Parameters}
  \label{tab:bond_parameters}
 \end{table}
 \end{savenotes}
@@ -625,7 +625,6 @@ and it is assumed that embedded options can only be exercised after receiving th
 \begin{savenotes}
 \begin{table}[ht]
  \centering
- \caption{Stock Parameters}
  \begin{tabular}{|l|l|} \hline
   \theader{Parameter} & \theader{Value} \h
   Risk free rate      & $r := 5\%$ \h
@@ -635,6 +634,7 @@ and it is assumed that embedded options can only be exercised after receiving th
   Default (typical\footnote{\citet{BP95} found that stock prices typically drop 30\% on announcement of default}) & $\eta := 30\%$ \h
   Default (partial)   & $\eta := 0\%$ \h
  \end{tabular}
+ \caption{Stock Parameters}
  \label{tab:stock_parameters}
 \end{table}
 \end{savenotes}
