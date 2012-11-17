@@ -337,6 +337,9 @@ class Annuity(Payoff):
         self.N = np.double(N)
         self.R = np.double(R)
 
+    def __contains__(self, t):
+        return t in self.times
+
     def default(self, t, S):
         """Residual value on default"""
         assert(t != self.T)
@@ -348,7 +351,7 @@ class Annuity(Payoff):
 
     def coupon(self, t):
         """Coupon payment."""
-        if t in self.times:
+        if t in self:
             return self.C
         else:
             return 0.0
@@ -406,5 +409,17 @@ class VariableStrike(object):
         try:
             self.K = K
             yield
+        finally:
+            self.K = K_origin
+
+    def strike(self, t):
+        """Calculate the time dependent strike."""
+
+    def transient(self, t, V, S):
+        """Transient payoff"""
+        K_origin = self.K
+        try:
+            self.K = self.strike(t)
+            return super(VariableStrike, self).transient(t, V, S)
         finally:
             self.K = K_origin
