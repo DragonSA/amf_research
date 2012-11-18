@@ -8,9 +8,10 @@ report_LIB=	../common/notation.tex
 presentation_LIB= ../common/notation.tex
 
 # Extract dependencies from ${TEXFILE}
-FIGURES!=	sed -nE 's|.*\includegraphics(\[.*\])?{(../common/[^}]*)}.*|\2.pdf|gp' ${NAME}.tex
-BIBLIOGRAPHY!=	sed -nE 's|.*\bibliography{(../references/[^}]*)}.*|\1|gp' ${NAME}.tex
-BIBSTYLE!=	sed -nE 's|.*\bibliographystyle{(../references/[^}]*)}.*|\1.bst|gp' ${NAME}.tex
+FIGURES!=	sed -nE 's|.*\includegraphics(\[.*\])?{(../common/[^}]+)}.*|\2.pdf|gp' ${NAME}.tex
+BIBLIOGRAPHY!=	sed -nE 's|.*\bibliography{(../references/[^}]+)}.*|\1|gp' ${NAME}.tex
+BIBSTYLE!=	sed -nE 's|.*\bibliographystyle{(../references/[^}]+)}.*|\1.bst|gp' ${NAME}.tex
+COMMON!=	sed -nE 's|.*\input{(../common/[^}]+)}.*|\1.tex|gp' ${NAME}.tex
 
 # Macros
 GETAUXCITE=	sed -nE 's|.*\citation{(.*)}.*|\1|gp' ${NAME}.aux 2> /dev/null | sort -u
@@ -30,7 +31,7 @@ clean:
 
 build: ${NAME}.pdf
 
-.tex.pdf: ${FIGURES} ${NAME}.bbl ${${NAME}_LIB}
+.tex.pdf: ${FIGURES} ${NAME}.bbl ${COMMON}
 	@${RUN_PDFLATEX}
 
 .aux.bbl: ${BIBLIOGRAPHY} ${BIBSTYLE}
