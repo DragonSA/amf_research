@@ -92,10 +92,11 @@
 
 % Derivatives
 \def\S{\ensuremath{S_t}\xspace}
+\def\W{\ensuremath{\tilde{W}_t\xspace}}
 \def\dP{\ensuremath{d\Pi_t}\xspace}
 \def\dS{\ensuremath{dS_t}\xspace}
 \def\dt{\ensuremath{dt}\xspace}
-\def\dW{\ensuremath{dW_t}\xspace}
+\def\dW{\ensuremath{d\W}\xspace}
 \def\dq{\ensuremath{dq_t}\xspace}
 \def\Vt{\frac{\partial V}{\partial t}}
 \def\Vs{\frac{\partial V}{\partial S}}
@@ -104,7 +105,7 @@
 % Differences
 \def\DS{\ensuremath{\delta S_t}\xspace}
 \def\Dt{\ensuremath{\delta t}\xspace}
-\def\DW{\ensuremath{\delta W_t}\xspace}
+\def\DW{\ensuremath{\delta \W}\xspace}
 \def\Dq{\ensuremath{\delta q_t}\xspace}
 
 % Finite difference
@@ -211,10 +212,12 @@ Place acknowledgements here.
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-% CONTENT --------------------------------------------------------
+% =============================================================================
 
 \chapter{Introduction}
 What this paper shows and does.
+
+% -----------------------------------------------------------------------------
 
 \section{Convertible Bonds with Credit Risk}
 A convertible bond is an annuity, which pays coupons \C at \ti and pays \R at maturity \T, with the following embedded options:
@@ -248,20 +251,25 @@ Table \ref{tab:choices} illustrated the various choices made by the bond holder 
  \label{tab:choices}
 \end{table}
 
+% -----------------------------------------------------------------------------
+
 \section{Literature Review}
 Describe the current state of literature w/ Convertible Bonds with Credit Risk,
 possibly split this and include it at the beginning of each relevant section?
 
+% =============================================================================
 
 \chapter{Finite Difference Model}
 Describe the finite difference model based on the paper by \citet{AFV03}.
 
-\section{Definition}
+% -----------------------------------------------------------------------------
+
+\section{Stochastic Process}
 Consider a stock with the following stochastic model for stock price movements:
 \begin{equation}
  \dS = \mu\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
-If we impose that the risk neutral expectation of the stock price evolve at the risk free rate $\E[\dS] = r\S\dt$ then $\mu = (r + \lambda\eta)$ and the differential equation becomes:
+If we impose that the risk neutral expectation of the stock price evolution as the risk free rate $\E[\dS] = r\S\dt$ then $\mu = (r + \lambda\eta)$ and the differential equation becomes:
 \begin{equation}
  \dS = (r + \lambda\eta)\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
@@ -276,6 +284,8 @@ where:
  \dW            & is a Wiener process \\
  \dq            & is a Poisson jump process where the first jump is the default event \\
 \end{tabular}
+
+% -----------------------------------------------------------------------------
 
 \section{Derivation}
 Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  This yields a differential equation for \P:
@@ -306,6 +316,8 @@ Equating the differential \eqref{eq:rPdt} and the expected differential \eqref{e
  (r + \lambda)\V &= \Vt + (r + \lambda\eta)\S\Vs + \half\sigma^2\S^2\Vss + \lambda\X
 \end{align}
 
+% -----------------------------------------------------------------------------
+
 \section{Finite Difference}
 The derived PDE can be solved numerically by constructing a lattice of stock prices and time.  \Vjn will denote the lattice value at the j\th stock node and n\th time node where the step between stock nodes is \DS and the step between time nodes is \Dt.  \Sj will denote the stock value at the j\th stock node and \Xj will denote the defaulted value at the j\th stock node.  The stock prices go from a minimum of \Sz to a maximum of \SJ.
 
@@ -323,6 +335,8 @@ and it is assumed that for boundary nodes:
                     \VJpn &= 2\VJn - \VJmn \\
 \end{align*}
 
+% -----------------------------------------------------------------------------
+
 \subsection{Explicit Scheme}
 Using the backwards difference equation for the temporal derivative the finite difference equation is:
 \begin{displaymath}
@@ -334,6 +348,8 @@ Using the backwards difference equation for the temporal derivative the finite d
  \VJnm &= (\alpha - \kappa)\Vjmn + (1 + \beta - 2\kappa)\VJn + \lambda\Dt\Xj
 \end{align}
 
+% -----------------------------------------------------------------------------
+
 \subsection{Implicit Scheme}
 Using the backwards difference equation for the temporal derivative and evaluating the spacial differentials at the previous time step the finite difference equation is:
 \small\begin{displaymath}
@@ -344,6 +360,8 @@ Using the backwards difference equation for the temporal derivative and evaluati
  (1 - \beta - 2\alpha)\Vonm - (\kappa - \alpha)\Vopnm &= \Von + \lambda\Dt\X \\
  -(\alpha - \kappa)\VJmnm + (1 - \beta - 2\kappa)\VJnm &= \VJn + \lambda\Dt\X
 \end{align}
+
+% -----------------------------------------------------------------------------
 
 \subsection{Crank-Nicolson Scheme}
 Using the backwards difference equation for the temporal derivative and taking the average of the spacial differentials at the current and previous time step the finite difference equation is:
@@ -357,13 +375,21 @@ Using the backwards difference equation for the temporal derivative and taking t
  -(\alpha - \kappa)\VJmnm + (2 - \beta - 2\kappa)\VJnm &= (\alpha - \kappa)\VJmn + (2 + \beta + 2\kappa)\VJn + 2\lambda\Dt\X
 \end{align}\normalsize
 
+% -----------------------------------------------------------------------------
+
+\section{Coupons}
+TODO: figure out how to handle coupons
+
+% =============================================================================
 
 \chapter{Binomial Model}
 The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
 
 TODO: add further explanation and references.
 
-\section{Definition}
+% -----------------------------------------------------------------------------
+
+\section{Binomial Process}
 Consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$}.  The mean and variance of this model is: (TODO: insert picture illustration)
 \begin{align}
  \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
@@ -382,6 +408,8 @@ The mean and variance of the stock's stochastic differential equation is:
                         &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
 
+
+% -----------------------------------------------------------------------------
 
 \section{Derivation}
 If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{S_{t + \Dt}}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} then:
@@ -415,7 +443,9 @@ and substituting \eqref{eq:u+d} into \eqref{eq:Var=} with the appropriate expans
  A\Dt                   &= \sigma^2\Dt
 \end{align}
 
-\section{Limits}
+% -----------------------------------------------------------------------------
+
+\section{Restrictions}
 The time step \Dt is assumed to be strictly positive ($\Dt > 0$), as time is monotonically increasing.
 
 Although $\sigma$ could be positive or negative, the formul\ae\ use $\sigma$ where, strictly, $|\sigma|$ should be used.  If $\sigma = 0$ then the model is no longer useful.  The restriction $\sigma > 0$ may be introduced for convenience and without loss of generality.
@@ -450,7 +480,12 @@ The inequality of $\ln\left(\frac{d - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) 
 
 Based on the probability limits \eqref{eq:bin_prob_limit} no restriction is placed on $r$, the risk free rate, or $\eta$, the percentage drop in stock price.
 
+% -----------------------------------------------------------------------------
+
 \section{Valuation}
+TODO: add some fluff
+
+\subsection{Valuation without Coupons}
 Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  At time $t + \Dt$ one should have:
 \begin{equation*}
  \Pi_{t + \Dt} =
@@ -497,7 +532,9 @@ thus the pricing method of this binomial model is the same as the pricing method
         &= e^{-r\Dt}\Et[V_{t + \Dt}]
 \end{align}
 
-\section{Valuation with Coupon Cash-flow}
+% -----------------------------------------------------------------------------
+
+\subsection{Valuation with Coupons}
 Consider a portfolio, as above, with the add of coupon cash flows.  At time $t + \Dt$ one should have:
 \begin{equation*}
  \Pi_{t + \Dt} =
@@ -527,6 +564,8 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
  V_t    &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i \n
         &= e^{-r\Dt}\Et[V_{t + \Dt}] + c_i
 \end{align}
+
+% -----------------------------------------------------------------------------
 
 \section{Parameters and Formul\ae\ of Model}
 Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
@@ -587,9 +626,12 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
  \label{tab:bin_formulae}
 \end{table}
 
+% -----------------------------------------------------------------------------
+
 \section{Example and Hedging Strategy}
 Provide a numerical example (with diagrams) and provide example of the hedging strategy.
 
+% =============================================================================
 
 \chapter{Numerical Example}
 In the following analysis of the numerical results Table \ref{tab:bond_parameters}, the bond parameters, and Table \ref{tab:stock_parameters}, the stock parameters, are used as a basis.  There are three different types of stock price decreases that are used: total default when the stock losses all value, typical default when the stock losses 40\% and partial default where the stock price doesn't lose any value.
@@ -639,6 +681,8 @@ and it is assumed that embedded options can only be exercised after receiving th
 \end{table}
 \end{savenotes}
 
+% -----------------------------------------------------------------------------
+
 \section{Payoff}
 Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it's lifetime, and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
 
@@ -660,12 +704,20 @@ The figure has clear jumps at each coupon payment, producing a saw effect.  The 
 \end{itemize}
 
 
+% =============================================================================
+
 \chapter{Conclusion}
 Summarise what this paper shows and does (i.e. Introduction + Conclusion = Executive Summary).
 
+% =============================================================================
+
 \appendix
 \chapter{Appendix}
+% -----------------------------------------------------------------------------
+
 \section{Software}
+
+% -----------------------------------------------------------------------------
 
 \section{Hardware}
 
