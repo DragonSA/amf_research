@@ -27,6 +27,7 @@
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
 \usepackage{natbib}
+\usepackage{xspace}
 
 % GRAPHICS HANDLING ----------------------------------------------
 \ifpdf
@@ -70,6 +71,8 @@
 
 \date{19 November 2012}
 
+\input{../common/notation}
+
 % =============================================================================
 
 \begin{document}
@@ -108,26 +111,72 @@
 
 % =============================================================================
 
-\section{Convertible Bond}
+\section{Convertible Bond} % 8 mins
 
 % -----------------------------------------------------------------------------
 
 \subsection{Convertible Bond definition}
 
-\begin{frame}{Convertible Bond (words)}
-
+\begin{frame}{Convertible Bond (1/3)}
+\begin{defn}[Convertible Bond]
+A convertible bond has the following components:
+\begin{itemize}
+ \item \emph{Annuity:} a series of coupons with a final redemption payment
+ \item \emph{Put:} a put option on the bond for the \underline{bond holder}
+ \item \emph{Call:} a call option on the bond for the \underline{bond issuer}
+ \item \emph{Conversion:} an asset swap for stock by the \underline{bond holder}
+\end{itemize}
+\end{defn}
 \end{frame}
 
-\begin{frame}{Convertible Bond (symbols)}
+\begin{frame}{Convertible Bond (2/3)}
+\begin{defn}[Convertible Bond]
+A convertible bond has the following components\footnote{\V denoted the intrinsic value of the derivative}:
+\begin{itemize}
+ \item \emph{Annuity:} Coupons: \C at \ti; Redemption: \R at \T
+ \item \emph{Put:} Strike: \Kp for $\t \in \Tp$; Payoff: $\Kp 1_{(\V \le \Kp)\wedge(\t \in \Tp)}(\V, \t)$
+ \item \emph{Call:} Strike: \Kc for $\t \in \Tc$; Payoff: $\Kc 1_{(\V \ge \Kc)\wedge(\t \in \Tc)}(\V, \t)$
+ \item \emph{Conversion:} Stock: $\Kv\S$ for $\t \in \Tv$; Payoff: $\Kv\S 1_{(\V \le \Kv\S)\wedge(\t \in \Tv)}(\V, \t)$
+\end{itemize}
+\end{defn}
+\end{frame}
 
+\begin{frame}{Convertible Bond (3/3)}
+\begin{defn}[Convertible Bond]
+A convertible bond has the following components:
+\begin{itemize}
+ \item \emph{Annuity:} $\ti \not= \T$
+ \item \emph{Put:} $\T \not\in \Tp$
+ \item \emph{Call:} $\T \not\in \Tv$; $\Kc > \Kp$
+ \item \emph{Conversion:} $\kappa > 0$; $\T \in \Tv$; supersedes the put and call option
+\end{itemize}
+\end{defn}
 \end{frame}
 
 \begin{frame}{Payoff and Actions}
-
+\begin{table}[ht]
+ \footnotesize
+ \centering
+ \begin{tabular}{|l|l|l|}\hline
+  \theader{Action}    & \theader{Payoff} & \theader{Condition} \h
+  Put                 & \Kp              & $(\V \le \Kp)\wedge(\t \in \Tp)\wedge[(\Kv\S < \V)\lor(\t \not\in \Tv)]$ \h
+  Call                & \Kc              & $(\V \ge \Kc)\wedge(\t \in \Tc)\wedge[(\Kv\S < \Kc)\lor(\t \not\in\Tv)]$ \h
+  Conversion          & $\Kv\S$          & $(\Kv\S \ge \V)\wedge(\t \in \Tv)$ \h
+  Forced conversion   & $\Kv\S$          & $(\V > \Kv\S \ge \Kc)\wedge(\t \in \Tv)\wedge(\t \in \Tc)$ \h
+  Redemption          & \R               & $(\t = \T)\wedge[(\Kv\S \le \R)\lor(\t \not\in \Tv)]$ \h
+  Hold                &                  & \emph{otherwise} \h
+ \end{tabular}
+ \caption[Payoff for the convertible bond]{Payoff for the convertible bond.  \V is the intrinsic value of the derivative}
+ \label{tab:choices}
+\end{table}
 \end{frame}
 
 \begin{frame}{Payoff and Actions}
-
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=10cm]{../common/fig_choices}
+ \label{fig:choices}
+\end{figure}
 \end{frame}
 
 
@@ -136,7 +185,20 @@
 \subsection{Credit Risk}
 
 \begin{frame}{Credit Risk}
+\begin{defn}[Convertible Bond on Default]
+In default the convertible bond has the following components:
+\begin{itemize}
+ \item \emph{Annuity:} residual value\footnote{This is assuming the bond recovery is based on the redemption value.  Another possibility is to base the recovery on the bond value at time \t.} of $\gamma\R$
+ \item \emph{Conversion:} stock price of $(1 - \eta)\Kv\S$
+\end{itemize}
 
+The value (payoff) the convertible bond is:
+\begin{equation}
+ \X = \max(\gamma\R, (1 - \eta)\Kv\S)
+\end{equation}
+
+Default is considered terminal.
+\end{defn}
 \end{frame}
 
 % =============================================================================
