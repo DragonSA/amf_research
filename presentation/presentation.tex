@@ -19,7 +19,6 @@
 
 % PACKAGES -------------------------------------------------------
 
-\usepackage[english]{babel}
 \usepackage{amsmath}
 \usepackage{amsbsy}
 \usepackage{amsfonts}
@@ -27,6 +26,7 @@
 \usepackage{color}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
+\usepackage{natbib}
 
 % GRAPHICS HANDLING ----------------------------------------------
 \ifpdf
@@ -57,7 +57,7 @@
 
 % PREAMBLE -------------------------------------------------------
 
-\title[Valuation of Convertible Bonds with Credit Risk]{Valuation of Convertible Bonds}
+\title[Valuation of Convertible Bonds]{Valuation of Convertible Bonds with Credit Risk}
 
 %\subtitle{Subtitle (if needed)}
 
@@ -68,9 +68,9 @@
     University of the Witwatersrand\\
     \vspace{.5cm}\includegraphics[height=2cm]{../common/WitsColourLogo}}
 
-\date{Day Month Year}
+\date{19 November 2012}
 
-% MAIN DOCUMENT --------------------------------------------------
+% =============================================================================
 
 \begin{document}
 
@@ -78,29 +78,27 @@
   \titlepage
 \end{frame}
 
-% -----------------------
-
-% If you want a small logo on each page then uncomment the following line
-%
-%\logo{\includegraphics[height=0.75cm]{WitsColourLogo.pdf}}
+% =============================================================================
 
 \section{Introduction}
 
 \begin{frame}{Introduction}
-\begin{enumerate}
-    \item<1-> This is the first item.
-    \item<2-> This is the second item.
-    \item<3-> This is the third item.
-\end{enumerate}
+
+\citet{AFV03}
+
 \end{frame}
 
-% -----------------------
+\begin{frame}{Notation}
+
+\end{frame}
+
+% =============================================================================
 
 \begin{frame}{Outline of the Talk}
   \tableofcontents[hidesubsections]
 \end{frame}
 
-% -----------------------
+% =============================================================================
 
 \AtBeginSection[] {
     \begin{frame}<beamer>{Outline}
@@ -108,42 +106,117 @@
     \end{frame}
 }
 
-\section{First Section}
+% =============================================================================
 
-\subsection{Subsection 1.1}
+\section{Convertible Bond}
 
-\begin{frame}{Subsection 1.1}
-% \begin{figure}[h!]
-%     \centering
-%     \includegraphics[width=7cm]{FigFile1}
-%     \caption[Coefficient of variation]{Coefficient of variation of the estimator.}\label{CoV}
-% \end{figure}
+% -----------------------------------------------------------------------------
+
+\subsection{Convertible Bond definition}
+
+\begin{frame}{Convertible Bond (words)}
+
 \end{frame}
 
-% -----------------------
+\begin{frame}{Convertible Bond (symbols)}
 
-
-\subsection{Subsection 1.2 - with no heading}
-
-\begin{frame}
-% \begin{figure}[h!]
-%     \centering
-%     \includegraphics[\bb=0 0 672 504, width=8cm]{Matlab.jpg}
-%     \caption[Matlab logo]{The Matlab logo.}\label{Matlab}
-% \end{figure}
 \end{frame}
 
-% -----------------------
+\begin{frame}{Payoff and Actions}
 
-
-\section{Second Section}
-
-\subsection{Subsection 2.1}
-
-\begin{frame}{Subsection 2.1}
 \end{frame}
 
-% -----------------------
+\begin{frame}{Payoff and Actions}
+
+\end{frame}
 
 
+% -----------------------------------------------------------------------------
+
+\subsection{Credit Risk}
+
+\begin{frame}{Credit Risk}
+
+\end{frame}
+
+% =============================================================================
+
+\section{Finite Difference Model}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Stochastic Process}
+
+\begin{frame}{Stochastic Process}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Derivation}
+
+\begin{frame}{Derivation}
+
+\end{frame}
+
+% =============================================================================
+
+\section{Binomial Model}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Binomial Process}
+
+\begin{frame}{Binomial Process}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Derivation}
+
+\begin{frame}{Derivation}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Restrictions}
+
+\begin{frame}{Restrictions}
+
+\end{frame}
+
+% -----------------------------------------------------------------------------
+
+\subsection{Valuation}
+
+\begin{frame}{Valuation without Coupons}
+
+\end{frame}
+
+\begin{frame}{Valuation with Coupons}
+
+\end{frame}
+
+
+% =============================================================================
+
+\section{Numerical Example}
+
+\begin{frame}{Parameters for the Convertible Bond}
+
+\end{frame}
+
+
+% -----------------------------------------------------------------------------
+
+\subsection{Binomial Process}
+
+\begin{frame}{Payoff}
+
+\end{frame}
+
+\bibliographystyle{../references/amsplnat}
+\bibliography{../references/references.bib}
 \end{document}
