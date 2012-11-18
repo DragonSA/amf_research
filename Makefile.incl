@@ -3,6 +3,10 @@
 
 CLEAN_SUFFIXES=	.aux .lof .log .lot .toc .bbl .blg .snm .nav .out
 
+# Dependencies
+report_LIB=	../common/notation.tex
+presentation_LIB= ../common/notation.tex
+
 # Extract dependencies from ${TEXFILE}
 FIGURES!=	sed -nE 's|.*\includegraphics(\[.*\])?{(../common/[^}]*)}.*|\2.pdf|gp' ${NAME}.tex
 BIBLIOGRAPHY!=	sed -nE 's|.*\bibliography{(../references/[^}]*)}.*|\1|gp' ${NAME}.tex
@@ -26,7 +30,7 @@ clean:
 
 build: ${NAME}.pdf
 
-.tex.pdf: ${FIGURES} ${NAME}.bbl
+.tex.pdf: ${FIGURES} ${NAME}.bbl ${${NAME}_LIB}
 	@${RUN_PDFLATEX}
 
 .aux.bbl: ${BIBLIOGRAPHY} ${BIBSTYLE}
