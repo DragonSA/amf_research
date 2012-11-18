@@ -203,23 +203,74 @@ Default is considered terminal.
 
 % =============================================================================
 
-\section{Finite Difference Model}
+\section{Finite Difference Model} % 5 mins
 
 % -----------------------------------------------------------------------------
 
 \subsection{Stochastic Process}
 
-\begin{frame}{Stochastic Process}
+\begin{frame}{Stock Process with Credit Risk (1/3)}
+\begin{defn}[Geometric Brownian with Credit Risk]
+A stock process with geometric Brownian motion, with a jump component to model the default event, has the following stochastic differential equation:
+\begin{equation}
+ \dS = \mu\S\dt + \sigma\S\dW - \eta\S\dq
+\end{equation}
+with \q being a Poison process with intensity $\lambda$ where the first event $\q = 1$ is the default event.
+\end{defn}
+\end{frame}
 
+\begin{frame}{Stock Process with Credit Risk (2/3)}
+\begin{cor}
+The stochastic process \q, when representing terminal default, follows an exponential distribution with:
+\begin{align}
+ \q                       &\sim \exp(\lambda) \\
+ \Prob(\qdt = 1 | \q = 0) &= \lambda\dt \\
+ \E[\dq]                  &= \lambda\dt \\
+ \Var[\dq]                &= \lambda\dt
+\end{align}
+\end{cor}
+\end{frame}
+
+\begin{frame}{Stock Process with Credit Risk (3/3)}
+\begin{cor}
+Under risk neutral probability space the drift rate of \S is $\mu = (r + \lambda\eta)$ and the stochastic differential equation is:
+\begin{equation}
+ \dS = (r + \lambda\eta)\S\dt + \sigma\S\dW - \eta\S\dq
+\end{equation}
+\end{cor}
 \end{frame}
 
 % -----------------------------------------------------------------------------
 
-\subsection{Derivation}
+\subsection{Partial Differential Equation}
+
+\begin{frame}{Partial Differential Equation}
+\begin{thm}[Black-Scholes with Credit Risk]
+The price of an option, on an underlying \S, has the following partial differential equation:
+\begin{equation}
+ (r + \lambda)\V = \Vt + (r + \lambda\eta)\S\Vs + \half\sigma^2\S^2\Vss + \lambda\X \label{eq:BScr}
+\end{equation}
+\end{thm}
+\end{frame}
 
 \begin{frame}{Derivation}
-
+The following steps are used in the derivation for Equation \ref{eq:BScr}:
+\begin{enumerate}
+ \item Create a portfolio $\P = \V - \D\S$
+ \item Invest the residual of \P at the risk free rate: $\dP = r\P\dt$
+ \item Equate the expected value of the derivative of \P with the risk free rate:
+       \begin{align}
+        r\P\dt = \E[\dP] &= \Prob(\qdt = 0) \E[d(\V - \D\S)|\qdt = 0] + \n
+                         &\qquad \Prob(\qdt = 1) \E[d(\V - \D\S)|\qdt = 1]
+       \end{align}
+ \item Note that the derivative of \P when going into default is:
+       \begin{equation}
+        \E[d(\V - \D\S)|\qdt = 1] = \X - (1 - \eta)\D\S -(\V - \D\S) \label{eq:dPx}
+       \end{equation}
+ \item Choose $\D = \Vs$ to eliminate the \dW terms
+\end{enumerate}
 \end{frame}
+
 
 % =============================================================================
 
