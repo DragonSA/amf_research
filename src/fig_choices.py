@@ -15,13 +15,13 @@ import scipy.interpolate as interpolate
 from convertible_bond import dS_total as dS, payoff, A, P, C, T
 from model import FDEModel, CrankNicolsonScheme
 
-colourise = cm.jet
-PUT   = 0. / 5
-CALL  = 1. / 5
-CONV  = 2. / 5
-FCONV = 3. / 5
-REDEM = 4. / 5
-HOLD  = 5. / 5
+colourise = cm.gist_ncar
+PUT   = 0. / 6
+CALL  = 1. / 6
+CONV  = 2. / 6
+FCONV = 3. / 6
+REDEM = 4. / 6
+HOLD  = 5. / 6
 
 def choices(Z):
     colours = np.zeros((len(Z.S), len(Z.t)))
