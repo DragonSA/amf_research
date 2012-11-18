@@ -177,7 +177,7 @@ Consider a stock with the following stochastic model for stock price movements:
 \begin{equation}
  \dS = \mu\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
-If we impose that the risk neutral expectation of the stock price evolution as the risk free rate $\E[\dS] = r\S\dt$ then $\mu = (r + \lambda\eta)$ and the differential equation becomes:
+If we impose that the risk neutral expectation that the stock price evolution is the risk free rate, $\E[\dS] = r\S\dt$, then $\mu = (r + \lambda\eta)$ and the differential equation becomes:
 \begin{equation}
  \dS = (r + \lambda\eta)\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
@@ -205,7 +205,7 @@ Consider a portfolio, \P, that has a long position in the derivative, \V, and a 
 In the event of default the portfolio holdings $\P^x$ has a long position in the derivative with residual value \X and a short position of \D in the stock with residual value of $(1 - \eta)\S$.  Thus the difference of the portfolio holdings when going into default is:
 \begin{align}
  \dP^x &= \P^x - \P \n
-        &= \X - (\V - \eta\D\S) \label{eq:dPx}
+       &= \X - (\V - \eta\D\S) \label{eq:dPx}
 \end{align}
 
 At any given instant the portfolio can either default or evolve in the normal stochastic manner.  The probability of default in any given instant is $\lambda\dt$ and the probability of non-default is $(1 - \lambda)\dt$.  Taking the expectation of the differential of \P and applying Ito's lemma to the stochastic component:
