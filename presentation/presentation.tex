@@ -87,9 +87,29 @@
 \section{Introduction}
 
 \begin{frame}{Introduction}
+Project Objective:
+\begin{itemize}
+ \item Understand and implement pricing of a convertible bond with credit risk:
+       \begin{itemize}
+        \item Finite Difference Model
+        \item Binomial Model
+       \end{itemize}
+\end{itemize}
+\end{frame}
 
-\citet{AFV03}
+\begin{frame}{Literature}
+Finite Difference Model:
+\begin{itemize}
+ \item \Citet{HP96} and \citet{TF98} modelled the derivative using geometric Brownian motion
+ \item \Citet{AFV03} modelled non-total default jump of the stock
+\end{itemize}
 
+Binomial Model:
+\begin{itemize}
+ \item \Citet{DL99} first proposed a trinomial tree
+ \item \Citet{BEA94}, and \citet{H11} have implemented a binomial tree
+ \item \Citet{MK12} implemented a binomial model that converges to the stochastic model
+\end{itemize}
 \end{frame}
 
 % =============================================================================
@@ -274,17 +294,6 @@ The following steps are used in the derivation for Equation \ref{eq:BScr}:
 
 % -----------------------------------------------------------------------------
 
-\subsection{Literature Review}
-\begin{frame}{Literature Review}
-\begin{itemize}
- \item \citet{DL99} first proposed a trinomial tree
- \item \citet{TKN01}, \citet{AFV02} and \citet{H11} have implemented a binomial tree
- \item \citet{MK12} implemented a binomial model that converges to the stochastic model
-\end{itemize}
-\end{frame}
-
-% -----------------------------------------------------------------------------
-
 \subsection{Binomial Tree}
 
 \begin{frame}{Binomial Tree (1/2)}
@@ -447,6 +456,7 @@ Consider the following parameters of a Convertible Bond:
 \section{Bibliography}
 
 \begin{frame}{Bibliography}
+\scriptsize
 \bibliographystyle{../references/amsplnat}
 \bibliography{../references/references.bib}
 \end{frame}
