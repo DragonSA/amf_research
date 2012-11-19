@@ -11,6 +11,10 @@ fig_afv03_6_LIB=	convertible_bond/afv03.py
 fig_afv03_7_LIB=	convertible_bond/afv03.py
 fig_mk12_LIB=	convertible_bond/mk12.py
 
+fig_choices_LIB=	plot.py
+fig_simple_LIB=	plot.py
+fig_varR_LIB=	plot.py
+
 .py.pdf: ${PYLIB:S|^|${SRC}|} ${${.PREFIX}_LIB:S|^|${SRC}|}
 	@echo "[FIG] ${.PREFIX}"
 	@(cd ${SRC}; ${PYTHON} ${.PREFIX}.py)
