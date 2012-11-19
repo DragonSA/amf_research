@@ -300,27 +300,27 @@ TODO: add further explanation and references.
 \section{Binomial Process}
 Consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$}.  The mean and variance of this model is: (TODO: insert picture illustration)
 \begin{align}
- \E[\frac{S_{t + \Dt}}{\S}]     &= \u\pu + \d\pd + (1 - \eta)\po \n
-                                &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
- \Var[\frac{S_{t + \Dt}}{\S}]   &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\DS}{\S}]^2 \n
-                                &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t+\Dt}}{\S}]^2 \label{eq:BM_Var}
+ \E[\frac{\SDt}{\S}]   &= \u\pu + \d\pd + (1 - \eta)\po \n
+                       &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
+ \Var[\frac{\SDt}{\S}] &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\SDt}{\S}]^2 \n
+                       &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\SDt}{\S}]^2 \label{eq:BM_Var}
 \end{align}
 
 The mean and variance of the stock's stochastic differential equation is:
 \begin{align}
- \E[\frac{\dS}{\S}]     &= r\dt \\
- \E[\frac{S_{t + \dt}}{\S}] &= \E[\frac{\S}{\S} + \frac{\dS}{\S}] \n
-                        &= 1 + \E[\frac{\dS}{\S}] \label{eq:SM_E} \\
- \Var[\frac{\dS}{\S}]   &= (\sigma^2 + \lambda\eta^2)\dt \\
- \Var[\frac{S_{t + \dt}}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
-                        &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
+ \E[\frac{\dS}{\S}]    &= r\dt \\
+ \E[\frac{\Sdt}{\S}]   &= \E[\frac{\S}{\S} + \frac{\dS}{\S}] \n
+                       &= 1 + \E[\frac{\dS}{\S}] \label{eq:SM_E} \\
+ \Var[\frac{\dS}{\S}]  &= (\sigma^2 + \lambda\eta^2)\dt \\
+ \Var[\frac{\Sdt}{\S}] &= \Var[\frac{\S}{\S} + \frac{\dS}{\S}] \n
+                       &= \Var[\frac{\dS}{\S}] \label{eq:SM_Var}
 \end{align}
 
 
 % -----------------------------------------------------------------------------
 
 \section{Derivation}
-If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{S_{t + \Dt}}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} then:
+If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote{$\E[\frac{\SDt}{\S}] = e^{r\Dt}$}, in \Dt time, with that of the binomial model \eqref{eq:BM_E} then:
 \begin{align}
  e^{r\Dt}       &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \n
  \pu(\u - \d)   &= e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:p(u-d)}\\
@@ -329,7 +329,7 @@ If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote
 \end{align}
 and if one equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} then\footnote{Substituting equation \eqref{eq:p(u-d)} into \eqref{eq:Var=1} one gets \eqref{eq:Var=2}}:
 \begin{align}
- (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{S_{t + \Dt}}{\S}]^2 \n
+ (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\SDt}{\S}]^2 \n
                         &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \label{eq:Var=1} \\
                         &= (\u + \d)(e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})) \label{eq:Var=2} \\
                         &\qquad + \d^2 e^{-\lambda\Dt} + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \n
@@ -396,7 +396,7 @@ TODO: add some fluff
 \subsection{Valuation without Coupons}
 Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  At time $t + \Dt$ one should have:
 \begin{equation*}
- \Pi_{t + \Dt} =
+ \PDt =
  \begin{cases}
   \Vu - \D\S u          & \text{with probability } \pu \\
   \Vd - \D\S d          & \text{with probability } \pd\\
@@ -420,12 +420,12 @@ If one wishes to hedge against up and down movements of the stock then:
 
 The required value of \P at time $t + \Dt$ is:
 \begin{align}
- \Pi_{t + \Dt}  &= \P e^{r\Dt} \n
-                &= \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} \label{eq:P}
+ \PDt  &= \P e^{r\Dt} \n
+       &= \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} \label{eq:P}
 \end{align}
-as \P is invested at the risk free rate, and taking the expected value of $\Pi_{t + \Dt}$, which must equal \eqref{eq:P}, one gets:
+as \P is invested at the risk free rate, and taking the expected value of $\PDt$, which must equal \eqref{eq:P}, one gets:
 \begin{align}
- \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} &= \Et[\Pi_{t + \Dt}] \n
+ \left(\V - \frac{\Vu - \Vd}{u - d}\right) e^{r\Dt} &= \Et[\PDt] \n
         &= \left(\Vu - \frac{\Vu - \Vd}{u - d}u\right) e^{-\lambda\Dt} \n
         &\qquad + \left(\X - \frac{\Vu - \Vd}{u - d}(1 - \eta)\right)(1 - e^{-\lambda\Dt}) \n
         &= \Vu\left(e^{-\lambda\Dt} - \frac{ue^{-\lambda\Dt} + (1 - \eta)(1 - e^{-\lambda\Dt})}{u - d}\right) \n
@@ -445,7 +445,7 @@ thus the pricing method of this binomial model is the same as the pricing method
 \subsection{Valuation with Coupons}
 Consider a portfolio, as above, with the add of coupon cash flows.  At time $t + \Dt$ one should have:
 \begin{equation*}
- \Pi_{t + \Dt} =
+ \PDt =
  \begin{cases}
   \Vu - \D\S u + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pu \\
   \Vd - \D\S d + c_i e^{t + \Dt - t^{c}_i}      & \text{with probability } \pd\\
