@@ -227,17 +227,9 @@ class Time(Payoff):
     def __init__(self, payoff, times):
         super(Time, self).__init__(payoff.T)
         self.payoff = payoff
-        self.times = times
         self._time_discrete = set()
         self._time_continuous = []
-        for time in times:
-            try:
-                l = max(np.double(time[0]), 0)
-                u = min(np.double(time[1]), self.T)
-                self._time_continuous.append((l, u))
-            except (TypeError, IndexError):
-                if 0 <= time <= self.T:
-                    self._time_discrete.add(np.double(time))
+        self.times = times
 
     def __contains__(self, t):
         """Check if the current time is a valid time for the payoff."""
@@ -248,6 +240,23 @@ class Time(Payoff):
                 return True
         else:
             return False
+
+    @property
+    def times(self):
+        return list(self._time_discrete) + self._time_continuous
+
+    @times.setter
+    def times(self, times):
+        self._time_discrete = set()
+        self._time_continuous = []
+        for time in times:
+            try:
+                l = max(np.double(time[0]), 0)
+                u = min(np.double(time[1]), self.T)
+                self._time_continuous.append((l, u))
+            except (TypeError, IndexError):
+                if 0 <= time <= self.T:
+                    self._time_discrete.add(np.double(time))
 
     def default(self, t, S):
         """Default value of payoff, zero is out of time."""
