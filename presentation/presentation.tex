@@ -26,6 +26,7 @@
 \usepackage{color}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
+\usepackage{multirow}
 \usepackage{natbib}
 \usepackage{xspace}
 
@@ -58,7 +59,7 @@
 
 % PREAMBLE -------------------------------------------------------
 
-\title[Valuation of Convertible Bonds]{Valuation of Convertible Bonds with Credit Risk}
+\title[Convertible Bonds with Credit Risk]{Valuation of Convertible Bonds with Credit Risk}
 
 %\subtitle{Subtitle (if needed)}
 
@@ -175,7 +176,6 @@ A convertible bond has the following components:
 \begin{figure}[ht]
  \centering
  \includegraphics[width=10cm]{../common/fig_choices}
- \label{fig:choices}
 \end{figure}
 \end{frame}
 
@@ -245,7 +245,7 @@ Under risk neutral probability space the drift rate of \S is $\mu = (r + \lambda
 \subsection{Partial Differential Equation}
 
 \begin{frame}{Partial Differential Equation}
-\begin{thm}[Black-Scholes with Credit Risk]
+\begin{thm}[Black-Scholes with Default]
 The price of an option, on an underlying \S, has the following partial differential equation:
 \begin{equation}
  (r + \lambda)\V = \Vt + (r + \lambda\eta)\S\Vs + \half\sigma^2\S^2\Vss + \lambda\X \label{eq:BScr}
@@ -274,62 +274,173 @@ The following steps are used in the derivation for Equation \ref{eq:BScr}:
 
 % =============================================================================
 
-\section{Binomial Model}
+\section{Binomial Model} % 9 mins
+
+% -----------------------------------------------------------------------------
+
+\subsection{Binomial Tree}
+
+\begin{frame}{Binomial Tree (1/2)}
+\begin{defn}[Binomial Process with Default]
+A binomial process with up movement \u and down movement \d and a terminal default event $(1 - \eta)$ has the following mass distribution function:
+\begin{equation}
+ f(\SDt) = \left\{\begin{array}{l@{\qquad\mbox{if }}l} \pu & \SDt = u\S \\ \pd & \SDt = d\S \\ \po & \SDt = (1 - \eta)\S \end{array} \right.
+\end{equation}
+\end{defn}
+\end{frame}
+
+\begin{frame}{Binomial Tree (2/2)}
+\begin{cor}
+The expected value and variance of the Binomial Process with Default is:
+\begin{align}
+ \E[\frac{\SDt}{\S}]   &= \u\pu + \d\pd + (1 - \eta)\po \\
+ \Var[\frac{\SDt}{\S}] &= \u^2\pu + \d^2\pd + (1 - \eta)^2\po - \E[\frac{\SDt}{\S}]^2
+\end{align}
+\end{cor}
+\end{frame}
 
 % -----------------------------------------------------------------------------
 
 \subsection{Binomial Process}
 
-\begin{frame}{Binomial Process}
-
+\begin{frame}{Binomial Process (1/2)}
+\begin{thm}[Binomial Process with Default]
+A Binomial Process with Default has the following parameters:
+\begin{align*}
+  \u  &= e^{\sigma\sqrt{\Dt}} \\
+  \d  &= e^{-\sigma\sqrt{\Dt}} \\
+  \pu &= \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
+  \pd &= e^{-\lambda\Dt} - \pu \\
+  \po &= 1 - e^{-\lambda\Dt} \\
+  \V  &= e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i \\
+\end{align*}
+\end{thm}
 \end{frame}
 
-% -----------------------------------------------------------------------------
-
-\subsection{Derivation}
-
-\begin{frame}{Derivation}
-
+\begin{frame}{Binomial Process (2/2)}
+\begin{thm}[Binomial Process with Default]
+A Binomial Process with Default has the following restrictions on the parameters:
+\begin{align*}
+  0   &< \sigma \\
+  0   &\le \lambda \\
+  0   &< \Dt \\
+  \Dt &\le \frac{\sigma^2}{r^2} \\
+  \Dt &\le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right) \\
+\end{align*}
+\end{thm}
 \end{frame}
 
-% -----------------------------------------------------------------------------
-
-\subsection{Restrictions}
-
-\begin{frame}{Restrictions}
-
+\begin{frame}{Derivation (1/3)}
+The following steps are used in the derivation for the parameters of the Binomial Process with Default.
+\begin{enumerate}
+ \item Note that the arrival time of a default event follows an exponential distribution with hazard rate $\lambda$:
+       \begin{align}
+        \po &= 1 - e^{-\lambda\Dt} \\
+        \pd &= e^{-\lambda\Dt} - \pu
+       \end{align}
+ \item Equate $\E[\frac{\SDt}{\S}]$ with $\E[\frac{\Sdt}{\S}] = e^{r\Dt}$, where $\dt \approxeq \Dt$
+ \item Equate $\Var[\frac{\SDt}{\S}]$ with $\Var[\frac{\Sdt}{\S}] = (\sigma^2 + \lambda\eta^2)\Dt$, where $\dt \approxeq \Dt$
+       \begin{enumerate}
+        \item Assume $\Dt^2$ = 0
+        \item $\u\d = 1$
+        \item $\u = e^{\sqrt{A\Dt}}$
+        \item Use Taylor series expansion for all exponential terms
+       \end{enumerate}
+\end{enumerate}
 \end{frame}
 
-% -----------------------------------------------------------------------------
-
-\subsection{Valuation}
-
-\begin{frame}{Valuation without Coupons}
-
+\begin{frame}{Derivation (2/3)}
+The following steps are used in the derivation for the valuation of the Binomial Process with Default.
+\begin{enumerate}
+ \item Construct a portfolio $\P = \V - \D\S$ with:
+       \begin{equation}
+        \PDt = \left\{
+                \begin{array}{l@{\qquad\mbox{with probability }}l}
+                 \Vu - \D\S\u      & \pu \\
+                 \Vd - \D\S\d      & \pu \\
+                 \X - (1 - \eta)\S & \po
+                \end{array}\right.
+       \end{equation}
+ \item Invest the residual of \P at the risk free rate: $\PDt = \P e^{r\Dt}$
+ \item Equate the expected value of \PDt with the risk free rate:
+       \begin{align}
+        \P e^{-r\Dt} = \E[\PDt]
+       \end{align}
+ \item Choose $\D = \frac{\Vu - \Vd}{\S(u - d)}$ to hedge against up and down movements of the stock
+\end{enumerate}
 \end{frame}
 
-\begin{frame}{Valuation with Coupons}
-
+\begin{frame}{Derivation (3/3)}
+The following steps are used in the derivation for the limits of the Binomial Process with Default.
+\begin{enumerate}
+ \item Note that $\{\pu, \pd, \po\}$ is required to be a valid probability set:
+       \begin{align}
+        \min(\pu, \pd, \po) \ge 0 \\
+        \pu + \pd + \po = 1
+       \end{align}
+ \item Using the relationship between \pu, \pd and \po the following inequality needs to hold:
+       \begin{equation}
+        0 \le \pu \le e^{-\lambda\Dt}
+       \end{equation}
+ \item Impose the requirements that $\lambda\Dt \ge 0$
+\end{enumerate}
 \end{frame}
-
 
 % =============================================================================
 
 \section{Numerical Example}
 
 \begin{frame}{Parameters for the Convertible Bond}
-
+Consider the following parameters of a Convertible Bond:
+\begin{table}[ht]
+ \centering
+ \begin{tabular}{|c|l|c|} \hline
+  \theader{Component}         & \theader{Parameter} & \theader{Value} \h
+  \multirow{5}{*}{Annuity}    & Notional            & $100$ \\
+                              & Coupon              & 8\% \\
+                              & Coupon frequency    & Semi-annually \\
+                              & Maturity            & $\T := 5$ \\
+                              & Recovery            & $\gamma := 0\%$ \h
+  \multirow{2}{*}{Put}        & Strike              & $\Kp := 105$ \\
+                              & Period(s)           & $\Tp := \{3\}$ \h
+  \multirow{2}{*}{Call}       & Strike              & $\Kc := 110 + \C\tfrac{t \pmod {0.5}}{0.5}$ \\
+                              & Period(s)           & $\Tc := [2, 5)$ \h
+  \multirow{2}{*}{Conversion} & Quantity of stocks  & $\Kv := 1$ \\
+                              & Period(s)           & $\Tv := [0, 5]$ \h
+ \end{tabular}
+ \caption{Convertible Bond Parameters}
+\end{table}
 \end{frame}
 
-
-% -----------------------------------------------------------------------------
-
-\subsection{Binomial Process}
-
-\begin{frame}{Payoff}
-
+\begin{frame}{Parameters for the Stock}
+\begin{table}[ht]
+ \centering
+ \begin{tabular}{|l|l|} \hline
+  \theader{Parameter} & \theader{Value} \h
+  Risk free rate      & $r := 5\%$ \h
+  Volatility          & $\sigma := 20\%$ \h
+  Hazard rate         & $\lambda := 2\%$ \h
+  Default (total)     & $\eta := 100\%$ \h
+  Default (typical\footnote{\citet{BP95} found that stock prices typically drop 30\% on announcement of default}) & $\eta := 30\%$ \h
+  Default (partial)   & $\eta := 0\%$ \h
+ \end{tabular}
+ \caption{Stock Parameters}
+ \label{tab:stock_parameters}
+\end{table}
 \end{frame}
 
+\begin{frame}{Payoff and Action}
+\begin{figure}[ht]
+ \centering
+ \includegraphics[width=8cm]{../common/fig_choices}
+ \caption[Payoff]{Payoff of the convertible bond with total default and colours indicating the action taken for that payoff.  $\Dt = 2^{-3}$, $\DS = 2^{1}$ and $\S \in [0, 250]$.}
+\end{figure}
+\end{frame}
+
+\section{Bibliography}
+
+\begin{frame}{Bibliography}
 \bibliographystyle{../references/amsplnat}
 \bibliography{../references/references.bib}
+\end{frame}
 \end{document}
