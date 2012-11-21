@@ -231,7 +231,7 @@ A stock process with geometric Brownian motion, with a jump component to model t
 \begin{equation}
  \dS = \mu\S\dt + \sigma\S\dW - \eta\S\dq
 \end{equation}
-with \q being a Poison process with intensity $\lambda$ where the first event $\q = 1$ is the default event.
+with \q being a Poisson process with intensity $\lambda$ where the first event $\q = 1$ is the default event.
 \end{defn}
 \end{frame}
 
@@ -373,14 +373,14 @@ The following steps are used in the derivation for the valuation of the Binomial
         \PDt = \left\{
                 \begin{array}{l@{\qquad\mbox{with probability }}l}
                  \Vu - \D\S\u      & \pu \\
-                 \Vd - \D\S\d      & \pu \\
+                 \Vd - \D\S\d      & \pd \\
                  \X - (1 - \eta)\S & \po
                 \end{array}\right.
        \end{equation}
  \item Invest the residual of \P at the risk free rate: $\PDt = \P e^{r\Dt}$
  \item Equate the expected value of \PDt with the risk free rate:
        \begin{align}
-        \P e^{-r\Dt} = \E[\PDt]
+        \P e^{r\Dt} = \E[\PDt]
        \end{align}
  \item Choose $\D = \frac{\Vu - \Vd}{\S(u - d)}$ to hedge against up and down movements of the stock
 \end{enumerate}
