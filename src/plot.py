@@ -1,13 +1,20 @@
 """
 Utility functions for plotting
 """
+import argparse
+import os.path
+import sys
+
+import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.patches as patches
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-from convertible_bond import dS_total as dS, payoff, A, P, C, T
+from convertible_bond import A, P, C, T, S as Conv
 from model import FDEModel, CrankNicolsonScheme
+
+__all__ = ["payoff", "plot_model", "plotmain"]
 
 colourise = cm.gist_ncar
 PUT   = 0. / 6
@@ -17,29 +24,32 @@ FCONV = 3. / 6
 REDEM = 4. / 6
 HOLD  = 5. / 6
 
-def choices(Z):
-    colours = np.zeros((len(Z.S), len(Z.t)))
-    for y, t in zip(range(len(Z.t)), Z.t):
-        Kp = P.payoff.strike(t)
-        Kc = C.payoff.strike(t)
-        for x, S in zip(range(len(Z.S)), Z.S):
-            V = Z.V[y][x]
-            if t in A and t != T:
-                V -= A.C
 
-            if V == S:
-                if t in C and t != T and Z.I[y][x] > S:
-                    colours[x, y] = FCONV
-                else:
-                    colours[x, y] = CONV
-            elif t == T:
-                colours[x, y] = REDEM
-            elif t in P and V == Kp:
-                colours[x, y] = PUT
-            elif t in C and V == Kc:
-                colours[x, y] = CALL
-            else:
-                colours[x, y] = HOLD
+def payoff(t, S, V, I):
+    if t in A and t != T:
+        V -= A.C
+
+    if V == S and t in Conv:
+        if t in C and t != T and I > S:
+            return FCONV
+        else:
+            return CONV
+    elif t == T:
+        return REDEM
+    elif t in P and V == P.payoff.strike(t):
+        return PUT
+    elif t in C and V == C.payoff.strike(t):
+        return CALL
+    else:
+        return HOLD
+
+
+def choices(P):
+    colours = np.zeros((len(P.S), len(P.t)))
+    for y, t in zip(range(len(P.t)), P.t):
+        for x, S in zip(range(len(P.S)), P.S):
+            #print (y, t), (x, S)
+            colours[x, y] = payoff(t, S, P.V[y][x], P.I[y][x])
     return colourise(colours)
 
 
@@ -103,3 +113,28 @@ def plot_model(ax, dS, payoff):
     ax.set_ylabel("Stock Price")
     ax.set_zlabel("Portfolio Value")
     legend(ax)
+
+def plotmain(main):
+    name = os.path.basename(sys.argv[0])[:-3]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--format', '-f', type=str, default='pdf',
+                        help='Image format')
+    parser.add_argument('--show', '-s', default=False, action='store_true',
+                        help='Show image')
+    parser.add_argument('--backend', '-b', type=str, help='Rendering backend')
+    args = parser.parse_args()
+
+    if args.backend:
+        plt.switch_backend(args.backend)
+    elif args.show:
+        plt.switch_backend('Qt4Agg')
+    else:
+        plt.switch_backend('cairo')
+
+    main()
+
+    if args.show:
+        plt.show()
+    else:
+        plt.savefig("../common/%s.%s" % (name, args.format))
