@@ -16,6 +16,7 @@
 \usepackage{mathrsfs}
 \usepackage{multirow}
 \usepackage[numbers]{natbib}
+\usepackage{placeins}
 \usepackage{xspace}
 
 % GRAPHICS HANDLING ----------------------------------------------
@@ -397,11 +398,11 @@ TODO: add some fluff
 Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  At time $t + \Dt$ one should have:
 \begin{equation*}
  \PDt =
- \begin{cases}
-  \Vu - \D\S u          & \text{with probability } \pu \\
-  \Vd - \D\S d          & \text{with probability } \pd\\
-  \X - (1 - \eta)\S     & \text{with probability } \po\\
- \end{cases}
+ \left\{\begin{array}{l@{\qquad\text{with probability }}l}
+  \Vu - \D\S u          & \pu \\
+  \Vd - \D\S d          & \pd \\
+  \X - (1 - \eta)\D\S   & \po \\
+ \end{array}\right.
 \end{equation*}
 where
 
@@ -536,8 +537,7 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 
 % -----------------------------------------------------------------------------
 
-\section{Example and Hedging Strategy}
-Provide a numerical example (with diagrams) and provide example of the hedging strategy.
+\section{Synthesising and Hedging Strategy}
 
 % =============================================================================
 
@@ -591,12 +591,12 @@ and it is assumed that embedded options can only be exercised after receiving th
 
 % -----------------------------------------------------------------------------
 
-\section{Payoff}
+\section{Sensitivity}
 Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it's lifetime, and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
 
-\begin{figure}[ht]
+\begin{figure}[htb!]
  \centering
- \includegraphics[width=14cm]{../common/fig_choices}
+ \includegraphics[width=8cm]{../common/fig_choices}
  \caption[Payoff]{Payoff of the convertible bond with total default and colours indicating the action taken for that payoff.  $\Dt = 2^{-3}$, $\DS = 2^{1}$ and $\S \in [0, 250]$.}
  \label{fig:choices}
 \end{figure}
@@ -611,6 +611,54 @@ The figure has clear jumps at each coupon payment, producing a saw effect.  The 
  \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ having minimal impact.
 \end{itemize}
 
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=14cm]{../common/fig_simple}
+ \caption[Simple Call]{Comparison of initial value of the standard convertible bond compared to one with a singular time for the call option.  Also the payoff of the ``simple call'' and colours indicating the action taken for the payoff.}
+ \label{fig:simple}
+\end{figure}\FloatBarrier
+
+The above analysis suggests that the majority of impact that the call option has on the convertible bond's value is the leading edge at time $\t = 2$ and Figure \ref{fig:simple} illustrates the minimal change in price due to having a call with a single exercise time of $\Tc = \{2\}$.
+
+In considering the sensitivity of the convertible bond to changes in each of the four components consider the following figures.
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=14cm]{../common/fig_varR}
+ \caption[Varying Redemption Value]{Comparison of initial value of standard convertible bonds to one with no redemption value.  Also the payoff of the ``no redemption'' and colours indicating the action taken for the payoff.}
+ \label{fig:varR}
+\end{figure}
+
+\emph{Annuity}: Figure \ref{fig:varR} compares the convertible bond with normal and no redemption value.  The payoff surface shows that at time $\t = 3$ the put effectively ``resets'' the payoff profile to that of a normal redemption value.
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=8cm]{../common/fig_varTp}
+ \caption[Varying Put Time]{Comparison of initial value of convertible bonds with different times for the put option.}
+ \label{fig:varTp}
+\end{figure}
+
+\emph{Put:} Figure \ref{fig:varTp} compares the price of a convertible bond with differing put times.  The figure illustrates that the price of the bond is correlated with the put exercise time.  This effect happens because the coupon rate (converted to NACC) is greater than the risk free rate.  If the coupon rate were lower that an inverse correlation would be observed.  The effect dominant for $\S \in [0, 50]$ and tapers of until almost no impact by $\S = 100$.
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=8cm]{../common/fig_varTc}
+ \caption[Varying Call Time]{Comparison of initial value of convertible bonds with different times for the call option.}
+ \label{fig:varTc}
+\end{figure}
+
+\emph{Call:} Figure \ref{fig:varTc} compares the price of a convertible bond with differing call times.  The figure illustrates that the price of the bond is correlated with the call exercise time.  This effect happens because the payoff behaves similarly to a forward on the stock and thus is increasing with time.
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=14cm]{../common/fig_varTv}
+ \caption[Varying Call Time]{Comparison of initial value of convertible bonds with different times for the conversion option.  Also the payoff of for $\Tv = [4, 5]$ and colours indicating the action taken for the payoff.}
+ \label{fig:varTv}
+\end{figure}
+
+\emph{Conversion:} Figure \ref{fig:varTv} compares the price of a convertible bond with differing conversion times.  The figure illustrates the impact the conversion option, in conjunction with the call option, has on the price.  For conversion intervals that overlap with the leading edge of the call option (i.e. $\Tv = [1, 5]$ and $\Tv = [2, 4]$) the value is unchanged however when there is no overlap (i.e. $\Tv = [3, 5]$ and $\Tv = [4, 4]$) the upper section of the convertible bond's value is significantly suppressed limiting around the strike price of the call option.
+
+As seen above the convertible bond is insensitive to changes in the redemption value and the majority of the value is determined by the leading edge of the call and put options (i.e. $\min(\Tc)$ and $\min(\Tp)$).  The call option influences the upper section, and the put option influences the lower section, of the pricing curve of the convertible bond.  Another important criteria is whether the conversion option on or before the leading edge of the call option or after the call option.
 
 % =============================================================================
 
