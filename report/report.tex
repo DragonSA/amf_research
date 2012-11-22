@@ -99,14 +99,18 @@ I declare that this project is my own, unaided work. It is being submitted as pa
 \begin{abstract}
 A convertible bond is a complex derivative that cannot be priced as a simple combination of bond and stock components.  Convertible bonds can be broken down as a bond with two embedded options (a put option for the investor and a call option for the issuer) and an option to convert the bond into stock.  Due to the multiple continuous options, the pricing of the convertible bond is path dependent.
 
-This research project explores and implements a binary tree and finite difference scheme to price the convertible bond, taking into account credit risk.
+This research project explores and implements a binary tree and finite difference scheme to price the convertible bond, taking into account credit risk.  Consideration is given to the sensitivities of the convertible bond and a possible hedging strategy.
 \end{abstract}
 
 % ACKNOWLEDGEMENTS -----------------------------------------------
 
 \def\abstractname{\Huge Acknowledgements}
 \begin{abstract}
-Place acknowledgements here.
+I would like to thank my supervisor Tom McWalter for assigning me this very interesting problem and for the support he provided in understanding more difficult components of the project.
+
+I would also like to thank Coenraad Labuschagne, the AMF Honours course coordinator and lecturer, and all the AMF Honours lecturers for providing me with the knowledge and understanding, both for an future and this project.
+
+Lastly, I would like to thank my army of checkers and proof readers: Kay \mbox{McCallum}, Anne Naylor and Nigel Naylor.
 \end{abstract}
 
 % TABLE OF CONTENTS ----------------------------------------------
@@ -124,7 +128,9 @@ Place acknowledgements here.
 % =============================================================================
 
 \chapter{Introduction}
-What this paper shows and does.
+This research project aims to price convertible bonds based on the paper by \citet{AFV03} and \citet{MK12}.
+
+Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond, except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
 % -----------------------------------------------------------------------------
 
@@ -163,8 +169,13 @@ Table \ref{tab:choices} illustrated the various choices made by the bond holder 
 % -----------------------------------------------------------------------------
 
 \section{Literature Review}
-Describe the current state of literature w/ Convertible Bonds with Credit Risk,
-possibly split this and include it at the beginning of each relevant section?
+\citet{I77} started the literature of pricing a convertible bond with extensions from \citet{BS77} and \citet{BS80}.  The original approach was to treat the bond and equity as components of the issuer's value and to treat default as when the issuer's value drops below a point where it can no longer meet its financial obligations.  An overview of this type of approach is provided by \citet{N96} and criticisms are addressed by \citet{JT95}.  The main problems with this model is that the issuer's value is not directly observable, difficult to parameterise and all senior debt to the convertible bond also needs to be priced.
+
+A second approach was to price the convertible bond based on the issuer's stock price \cite{MS86}.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  \Citet{AFV03} was the first to allow stock jumps that didn't go to zero.  The probability of the loss jump over a short period of time is described by a hazard rate.
+
+Also some Monte Carlo based pricing methods have been considered as proposed by \citet{B89} with \citet{G03} providing an optimisation approach to handle optimal early exercise of the American options.  Further improvements to the pricing methods were done by \citet{AKW08}.
+
+Other methods used for pricing include a finite element method by \citet{BBH03} and a binomial tree method by \citet{TKN01} and \citet{AFV02}.
 
 % =============================================================================
 
@@ -476,67 +487,6 @@ if, however, $t^{c}_i = t$, thus $c_i$ arrives with certainty at $t$, it is triv
 
 % -----------------------------------------------------------------------------
 
-\section{Parameters and Formul\ae\ of Model}
-Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
-
-\begin{table}[ht]
- \centering
- \begin{tabular}{|r|l|}\hline
-  \theader{Parameter} & \theader{Description} \h
-  $r$                 & Risk free rate \h
-  $\sigma$            & Log-volatility of the stock price \h
-  $\lambda$           & Hazard rate of default \h
-  $\eta$              & Percentage drop of stock price in a default event \h
-  \Dt                 & Time-step \h
-  \Vu                 & Value of portfolio for an up-step at $t + \Dt$ \h
-  \Vd                 & Value of portfolio for a down-step at $t + \Dt$ \h
-  \X                  & Value of defaulted portfolio at $t$ \h
-  $c_i$               & Value of the i\textsuperscript{th} coupon payment \h
-  $t^{c}_i$           & Time of the i\textsuperscript{th} coupon payment \h
- \end{tabular}
- \caption{Parameters of the Binomial Model with Credit Risk}
- \label{tab:bin_parameter}
-\end{table}
-
-\begin{savenotes}
-\begin{table}[ht]
- \centering
- \begin{tabular}{|c|l|}\hline
-  \theader{Limit}                & \theader{Description} \h
-  $0 < \sigma$                   & Volatility must be positive \h
-  $0 \le \lambda$                & Hazard rate must be non-negative \h
-  $0 < \Dt$                      & Time step must be positive \h
-  $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \h
-  $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \h
- \end{tabular}
- \caption{Limits of the Binomial Model with Credit Risk}
- \label{tab:bin_limit}
-\end{table}
-\end{savenotes}
-
-\begin{table}[ht]
- \centering
- \begin{tabular}{|r@{ = }l|l|l|}\hline
-  \multicolumn{2}{|c|}{\textbf{Formul\ae}} & \theader{Description} \h
-  \u     & $e^{\sigma\sqrt{\Dt}}$ &
-     Multiplier for an up-step \h
-  \d     & $e^{-\sigma\sqrt{\Dt}}$ &
-     Multiplier for a down-step \h
-  \pu    & $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
-     Probability of an up-step \h
-  \pd    & $e^{-\lambda\Dt} - \pu$ &
-     Probability of a down-step \h
-  \po    & $1 - e^{-\lambda\Dt}$ &
-     Probability of default \h
-  \V     & $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
-     Value of portfolio at $t$ for $t^{c}_i = t$ \h
- \end{tabular}
- \caption{Formal\ae\ for the Binomial Model with Credit Risk}
- \label{tab:bin_formulae}
-\end{table}
-
-% -----------------------------------------------------------------------------
-
 \section{Synthesising and Hedging Strategy}
 Consider the strategy where $\V - \D\S$ is invested at the risk free rate and $\D\S$ is held in stock.  This creates the portfolio $\P = \D\S + (\V - \D\S) = \V$ and in one time step the portfolio is worth:
 \begin{equation}
@@ -595,6 +545,70 @@ Equation \ref{eq:PDt} can be rewritten as:
 
 It is trivial to confirm that the expected value of \PDt is $e^{r\Dt}\P$.
 
+% -----------------------------------------------------------------------------
+
+\section{Parameters and Formul\ae\ of Model}
+Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
+
+\begin{table}[ht]
+ \centering
+ \begin{tabular}{|r|l|}\hline
+  \theader{Parameter} & \theader{Description} \h
+  $r$                 & Risk free rate \h
+  $\sigma$            & Log-volatility of the stock price \h
+  $\lambda$           & Hazard rate of default \h
+  $\eta$              & Percentage drop of stock price in a default event \h
+  \Dt                 & Time-step \h
+  \Vu                 & Value of portfolio for an up-step at $t + \Dt$ \h
+  \Vd                 & Value of portfolio for a down-step at $t + \Dt$ \h
+  \X                  & Value of defaulted portfolio at $t$ \h
+  $c_i$               & Value of the i\textsuperscript{th} coupon payment \h
+  $t^{c}_i$           & Time of the i\textsuperscript{th} coupon payment \h
+ \end{tabular}
+ \caption{Parameters of the Binomial Model with Credit Risk}
+ \label{tab:bin_parameter}
+\end{table}
+
+\begin{savenotes}
+\begin{table}[ht]
+ \centering
+ \begin{tabular}{|c|l|}\hline
+  \theader{Limit}                & \theader{Description} \h
+  $0 < \sigma$                   & Volatility must be positive \h
+  $0 \le \lambda$                & Hazard rate must be non-negative \h
+  $0 < \Dt$                      & Time step must be positive \h
+  $\Dt \le \frac{\sigma^2}{r^2}$ & Time step must be small enough to handle volatility\footnote{If $r = 0$ then this inequality is not applicable.} \h
+  $\Dt \le \frac{1}{\lambda}\ln\left(\frac{u - (1 - \eta)}{e^{r\Dt} - (1 - \eta)}\right)$ & Time step must be small enough to handle hazard rate\footnote{If $\lambda = 0$ then this inequality is not applicable.} \h
+ \end{tabular}
+ \caption{Limits of the Binomial Model with Credit Risk}
+ \label{tab:bin_limit}
+\end{table}
+\end{savenotes}
+
+\begin{table}[ht]
+ \centering
+ \begin{tabular}{|r@{ = }l|l|l|}\hline
+  \multicolumn{2}{|c|}{\textbf{Formul\ae}} & \theader{Description} \h
+  \u     & $e^{\sigma\sqrt{\Dt}}$ &
+     Multiplier for an up-step \h
+  \d     & $e^{-\sigma\sqrt{\Dt}}$ &
+     Multiplier for a down-step \h
+  \pu    & $\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}$ &
+     Probability of an up-step \h
+  \pd    & $e^{-\lambda\Dt} - \pu$ &
+     Probability of a down-step \h
+  \po    & $1 - e^{-\lambda\Dt}$ &
+     Probability of default \h
+  \V     & $e^{-r\Dt}(\Vu\pu + \Vd\pd + \X\po) + c_i$ &
+     Value of portfolio at $t$ for $t^{c}_i = t$ \h
+  \D     & $\tfrac{\Vu - \Vd}{S(\u - \d)}$ &
+     Delta ratio for hedging \h
+  \H     & $\X - (\Vu - \D\S\u) - (1 - \eta)\D\S$ &
+     Unadjusted default cost after hedging \h
+ \end{tabular}
+ \caption{Formal\ae\ for the Binomial Model with Credit Risk}
+ \label{tab:bin_formulae}
+\end{table}
 
 % =============================================================================
 
@@ -653,7 +667,7 @@ Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it'
 
 \begin{figure}[htb!]
  \centering
- \includegraphics[width=8cm]{../common/fig_choices}
+ \includegraphics[width=14cm]{../common/fig_choices}
  \caption[Payoff]{Payoff of the convertible bond, with total default, and colours indicating the action taken for that payoff.  $\Dt = 2^{-3}$, $\DS = 2^{1}$ and $\S \in [0, 250]$.}
  \label{fig:choices}
 \end{figure}
@@ -690,7 +704,7 @@ In considering the sensitivity of the convertible bond to changes in each of the
 
 \begin{figure}[htb!]
  \centering
- \includegraphics[width=8cm]{../common/fig_varTp}
+ \includegraphics[width=12cm]{../common/fig_varTp}
  \caption[Varying Put Time]{Comparison of initial value of convertible bonds, with total default, with different times for the put option.}
  \label{fig:varTp}
 \end{figure}
@@ -699,7 +713,7 @@ In considering the sensitivity of the convertible bond to changes in each of the
 
 \begin{figure}[htb!]
  \centering
- \includegraphics[width=8cm]{../common/fig_varTc}
+ \includegraphics[width=12cm]{../common/fig_varTc}
  \caption[Varying Call Time]{Comparison of initial value of convertible bonds, with total default, with different times for the call option.}
  \label{fig:varTc}
 \end{figure}
@@ -717,11 +731,13 @@ In considering the sensitivity of the convertible bond to changes in each of the
 
 As seen above the convertible bond is insensitive to changes in the redemption value and the majority of the value is determined by the leading edge of the call and put options (i.e. $\min(\Tc)$ and $\min(\Tp)$).  The call option influences the upper section, and the put option influences the lower section, of the pricing curve of the convertible bond.  Another important criteria is whether the conversion option on or before the leading edge of the call option or after the call option.
 
+% -----------------------------------------------------------------------------
+
 \section{Default Cost after Hedging}
 
 \begin{figure}[htb!]
  \centering
- \includegraphics[width=12cm]{../common/fig_binTrade}
+ \includegraphics[width=14cm]{../common/fig_binTrade}
  \caption[Default Cost after Hedging]{Default Cost after Hedging, \H, for a convertible bond with typical default.}
  \label{fig:binTrade}
 \end{figure}
@@ -737,7 +753,19 @@ The hedging strategy is not perfect however if a large enough ``population'' of 
 % =============================================================================
 
 \chapter{Conclusion}
-Summarise what this paper shows and does (i.e. Introduction + Conclusion = Executive Summary).
+This project derived and implemented two pricing methods of convertible bonds, that allowed for differing levels of default.  Parameters for three schemes, the explicit, implicit and Crank-Nicolson, were derived.
+
+The binomial model was extended by considering the hedging strategy and showed that the binomial model does not provide for perfect hedging, requiring a cross financing of default and non-default events.  The cross financing requirement was shown to be \H, the unadjusted default cost after hedging, and a numerical analysis showed the convertible bond has a negative \H.
+
+The sensitivities of the convertible bond was considered, with the put and call options influencing the lower and upper sections of the price curve respectively.  The conversion option can have impact on the price if it doesn't coincide with the leading edge of the call option.  The redemption value was shown to have little impact on the price.
+
+Further avenues of research include:
+\begin{itemize}
+ \item considering the impact the bond and stock recovery has on the convertible bond price,
+ \item exploration of better hedging strategies,
+ \item Monte Carlo pricing, and
+ \item simulations of ``insuring'' the convertible bond with respect to \H.
+\end{itemize}
 
 % =============================================================================
 
@@ -746,10 +774,37 @@ Summarise what this paper shows and does (i.e. Introduction + Conclusion = Execu
 % -----------------------------------------------------------------------------
 
 \section{Software}
+All software using in this research project is open source.
+\begin{savenotes}
+\begin{table}[htb!]
+ \centering
+ \begin{tabular}{|l|l|} \hline
+  \theader{Software} & \theader{Version} \h
+  TeXLive    & 2012 \h
+  Python     & 2.7.3 \h
+  NumPy      & 1.6.2 \h
+  SciPy      & 0.10.1 \h
+  Matplotlib & 1.2.0 \h
+  Git        & 1.7.11.5 \h
+  pmake\footnote{As distributed with FreeBSD 9} & \h
+ \end{tabular}
+ \caption{Software}
+\end{table}
+\end{savenotes}
 
 % -----------------------------------------------------------------------------
 
 \section{Hardware}
+\begin{table}[htb!]
+ \centering
+ \begin{tabular}{|l|l|} \hline
+  \theader{Component} & \theader{Specification} \h
+  CPU    & Intel Core i7 2600 \h
+  Memory & 16GiB \h
+ \end{tabular}
+ \caption{Hardware}
+\end{table}
+
 
 % BIBLIOGRAPHY ---------------------------------------------------
 
