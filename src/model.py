@@ -417,6 +417,7 @@ class FDEModel(object):
         # Terminal stock price and derivative value
         P.C[-1] = C = self.V.coupon(self.V.T)
         P.V[-1] = V = self.V.terminal(S) + C
+        P.I[-1] = I = V
 
         # Discount price backwards
         t = P.t
