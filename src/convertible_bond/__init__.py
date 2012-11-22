@@ -11,7 +11,7 @@ from convertible_bond.payoff import Annuity, Call, Put
 
 __all__ = [
         "T",
-        "dS", "dS_total", "dS_partial",
+        "dS", "dS_total", "dS_typical", "dS_partial",
         "A", "P", "C", "S", "B", "E", "payoff",
     ]
 
@@ -24,6 +24,8 @@ T = 5
 #       Hazard rate = 2%
 # Total default (default = 100%)
 dS_total = WienerJumpProcess(r=0.05, sigma=0.2, lambd_=0.02, eta=1)
+# T default (default = 0%)
+dS_typical = WienerJumpProcess(r=0.05, sigma=0.2, lambd_=0.02, eta=0.3)
 # Partial default (default = 0%)
 dS_partial = WienerJumpProcess(r=0.05, sigma=0.2, lambd_=0.02, eta=0)
 # No default
@@ -46,7 +48,7 @@ P = Time(Put(T, 105, A), times=[3])
 C = Time(Call(T, 110, A), times=[(2, 5)])
 
 # Stock option (conversion option into stock for portfolio)
-S = CallA(T, 0)
+S = Time(CallA(T, 0), times=[(0, 5)])
 
 # Bond component of convertible bond
 B = Stack([A, P, C])
