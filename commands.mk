@@ -1,8 +1,9 @@
 .ifndef __COMMANDS_MK
 
-PYTHON=		python
 BIBTEX=		bibtex
+EPSTOPDF=	epstopdf
 PDFLATEX=	pdflatex
+PYTHON=		python
 
 __COMMANDS_MK=	YES
 

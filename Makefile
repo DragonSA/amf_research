@@ -2,10 +2,11 @@ DIRS=		presentation proposal report
 
 .PHONY: 	all clean test figures ${DIRS}
 
-all: ${DIRS}
+all: figures ${DIRS}
 
 clean:
 	@${MAKE} -C common clean
+	@${MAKE} -C src clean
 .for dir in ${DIRS}
 	@${MAKE} -C ${dir} -f ../Makefile.incl clean NAME=${dir}
 .endfor

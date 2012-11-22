@@ -8,10 +8,10 @@ all: ${FIGURES}
 
 clean:
 	@echo "[CLEAN] common"
-	@rm -f fig*.pdf
+	@rm -f fig_*.pdf fig_*.eps
 
 .PHONY:		all clean
-.SUFFIXES:	.py .pdf
+.SUFFIXES:	.py .pdf .eps
 .PATH.py:	${SRC}
 
 .include "${SRC}Makefile.incl"
