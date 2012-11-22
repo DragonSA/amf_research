@@ -11,6 +11,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{fancyhdr}
+\usepackage{float}
 \usepackage{footnote}
 \usepackage{ifpdf}
 \usepackage{mathrsfs}
@@ -106,9 +107,9 @@ This research project explores and implements a binary tree and finite differenc
 
 \def\abstractname{\Huge Acknowledgements}
 \begin{abstract}
-I would like to thank my supervisor Tom McWalter for assigning me this very interesting problem and for the support he provided in understanding more difficult components of the project.
+I would like to thank my supervisor Tom McWalter for assigning me this very interesting problem and for assisting me to understand the more difficult components of the project.
 
-I would also like to thank Coenraad Labuschagne, the AMF Honours course coordinator and lecturer, and all the AMF Honours lecturers for providing me with the knowledge and understanding, both for an future and this project.
+I would also like to thank Coenraad Labuschagne, the AMF Honours course coordinator and lecturer, and all the AMF Honours lecturers for providing me with the knowledge and understanding, both for this project and the future.
 
 Lastly, I would like to thank my army of checkers and proof readers: Kay \mbox{McCallum}, Anne Naylor and Nigel Naylor.
 \end{abstract}
@@ -130,7 +131,7 @@ Lastly, I would like to thank my army of checkers and proof readers: Kay \mbox{M
 \chapter{Introduction}
 This research project aims to price convertible bonds based on the paper by \citet{AFV03} and \citet{MK12}.
 
-Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond, except the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy back the convertible bond for a specified price and whereby the investor can force the issue to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
+Convertible bonds are a hybrid instrument available on financial markets.  The convertible bond is an instrument that is similar to a normal bond, except that the holder has the option to convert the bond into a specified number of shares.  The convertible bond typically also has embedded options whereby the issuer may buy back the convertible bond for a specified price and whereby the investor can force the issuer to repurchase the convertible bond.  In the event of a default by the issuer the bond could have partial recovery or total default.
 
 % -----------------------------------------------------------------------------
 
@@ -139,10 +140,10 @@ A convertible bond is an annuity, which pays coupons \C at \ti and pays \R at ma
 \begin{itemize}
  \item \emph{A put option for the bond holder:} the bond holder may redeem the bond early for \Kp, provided $\t \in \Tp$.  This option is not applicable at termination, $T \not\in \Tp$.
  \item \emph{A call option for the bond issuer:} the bond issuer may force early redemption of the bond for \Kc, provided $\t \in \Tc$.  Normally $\Kc > \Kp$.  This option is not applicable at termination, $T \not\in \Tc$.
- \item \emph{A conversion option:} the bond holder may convert the bond into \Kv shares, for a value of $\Kv\S$, provided $\t \in \Tv$.  To optimise profits the bond holder would rather convert than exercise if $\Kp < \Kv\S$.  This option supersedes the call option (i.e. if the bond issuer forces early redemption the bond holder may still convert the bond into shared).  This option is applicable at termination, $T \in \Tv$.
+ \item \emph{A conversion option:} the bond holder may convert the bond into \Kv shares, for a value of $\Kv\S$, provided $\t \in \Tv$.  To optimise profits the bond holder would rather convert than exercise if $\Kp < \Kv\S$.  This option of conversion supersedes the call option (i.e. if the bond issuer forces early redemption the bond holder may still convert the bond into shares).  This option is applicable at termination, $T \in \Tv$.
 \end{itemize}
 
-In the event of default the bond holder may either recover the remains of the annuity or convert into the stock, which ever is worth more.  Default is considered terminal.
+In the event of default the bond holder may either recover the remains of the annuity or convert into the stock, whichever is worth more.  Default is considered terminal.
 
 Suppose the recovery of the bond is $\gamma$, and the drop in share price is $\eta$, then the value of the convertible bond in default is\footnote{This is assuming the bond recovery is based on the redemption value.  Another possibility is to base the recovery on the bond value at time \t}:
 \begin{equation}
@@ -150,7 +151,7 @@ Suppose the recovery of the bond is $\gamma$, and the drop in share price is $\e
 \end{equation}
 
 
-Table \ref{tab:choices} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made \cite{AKW08}.  \Citet{AFV03} uses an alternative method, using a linear complementary problem, of describing the payoffs.  Figure \ref{fig:choices} illustrates the actions taken on the bond over the lifetime of a convertible bond.  The impact of coupons is left as an implementation detail.
+Table \ref{tab:choices} illustrates the various choices made by the bond holder and the bond issuer and under what circumstances those choices are made \cite{AKW08}.  \Citet{AFV03} uses an alternative method, a linear complementary problem, of describing the payoffs.  Figure \ref{fig:choices} illustrates the actions taken on the bond over the lifetime of a convertible bond.  The impact of coupons is left as an implementation detail.
 \begin{table}[ht]
  \centering
  \begin{tabular}{|l|l|l|}\hline
@@ -169,11 +170,11 @@ Table \ref{tab:choices} illustrated the various choices made by the bond holder 
 % -----------------------------------------------------------------------------
 
 \section{Literature Review}
-\citet{I77} started the literature of pricing a convertible bond with extensions from \citet{BS77} and \citet{BS80}.  The original approach was to treat the bond and equity as components of the issuer's value and to treat default as when the issuer's value drops below a point where it can no longer meet its financial obligations.  An overview of this type of approach is provided by \citet{N96} and criticisms are addressed by \citet{JT95}.  The main problems with this model is that the issuer's value is not directly observable, difficult to parameterise and all senior debt to the convertible bond also needs to be priced.
+\citet{I77} initially published on pricing a convertible bond with extensions from \citet{BS77} and \citet{BS80}.  The original approach was to treat the bond and equity as components of the issuer's value and to treat default as when the issuer's value drops below a point where it can no longer meet its financial obligations.  An overview of this type of approach is provided by \citet{N96} and criticisms are addressed by \citet{JT95}.  The main problems with this model is that the issuer's value is not directly observable, difficult to parameterise and all senior debt to the convertible bond also needs to be priced.
 
-A second approach was to price the convertible bond based on the issuer's stock price.  \Citet{HP96}, \citet{TF98} and  \citet{MS86} are examples of those who implemented finite difference models.  \Citet{DL02} first proposed using a trinomial tree  however did not implement one.  \Citet{BEA94} and \citet{H11} implemented binomial trees.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  \Citet{AFV03} was the first to allow stock jumps that didn't go to zero.  The probability of the loss jump over a short period of time is described by a hazard rate.
+A second approach was to price the convertible bond based on the issuer's stock price.  \Citet{HP96}, \citet{TF98} and  \citet{MS86} are examples of those who implemented finite difference models.  \Citet{DL02} first proposed using a trinomial tree, however did not implement one.  \Citet{BEA94} and \citet{H11} both implemented binomial trees.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  \Citet{AFV03} was the first to allow stock jumps that did not go to zero.  The probability of the loss jump over a short period of time is described by a hazard rate.
 
-The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
+The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as done in the classical binomial model.
 
 Also some Monte Carlo based pricing methods have been considered as proposed by \citet{B89} with \citet{G03} providing an optimisation approach to handle optimal early exercise of the American options.  Further improvements to the pricing methods were done by \citet{AKW08}.
 
@@ -232,7 +233,7 @@ By choosing \D to eliminate the \dW term, $\D = \Vs$, the differential simplifie
  \Et[\dP] = \left(\Vt + \half\sigma^2\S^2\Vss\right)\dt + \lambda\dt(\X - (\V - \eta\D\S)) \label{eq:EdP}
 \end{equation}
 
-Equating the differential \eqref{eq:rPdt} and the expected differential \eqref{eq:EdP} for \P the partial differential equation for a derivative with credit risk is derived:
+Equating the differential \eqref{eq:rPdt} and the expected differential \eqref{eq:EdP} for \P the partial differential equation (PDE) for a derivative with credit risk is derived:
 \begin{align}
  r(\V - \D\S)\dt &= \left(\Vt + \half\sigma^2\S^2\Vss\right)\dt + \lambda\dt(\X - (\V - \eta\D\S)) \n
  (r + \lambda)\V &= \Vt + (r + \lambda\eta)\S\Vs + \half\sigma^2\S^2\Vss + \lambda\X
@@ -300,7 +301,7 @@ Using the backwards difference equation for the temporal derivative and taking t
 % =============================================================================
 
 \chapter{Binomial Model}
-This section reproduces the derivation, using a different technique, of the binomial model as described by \citet{MK12}.  An extension is done by considering the hedging strategy.
+This section reproduces the derivation, using a different technique, of the binomial model as described by \citet{MK12}.  An extension is added by considering the hedging strategy.
 
 % -----------------------------------------------------------------------------
 
@@ -334,7 +335,7 @@ If one equates the first moment of the stochastic model \eqref{eq:SM_E}\footnote
  \pu            &= \frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d} \\
  \therefore\quad\pd &= -\frac{e^{r\Dt} - \u e^{-\lambda\Dt} - (1 - \eta)(1 - e^{-\lambda\Dt})}{\u - \d}
 \end{align}
-and if one equate the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} then\footnote{Substituting equation \eqref{eq:p(u-d)} into \eqref{eq:Var=1} one gets \eqref{eq:Var=2}}:
+and if one equates the second moment about the mean of the stochastic model \eqref{eq:SM_Var}, in \Dt time, with that of the binomial model \eqref{eq:BM_Var} then\footnote{Substituting equation \eqref{eq:p(u-d)} into \eqref{eq:Var=1} one gets \eqref{eq:Var=2}}:
 \begin{align}
  (\sigma^2 + \lambda\eta^2)\Dt &= \u^2\pu + \d^2(e^{-\lambda\Dt} - \pu) + (1 - \eta)^2(1 - e^{-\lambda\Dt}) - \E[\frac{\SDt}{\S}]^2 \n
                         &= (\u^2 - \d^2)\pu + \d^2 e^{-\lambda\Dt} +  (1 - \eta)^2(1 - e^{-\lambda\Dt}) - e^{-2r\Dt} \label{eq:Var=1} \\
@@ -524,7 +525,7 @@ The portfolio value for a default in stock:
          &= \X - (\X - (\Vu - \D\S\u) - (1 - \eta)\D\S)e^{-\lambda\Dt} \n
 \end{align}
 
-Consider $\H = \X - (\Vu - \D\S\u) - (1 - \eta)\D\S$, which could be considered the un-adjusted\footnote{Adjustments need to be made for the probability of default} default cost after hedging.  $\H\po$ is received for both an up- and down- step in stock price, so $\H\po$ is received $e^{-\lambda\Dt}$ of the time and $\H e^{-\lambda\Dt}$ is paid \po of the time, on balance.  Each time step effectively insures default for that time step by receiving on non-default events what needs to be paid on a default event.
+Consider $\H = \X - (\Vu - \D\S\u) - (1 - \eta)\D\S$, which could be considered the un-adjusted\footnote{Adjustments need to be made for the probability of default} default cost after hedging.  $\H\po$ is received for both an up- and down- step in stock price, so $\H\po$ is received $e^{-\lambda\Dt}$ of the time and $\H e^{-\lambda\Dt}$ is paid \po of the time, on balance.
 
 An important note about using the self-financing property of this model in practise is that it will require a large pool of uncorrelated portfolios with the same adjusted default cost after hedging and actuarial consideration to effectively handle the ``premiums'' and reserves.
 
@@ -542,7 +543,7 @@ It is trivial to confirm that the expected value of \PDt is $e^{r\Dt}\P$.
 % -----------------------------------------------------------------------------
 
 \section{Parameters and Formul\ae\ of Model}
-Based on the above Table \ref{tab:bin_parameter} lists the parameters required for, Table \ref{tab:bin_limit} lists the limits of, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price, this binomial tree.
+Based on the above, Table \ref{tab:bin_parameter} lists the parameters required for this binomial tree, Table \ref{tab:bin_limit} lists the limits of this binomial tree, and Table \ref{tab:bin_formulae} lists the formul\ae\ to price this binomial tree.
 
 \begin{table}[ht]
  \centering
@@ -607,7 +608,7 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 % =============================================================================
 
 \chapter{Numerical Example}
-In the following analysis of the numerical results Table \ref{tab:bond_parameters}, the bond parameters, and Table \ref{tab:stock_parameters}, the stock parameters, are used as a basis.  There are three different types of stock price decreases that are used: total default when the stock losses all value, typical default when the stock losses 40\% and partial default where the stock price doesn't lose any value.
+In the following analysis of the numerical results Table \ref{tab:bond_parameters}, the bond parameters, and Table \ref{tab:stock_parameters}, the stock parameters, are used as a basis.  There are three different types of stock price decreases that are used: total default when the stock losses all value, typical default when the stock losses 30\% of its value and partial default where the stock price does not lose any value.
 
 If $\t^+$ is the time immediately after a coupon payment and $\t^-$ is the immediately before a coupon payment then the coupon payment is handled as follows:
 \begin{equation}
@@ -657,7 +658,6 @@ and it is assumed that embedded options can only be exercised after receiving th
 % -----------------------------------------------------------------------------
 
 \section{Sensitivity}
-Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it's lifetime, and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
 
 \begin{figure}[htb!]
  \centering
@@ -666,6 +666,8 @@ Figure \ref{fig:choices} illustrates the payoff of the convertible bond over it'
  \label{fig:choices}
 \end{figure}
 
+Figure \ref{fig:choices} illustrates the payoff of the convertible bond over its lifetime and the actions that led to the payoff (see Table \ref{tab:choices} for the list of actions, the associated payoff and the conditions required for the payoff).
+
 The figure has clear jumps at each coupon payment, producing a saw effect.  The other influencing factors are shown below:
 \begin{itemize}
  \item \emph{Put:} the ``Put'' action is taken at time $\t = 3$ at stock prices from $\S = 0$ till $\S \approxeq 75$.  This option causes the value of the convertible bond prior to time $\t = 3$ to be elevated due to the higher payoff than the intrinsic value.
@@ -673,7 +675,7 @@ The figure has clear jumps at each coupon payment, producing a saw effect.  The 
  \item \emph{Conversion:} on termination the ``Conversion'' action is taken for $\S \ge 104$.  At no other time is there voluntary conversion as, at time $\t = 2$ the upper payoff is similar to that of a forward and for similar reasons the value of the convertible bond increases.  Due to the increasing value the intrinsic value is never below the conversion threshold.
  \item \emph{Forced conversion:} the ``Forced conversion'' action is taken from time $\t = 2$ until almost $\t = 5$ above stock price $\S \approxeq 110$.
  \item \emph{Redemption:} on termination the ``Redemption'' action is taken for $\S < 104$.
- \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ having minimal impact.
+ \item \emph{Hold:} the convertible bond is held for all other areas.  Of particular note is at time $\t = 3$ there is a narrow ``window'' from stock price $\S \approxeq 75$ to $\S \approxeq 110$ where the bond holder will not redeem, or be forced to redeem, the bond.  It is apparent that the changes of holding the bond beyond time $\t = 3$ is quite small.  Due to this the convertible bond value is dominated by the put, call and conversion options with the redemption value, and coupons after time $\t = 3$ have minimal impact.
 \end{itemize}
 
 \begin{figure}[htb!]
@@ -705,7 +707,7 @@ In considering the sensitivity of the convertible bond to changes in each of the
 
 \emph{Put:} Figure \ref{fig:varTp} compares the price of a convertible bond with differing put times.  The figure illustrates that the price of the bond is correlated with the put exercise time.  This effect happens because the coupon rate (converted to NACC) is greater than the risk free rate.  If the coupon rate were lower that an inverse correlation would be observed.  The effect dominant for $\S \in [0, 50]$ and tapers of until almost no impact by $\S = 100$.
 
-\begin{figure}[htb!]
+\begin{figure}[hb!]
  \centering
  \includegraphics[width=12cm]{../common/fig_varTc}
  \caption[Varying Call Time]{Comparison of initial value of convertible bonds, with total default, with different times for the call option.}
@@ -714,16 +716,16 @@ In considering the sensitivity of the convertible bond to changes in each of the
 
 \emph{Call:} Figure \ref{fig:varTc} compares the price of a convertible bond with differing call times.  The figure illustrates that the price of the bond is correlated with the call exercise time.  This effect happens because the payoff behaves similarly to a forward on the stock and thus is increasing with time.
 
-\begin{figure}[htb!]
+\begin{figure}[hb!]
  \centering
  \includegraphics[width=14cm]{../common/fig_varTv}
- \caption[Varying Call Time]{Comparison of initial value of convertible bonds, with total default, with different times for the conversion option.  Also the payoff of for $\Tv = [4, 5]$ and colours indicating the action taken for the payoff.}
+ \caption[Varying Conversion Time]{Comparison of initial value of convertible bonds, with total default, with different times for the conversion option.  Also the payoff of for $\Tv = [4, 5]$ and colours indicating the action taken for the payoff.}
  \label{fig:varTv}
 \end{figure}
 
 \emph{Conversion:} Figure \ref{fig:varTv} compares the price of a convertible bond with differing conversion times.  The figure illustrates the impact the conversion option, in conjunction with the call option, has on the price.  For conversion intervals that overlap with the leading edge of the call option (i.e. $\Tv = [1, 5]$ and $\Tv = [2, 4]$) the value is unchanged however when there is no overlap (i.e. $\Tv = [3, 5]$ and $\Tv = [4, 4]$) the upper section of the convertible bond's value is significantly suppressed limiting around the strike price of the call option.
 
-As seen above the convertible bond is insensitive to changes in the redemption value and the majority of the value is determined by the leading edge of the call and put options (i.e. $\min(\Tc)$ and $\min(\Tp)$).  The call option influences the upper section, and the put option influences the lower section, of the pricing curve of the convertible bond.  Another important criteria is whether the conversion option on or before the leading edge of the call option or after the call option.
+As seen above the convertible bond is insensitive to changes in the redemption value and the majority of the value is determined by the leading edge of the call and put options (i.e. $\min(\Tc)$ and $\min(\Tp)$).  The call option influences the upper section, and the put option influences the lower section, of the pricing curve of the convertible bond.  Another important criteria of the sensitivity is whether the conversion option happens on or before the leading edge of the call option or after the leading edge of the call option.
 
 % -----------------------------------------------------------------------------
 
@@ -742,21 +744,39 @@ The figure shows that the convertible bond has negative default cost after hedgi
 
 If one were to hedge a long position in the convertible bond then one would loose money in default due to the hedging strategy\footnote{In addition to the original loss due to default}.  However, the hedging will be profitable until default due to the ``insurance premium'' component of the hedging strategy.
 
-The hedging strategy is not perfect however if a large enough ``population'' of uncorrelated convertible bonds are used in the hedging strategy then protection from hedging losses in default is possible.
+The hedging strategy is not perfect.  However, if a large enough ``population'' of uncorrelated convertible bonds are used in the hedging strategy then protection from hedging losses in default is possible.
+
+% -----------------------------------------------------------------------------
+
+\section{Convergence}
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=14cm]{../common/fig_convergence}
+ \caption[Convergence of pricing methods]{Comparison of the convergence of different pricing methods, as a function of step size and a function of time}
+ \label{fig:convergence}
+\end{figure}
+
+Figure \ref{fig:convergence} looks at the convergence of the different pricing methods.  The explicit finite difference scheme was not used due to stability issues.  The penalty scheme is an extension of the Crank-Nicolson scheme as described by \citet{AL98} and \citet{CD11}.  The tolerance for the penalty method is based on the step sizes for stock and time, namely $\min(\Dt, \DS)^{-2}$, as recommended by \citet{FV02}.
+
+The Crank-Nicolson scheme converges faster, both for step size and time, than the implicit scheme.  The binomial model converges faster than the Crank-Nicolson in time and in step size except for the biggest step sizes.  In the limit\footnote{As the step sizes approach zero and as computational time approaches infinity} the penalty method converges the fastest, both in time and step size.
+
+If time is a limiting resource then the penalty method is the worst option with the binomial model offering better convergence than the other finite difference schemes, otherwise the penalty method is the best method.
 
 % =============================================================================
 
 \chapter{Conclusion}
-This project derived and implemented two pricing methods of convertible bonds, that allowed for differing levels of default.  Parameters for three schemes, the explicit, implicit and Crank-Nicolson, were derived.
+This project derived and implemented two pricing methods of convertible bonds that allowed for differing levels of default.  Parameters for three schemes, the explicit, implicit and Crank-Nicolson, were derived.
 
 The binomial model was extended by considering the hedging strategy and showed that the binomial model does not provide for perfect hedging, requiring a cross financing of default and non-default events.  The cross financing requirement was shown to be \H, the unadjusted default cost after hedging, and a numerical analysis showed the convertible bond has a negative \H.
 
-The sensitivities of the convertible bond was considered, with the put and call options influencing the lower and upper sections of the price curve respectively.  The conversion option can have impact on the price if it doesn't coincide with the leading edge of the call option.  The redemption value was shown to have little impact on the price.
+The sensitivities of the convertible bond was considered, with the put and call options influencing the lower and upper sections of the price curve respectively.  The conversion option could have impact on the price if it does not coincide with the leading edge of the call option.  The redemption value was shown to have little impact on the price.
 
-Further avenues of research include:
+Possible avenues of further research include:
 \begin{itemize}
- \item considering the impact the bond and stock recovery has on the convertible bond price,
+ \item consideration of the impact the bond and stock recovery has on the convertible bond price,
  \item exploration of better hedging strategies,
+ \item alternate finite difference schemes for better convergence,
  \item Monte Carlo pricing, and
  \item simulations of ``insuring'' the convertible bond with respect to \H.
 \end{itemize}
@@ -765,6 +785,15 @@ Further avenues of research include:
 
 \appendix
 \chapter{Appendix}
+% -----------------------------------------------------------------------------
+
+\section{Finite Difference Improvements}
+Other improvements to the finite difference schemes were implemented although not used in the analysis.
+
+\Citet{R84} originally described a method of handling discrete jumps in a finite difference equation, such as those introduced by coupons.  The method is, in this case, two implicit half steps instead of the a the normal Crank-Nicolson step following a discrete jump.    \Citet{GC06} recommends using four quarter steps instead of a half steps.  This recommendation was used and it demonstrated better smoothing capability of the price delta and gamma.
+
+\Citet{D04} describes a class of exponential fitted schemes that are able to handle small drift and volatility parameters.
+
 % -----------------------------------------------------------------------------
 
 \section{Software}
