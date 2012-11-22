@@ -1,15 +1,12 @@
 """
 Graph comparing different put times.
 """
-import sys
-
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
 from convertible_bond import dS_total as dS, payoff, P, T
 from model import FDEModel
+from plot import plotmain
 
 def main():
     S = np.linspace(0, 100, 100 * 8 + 1)
@@ -33,9 +30,6 @@ def main():
     plt.ylabel("Convertible Bond Price")
     plt.legend(legend)
 
-    plt.savefig("../common/fig_varTp.pdf")
-    #plt.show()
-
 
 if __name__ == "__main__":
-    main()
+    plotmain(main)

@@ -1,13 +1,12 @@
 """
 Comparative graph between AFV03 figure 2 and this model.
 """
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
 from convertible_bond.afv03 import dS, dS_partial, dS_total, payoff, T
 from model import FDEModel
+from plot import plotmain
 
 def main():
     S = np.arange(80, 121)
@@ -26,8 +25,6 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["No default", "Partial default", "Total Default"], loc=2)
-    plt.savefig("../common/fig_afv03_2.pdf")
-    #plt.show()
 
 if __name__ == "__main__":
-    main()
+    plotmain(main)

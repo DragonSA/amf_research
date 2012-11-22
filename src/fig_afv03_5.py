@@ -2,13 +2,13 @@
 Comparative graph between AFV03 figure 5 and this model.
 """
 import copy
-import matplotlib
-matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 import numpy as np
 
 from convertible_bond.afv03  import dS_total as dS, payoff, T
 from model import FDEModel
+from plot import plotmain
 
 def main():
     S = np.arange(24, 121)
@@ -34,8 +34,6 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Constant hazard rate", "$\\alpha = -1.2$", "$\\alpha = -2.0$"], loc=2)
-    plt.savefig("../common/fig_afv03_5.pdf")
-    #plt.show()
 
 if __name__ == "__main__":
-    main()
+    plotmain(main)

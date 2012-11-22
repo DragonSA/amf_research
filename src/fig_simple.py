@@ -1,16 +1,12 @@
 """
 Graph comparing different call times and price surface for C.times = [2].
 """
-import sys
-
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 
 from convertible_bond import dS_total as dS, payoff, C, T
 from model import FDEModel
-from plot import plot_model
+from plot import plot_model, plotmain
 
 def main():
     S = np.linspace(0, 200, 200 * 8 + 1)
@@ -34,9 +30,7 @@ def main():
 
     ax = fig.add_subplot(1, 2, 2, projection="3d")
     plot_model(ax, dS, payoff)
-    plt.savefig("../common/fig_simple.pdf")
-    #plt.show()
 
 
 if __name__ == "__main__":
-    main()
+    plotmain(main)

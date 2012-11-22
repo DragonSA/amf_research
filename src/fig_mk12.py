@@ -1,14 +1,13 @@
 """
 Comparative graph between MK12 and this model.
 """
-import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 np.seterr(divide="ignore")
 
 from convertible_bond.mk12 import dS, dS_var, payoff, A, T
 from model import FDEModel
+from plot import plotmain
 
 def main():
     S = np.linspace(0, 120, 120 * 8 + 1)
@@ -25,8 +24,6 @@ def main():
     plt.xlabel("Stock Price")
     plt.ylabel("Convertible Bond Price")
     plt.legend(["Constant $\\lambda$", "Synthesis $\\lambda$"], loc=2)
-    plt.savefig("../common/fig_mk12.pdf")
-    #plt.show()
 
 if __name__ == "__main__":
-    main()
+    plotmain(main)
