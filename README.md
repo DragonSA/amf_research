@@ -38,8 +38,9 @@ The code is written in Python 2.7, the following software were used:
  - Python 2.7.3
  - NumPy 1.6.2
  - SciPy 0.10.1
- - MatPlotLib 1.1.0
+ - MatPlotLib 1.2.0
  - pmake (as distributed with FreeBSD 9)
+ - TeXLive 2012
 
 The proposal, presentation and report are written in LaTeX using the TeXLive
 2012 distribution.
