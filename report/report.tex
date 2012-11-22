@@ -538,6 +538,63 @@ Based on the above Table \ref{tab:bin_parameter} lists the parameters required f
 % -----------------------------------------------------------------------------
 
 \section{Synthesising and Hedging Strategy}
+Consider the strategy where $\V - \D\S$ is invested at the risk free rate and $\D\S$ is held in stock.  This creates the portfolio $\P = \D\S + (\V - \D\S) = \V$ and in one time step the portfolio is worth:
+\begin{equation}
+ \PDt = \left\{\begin{array}{l@{\qquad\text{with probability }}l}
+                \D\S\u + e^{r\Dt}(\V - \D\S)         & \pu \\
+                \D\S\d + e^{r\Dt}(\V - \D\S)         & \pd \\
+                (1 - \eta)\D\S + e^{r\Dt}(\V - \D\S) & \po
+               \end{array}\right. \label{eq:PDt}
+\end{equation}
+
+Now consider the portfolio value for an up-movement in stock:
+\begin{align}
+ \PDt^u &= \D\S\u + e^{r\Dt}(\V - \D\S) \n
+        &= \D\S(\u - e^{r\Dt}) + e^{r\Dt}\V \n
+        &= (\Vu - \Vd)\left(\frac{\u - e^{r\Dt}}{u - d}\right) + (\Vu\pu + \Vd\pd + \X\po) \n
+%
+%        &= (\Vu - \Vd)\frac{\u - e^{r\Dt}}{u - d} + \left(\Vu\left(\frac{e^{r\Dt} - \d e^{-\lambda\Dt} - (1 - \eta)\po}{\u - \d}\right)\right. \n
+        &\qquad \left.+ \Vd\left(\frac{\u e^{-\lambda\Dt} + (1 - \eta)\po - e^{r\Dt}}{\u - \d}\right) + \X\po\right) \n
+%
+        &= \Vu + \left(\Vu\left(\frac{\d - \d e^{-\lambda\Dt} - (1 - \eta)\po}{\u - \d}\right)\right. \n
+        &\qquad \left.+ \Vd\left(\frac{\u e^{-\lambda\Dt} + (1 - \eta)\po - \u}{\u - \d}\right) + \X\po\right) \n
+%
+        &= \Vu + \left(\left(\frac{\Vu\d - \Vd\u}{\u - \d}\right) - (1 - \eta)\left(\frac{\Vu - \Vd}{\u - \d}\right) + \X\right)\po \n
+        &= \Vu + \left(-\Vu + \left(\frac{\Vu - \Vd}{\u - \d}\right)\u - (1 - \eta)\D\S + \X\right)\po \n
+        &= \Vu + (\X - (\Vu  - \D\S\u) - (1 - \eta)\D\S)\po
+\end{align}
+
+Similarly the portfolio value for a down-movement in stock:
+\begin{equation}
+ \PDt^d = \Vd + (\X - (\Vd  - \D\S\d) - (1 - \eta)\D\S)\po
+\end{equation}
+
+The portfolio value for a default in stock:
+\begin{align}
+ \PDt ^o &= (1 - \eta)\D\S + e^{r\Dt}(\V - \D\S) \n
+         &= \D\S((1 - \eta) - e^{r\Dt}) + e^{r\Dt}\V \n
+         &= (\Vu - \Vd)\left(\frac{(1 - \eta) - e^{r\Dt}}{u - d}\right) + (\Vu\pu + \Vd\pd + \X\po) \n
+         &= \X\po - \Vu\left(\frac{\d e^{-\lambda\Dt} - (1 - \eta)e^{-\lambda\Dt}}{u - d}\right) + \Vd\left(\frac{\u e^{-\lambda\Dt} - (1 - \eta)e^{-\lambda\Dt}}{u - d}\right) \n
+         &= \X\po - \left(\frac{\Vu\d - \Vd\u}{u - d}\right)e^{-\lambda\Dt} + (1 - \eta)\left(\frac{\Vu - \Vd}{u - d}\right)e^{-\lambda\Dt} \n
+         &= \X\po + ((\Vu - \D\S\u) + (1 - \eta)\D\S)e^{-\lambda\Dt} \n
+         &= \X - (\X - (\Vu - \D\S\u) - (1 - \eta)\D\S)e^{-\lambda\Dt} \n
+\end{align}
+
+Consider $\H = \X - (\Vu - \D\S\u) - (1 - \eta)\D\S$, which could be considered the un-adjusted\footnote{Adjustments need to be made for the probability of default} default cost after hedging.  $\H\po$ is received for both an up- and down- step in stock price, so $\H\po$ is received $e^{-\lambda\Dt}$ of the time and $\H e^{-\lambda\Dt}$ is paid \po of the time, on balance.  Each time step effectively insures default for that time step by receiving on non-default events what needs to be paid on a default event.
+
+An important note about using the self-financing property of this model in practise is that it will require a large pool of uncorrelated portfolios with the same adjusted default cost after hedging and actuarial consideration to effectively handle the ``premiums'' and reserves.
+
+Equation \ref{eq:PDt} can be rewritten as:
+\begin{equation}
+ \PDt = \left\{\begin{array}{l@{\qquad\text{with probability }}l}
+                \Vu + \H\po             & \pu \\
+                \Vd + \H\po             & \pd \\
+                \X - \H e^{-\lambda\Dt} & \po
+               \end{array}\right.
+\end{equation}
+
+It is trivial to confirm that the expected value of \PDt is $e^{r\Dt}\P$.
+
 
 % =============================================================================
 
