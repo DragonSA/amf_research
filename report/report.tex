@@ -590,7 +590,7 @@ Equation \ref{eq:PDt} can be rewritten as:
                 \Vu + \H\po             & \pu \\
                 \Vd + \H\po             & \pd \\
                 \X - \H e^{-\lambda\Dt} & \po
-               \end{array}\right.
+               \end{array}\right.\label{eq:PDt2}
 \end{equation}
 
 It is trivial to confirm that the expected value of \PDt is $e^{r\Dt}\P$.
@@ -716,6 +716,23 @@ In considering the sensitivity of the convertible bond to changes in each of the
 \emph{Conversion:} Figure \ref{fig:varTv} compares the price of a convertible bond with differing conversion times.  The figure illustrates the impact the conversion option, in conjunction with the call option, has on the price.  For conversion intervals that overlap with the leading edge of the call option (i.e. $\Tv = [1, 5]$ and $\Tv = [2, 4]$) the value is unchanged however when there is no overlap (i.e. $\Tv = [3, 5]$ and $\Tv = [4, 4]$) the upper section of the convertible bond's value is significantly suppressed limiting around the strike price of the call option.
 
 As seen above the convertible bond is insensitive to changes in the redemption value and the majority of the value is determined by the leading edge of the call and put options (i.e. $\min(\Tc)$ and $\min(\Tp)$).  The call option influences the upper section, and the put option influences the lower section, of the pricing curve of the convertible bond.  Another important criteria is whether the conversion option on or before the leading edge of the call option or after the call option.
+
+\section{Default Cost after Hedging}
+
+\begin{figure}[htb!]
+ \centering
+ \includegraphics[width=12cm]{../common/fig_binTrade}
+ \caption[Default Cost after Hedging]{Default Cost after Hedging, \H, for a convertible bond with typical default.}
+ \label{fig:binTrade}
+\end{figure}
+
+Figure \ref{fig:binTrade} shows the un-adjusted default cost after hedging.  The shape shows areas where hedging was not possible: the upper right where the call and conversion (forced) options applied and the lower right where the put option limits the stock's ability to extend all the way down.  The hedging strategy is described in Equations \ref{eq:PDt} and \ref{eq:PDt2}.
+
+The figure shows that the convertible bond has negative default cost after hedging.  If one were to synthesise the convertible bond then default events would be profitable due to a surplus (indicated by the negative in the graph) after paying the recovery component \X.
+
+If one were to hedge a long position in the convertible bond then one would loose money in default due to the hedging strategy\footnote{In addition to the original loss due to default}.  However, the hedging will be profitable until default due to the ``insurance premium'' component of the hedging strategy.
+
+The hedging strategy is not perfect however if a large enough ``population'' of uncorrelated convertible bonds are used in the hedging strategy then protection from hedging losses in default is possible.
 
 % =============================================================================
 
