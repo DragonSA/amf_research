@@ -150,7 +150,7 @@ Suppose the recovery of the bond is $\gamma$, and the drop in share price is $\e
 \end{equation}
 
 
-Table \ref{tab:choices} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made.  Figure \ref{fig:choices} illustrates the actions taken on the bond over the lifetime of a convertible bond.  The impact of coupons is left as an implementation detail.
+Table \ref{tab:choices} illustrated the various choices made by the bond holder and the bond issuer, and under what circumstances those choices are made \cite{AKW08}.  \Citet{AFV03} uses an alternative method, using a linear complementary problem, of describing the payoffs.  Figure \ref{fig:choices} illustrates the actions taken on the bond over the lifetime of a convertible bond.  The impact of coupons is left as an implementation detail.
 \begin{table}[ht]
  \centering
  \begin{tabular}{|l|l|l|}\hline
@@ -171,7 +171,9 @@ Table \ref{tab:choices} illustrated the various choices made by the bond holder 
 \section{Literature Review}
 \citet{I77} started the literature of pricing a convertible bond with extensions from \citet{BS77} and \citet{BS80}.  The original approach was to treat the bond and equity as components of the issuer's value and to treat default as when the issuer's value drops below a point where it can no longer meet its financial obligations.  An overview of this type of approach is provided by \citet{N96} and criticisms are addressed by \citet{JT95}.  The main problems with this model is that the issuer's value is not directly observable, difficult to parameterise and all senior debt to the convertible bond also needs to be priced.
 
-A second approach was to price the convertible bond based on the issuer's stock price \cite{MS86}.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  \Citet{AFV03} was the first to allow stock jumps that didn't go to zero.  The probability of the loss jump over a short period of time is described by a hazard rate.
+A second approach was to price the convertible bond based on the issuer's stock price.  \Citet{HP96}, \citet{TF98} and  \citet{MS86} are examples of those who implemented finite difference models.  \Citet{DL02} first proposed using a trinomial tree  however did not implement one.  \Citet{BEA94} and \citet{H11} implemented binomial trees.  A refined method, called ``reduced form'', treats default as a discrete jump in time.  \Citet{AFV03} was the first to allow stock jumps that didn't go to zero.  The probability of the loss jump over a short period of time is described by a hazard rate.
+
+The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
 
 Also some Monte Carlo based pricing methods have been considered as proposed by \citet{B89} with \citet{G03} providing an optimisation approach to handle optimal early exercise of the American options.  Further improvements to the pricing methods were done by \citet{AKW08}.
 
@@ -180,7 +182,7 @@ Other methods used for pricing include a finite element method by \citet{BBH03} 
 % =============================================================================
 
 \chapter{Finite Difference Model}
-Describe the finite difference model based on the paper by \citet{AFV03}.
+This section reproduces the derivation, using a different technique, of the stochastic model as described by \citet{AFV03}.  The parameters for the numerical solution, using a lattice construction, is explicitly derived.
 
 % -----------------------------------------------------------------------------
 
@@ -295,22 +297,15 @@ Using the backwards difference equation for the temporal derivative and taking t
  -(\alpha - \kappa)\VJmnm + (2 - \beta - 2\kappa)\VJnm &= (\alpha - \kappa)\VJmn + (2 + \beta + 2\kappa)\VJn + 2\lambda\Dt\X
 \end{align}\normalsize
 
-% -----------------------------------------------------------------------------
-
-\section{Coupons}
-TODO: figure out how to handle coupons
-
 % =============================================================================
 
 \chapter{Binomial Model}
-The Binomial Model with Credit Risk was first derived by \citet{MK12}, who showed that this model converges, in continuous time, to the \citet{AFV03} model.  \Citet{MK12} also showed the valuation method of this model is the same as in the classical binomial model.
-
-TODO: add further explanation and references.
+This section reproduces the derivation, using a different technique, of the binomial model as described by \citet{MK12}.  An extension is done by considering the hedging strategy.
 
 % -----------------------------------------------------------------------------
 
 \section{Binomial Process}
-Consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$}.  The mean and variance of this model is: (TODO: insert picture illustration)
+Consider a binomial model that has time step \Dt, up and down steps, \u and \d with probability \pu and \pd\footnote{$\pd = 1 - \pu - \po = e^{-\lambda\Dt} - \pu$} respectively, and where the probability of default is \po\footnote{The time till the first jump follows an exponential distribution with intensity $\lambda$ and has probability $\Prob(q_{t + \dt} = 1 | q_t = 0) = \po = 1 - e^{-\lambda\Dt}$}.  The mean and variance of this model is:
 \begin{align}
  \E[\frac{\SDt}{\S}]   &= \u\pu + \d\pd + (1 - \eta)\po \n
                        &= \u\pu + \d(e^{-\lambda\Dt} - \pu) + (1 - \eta)(1 - e^{-\lambda\Dt}) \label{eq:BM_E} \\
@@ -403,7 +398,6 @@ Based on the probability limits \eqref{eq:bin_prob_limit} no restriction is plac
 % -----------------------------------------------------------------------------
 
 \section{Valuation}
-TODO: add some fluff
 
 \subsection{Valuation without Coupons}
 Consider a portfolio, \P, that has a long position in the derivative, \V, and a short position of \D in the stock, \S.  The residual $\P = \V - \D\S$ is invested at the risk neutral rate.  At time $t + \Dt$ one should have:
